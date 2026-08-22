@@ -1,32 +1,5 @@
 require 'rails_helper'
 
-# == Schema Information
-#
-# Table name: invitations
-#
-#  id            :integer          not null, primary key
-#  accepted_at   :datetime
-#  email_address :string           not null
-#  expires_at    :datetime         not null
-#  role          :integer          default(2), not null
-#  token         :string           not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  invited_by_id :integer          not null
-#  workspace_id  :integer          not null
-#
-# Indexes
-#
-#  index_invitations_on_invited_by_id                   (invited_by_id)
-#  index_invitations_on_token                           (token) UNIQUE
-#  index_invitations_on_workspace_id                    (workspace_id)
-#  index_invitations_on_workspace_id_and_email_address  (workspace_id,email_address) UNIQUE WHERE accepted_at IS NULL
-#
-# Foreign Keys
-#
-#  invited_by_id  (invited_by_id => users.id)
-#  workspace_id   (workspace_id => workspaces.id)
-#
 RSpec.describe Invitation, type: :model do
   let(:workspace) { create(:workspace, :owned) }
 

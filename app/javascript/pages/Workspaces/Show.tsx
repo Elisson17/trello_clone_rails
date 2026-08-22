@@ -1,23 +1,39 @@
 import { Head, Link, router, useForm } from '@inertiajs/react'
-import { ArrowLeftIcon, LayoutGridIcon, UsersIcon } from 'lucide-react'
+import { ArchiveIcon, ArrowLeftIcon, UsersIcon } from 'lucide-react'
 
+import { BoardCard } from '@/components/BoardCard'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Input } from '@/components/Input'
 import { MemberAvatars } from '@/components/MemberAvatars'
+import { NewBoardDialog } from '@/components/NewBoardDialog'
 import { RoleBadge } from '@/components/RoleBadge'
 import { Button } from '@/components/ui/button'
 import { accentStyle } from '@/lib/accent'
-import type { WorkspaceSummary } from '@/types/inertia'
+import type { BoardBackground, BoardSummary, WorkspaceSummary } from '@/types/inertia'
 
-type Can = { update: boolean; destroy: boolean; manage_members: boolean; leave: boolean }
+type Can = {
+  update: boolean
+  destroy: boolean
+  manage_members: boolean
+  leave: boolean
+  create_board: boolean
+}
+
+type Props = {
+  workspace: WorkspaceSummary
+  boards: BoardSummary[]
+  archived_count: number
+  backgrounds: BoardBackground[]
+  can: Can
+}
 
 export default function WorkspaceShow({
   workspace,
+  boards,
+  archived_count: archivedCount,
+  backgrounds,
   can,
-}: {
-  workspace: WorkspaceSummary
-  can: Can
-}) {
+}: Props) {
   const form = useForm({ name: workspace.name })
   const base = `/workspaces/${workspace.slug}`
   const dirty = form.data.name.trim() !== workspace.name
@@ -53,7 +69,41 @@ export default function WorkspaceShow({
         </div>
       </header>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+      <section className="mt-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-semibold">Boards</h2>
+          {can.create_board && (
+            <NewBoardDialog workspaceSlug={workspace.slug} backgrounds={backgrounds} />
+          )}
+        </div>
+
+        {boards.length === 0 ? (
+          <div className="mt-3 rounded-xl border border-dashed px-6 py-12 text-center">
+            <p className="font-medium">Nenhum board por aqui</p>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+              {can.create_board
+                ? 'Crie o primeiro board e ele já vem com as listas A fazer, Fazendo e Feito.'
+                : 'Peça a um owner ou admin para criar o primeiro board.'}
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {boards.map((board) => (
+              <li key={board.id}>
+                <BoardCard
+                  id={board.id}
+                  title={board.title}
+                  background={board.background}
+                  visibility={board.visibility}
+                  meta={board.lists_count === 1 ? '1 lista' : `${board.lists_count} listas`}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link
           href={`${base}/memberships`}
           className="flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3.5 transition-colors hover:border-[var(--accent-solid)] hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -65,10 +115,18 @@ export default function WorkspaceShow({
           <MemberAvatars users={workspace.members_preview} total={workspace.members_count} />
         </Link>
 
-        <div className="flex items-center gap-2 rounded-xl border border-dashed px-4 py-3.5 text-sm text-muted-foreground">
-          <LayoutGridIcon className="size-4" />
-          Boards chegam na etapa 4
-        </div>
+        {archivedCount > 0 && (
+          <Link
+            href={`${base}/boards`}
+            className="flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3.5 transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <ArchiveIcon className="size-4 text-muted-foreground" />
+              Boards arquivados
+            </span>
+            <span className="text-sm tabular-nums text-muted-foreground">{archivedCount}</span>
+          </Link>
+        )}
       </div>
 
       {can.update && (

@@ -45,6 +45,8 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
+  gem "bullet"
+
   gem "rspec-rails"
   gem "factory_bot_rails"
   gem "faker"
@@ -55,7 +57,6 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
-  gem "annotaterb"
 
   # Abre no navegador os e-mails enviados em desenvolvimento (default sem RESEND_API_KEY).
   gem "letter_opener_web"

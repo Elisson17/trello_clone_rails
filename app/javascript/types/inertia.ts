@@ -41,3 +41,44 @@ export type PendingInvitation = {
   expires_at: string
   expired: boolean
 }
+
+export type BoardBackground = 'slate' | 'rose' | 'amber' | 'emerald' | 'sky' | 'violet'
+export type BoardVisibility = 'private_to_members' | 'workspace_wide'
+
+export type BoardSummary = {
+  id: number
+  title: string
+  background: BoardBackground
+  visibility: BoardVisibility
+  lists_count: number
+}
+
+export type CardPayload = {
+  id: number
+  title: string
+  position: number
+  due_at: string | null
+  completed: boolean
+  overdue: boolean
+  cover_color: string | null
+  comments_count: number
+}
+
+export type ListPayload = {
+  id: number
+  title: string
+  position: number
+  cards: CardPayload[]
+}
+
+export type BoardPayload = {
+  id: number
+  title: string
+  description: string | null
+  visibility: BoardVisibility
+  background: BoardBackground
+  archived: boolean
+  workspace: { slug: string; name: string }
+  lists: ListPayload[]
+  cards_count: number
+}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_22_112952) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -39,6 +39,53 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_112952) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "board_memberships", force: :cascade do |t|
+    t.integer "board_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "role", default: 1, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["board_id", "user_id"], name: "index_board_memberships_on_board_id_and_user_id", unique: true
+    t.index ["board_id"], name: "index_board_memberships_on_board_id"
+    t.index ["user_id"], name: "index_board_memberships_on_user_id"
+  end
+
+  create_table "boards", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.string "background", default: "slate", null: false
+    t.datetime "created_at", null: false
+    t.integer "creator_id", null: false
+    t.text "description"
+    t.integer "lists_count", default: 0, null: false
+    t.decimal "position", precision: 16, scale: 8, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "visibility", default: 0, null: false
+    t.integer "workspace_id", null: false
+    t.index ["creator_id"], name: "index_boards_on_creator_id"
+    t.index ["workspace_id", "archived_at"], name: "index_boards_on_workspace_id_and_archived_at"
+    t.index ["workspace_id"], name: "index_boards_on_workspace_id"
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.integer "comments_count", default: 0, null: false
+    t.datetime "completed_at"
+    t.string "cover_color"
+    t.datetime "created_at", null: false
+    t.integer "creator_id", null: false
+    t.text "description"
+    t.datetime "due_at"
+    t.integer "list_id", null: false
+    t.decimal "position", precision: 16, scale: 8, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_cards_on_creator_id"
+    t.index ["due_at"], name: "index_cards_on_due_at"
+    t.index ["list_id", "position"], name: "index_cards_on_list_id_and_position"
+    t.index ["list_id"], name: "index_cards_on_list_id"
+  end
+
   create_table "invitations", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -53,6 +100,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_112952) do
     t.index ["token"], name: "index_invitations_on_token", unique: true
     t.index ["workspace_id", "email_address"], name: "index_invitations_on_workspace_id_and_email_address", unique: true, where: "accepted_at IS NULL"
     t.index ["workspace_id"], name: "index_invitations_on_workspace_id"
+  end
+
+  create_table "lists", force: :cascade do |t|
+    t.datetime "archived_at"
+    t.integer "board_id", null: false
+    t.integer "cards_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.decimal "position", precision: 16, scale: 8, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "position"], name: "index_lists_on_board_id_and_position"
+    t.index ["board_id"], name: "index_lists_on_board_id"
   end
 
   create_table "memberships", force: :cascade do |t|
@@ -103,8 +162,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_112952) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "board_memberships", "boards"
+  add_foreign_key "board_memberships", "users"
+  add_foreign_key "boards", "users", column: "creator_id"
+  add_foreign_key "boards", "workspaces"
+  add_foreign_key "cards", "lists"
+  add_foreign_key "cards", "users", column: "creator_id"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "invitations", "workspaces"
+  add_foreign_key "lists", "boards"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"
   add_foreign_key "workspaces", "users", column: "owner_id"

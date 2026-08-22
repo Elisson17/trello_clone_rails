@@ -5,6 +5,7 @@ class WorkspacesController < ApplicationController
     authorize Workspace
 
     render inertia: "Workspaces/Index", props: {
+      recent_boards: recent_boards_props,
       workspaces: policy_scope(Workspace).ordered.includes(memberships: { user: { avatar_attachment: :blob } })
                                          .map { |workspace| workspace_props(workspace) }
     }
@@ -15,11 +16,15 @@ class WorkspacesController < ApplicationController
 
     render inertia: "Workspaces/Show", props: {
       workspace: workspace_props(@workspace),
+      boards: board_props(policy_scope(Board).where(workspace: @workspace).active),
+      archived_count: policy_scope(Board).where(workspace: @workspace).archived.count,
+      backgrounds: Board::BACKGROUNDS,
       can: {
         update: policy(@workspace).update?,
         destroy: policy(@workspace).destroy?,
         manage_members: policy(@workspace).manage_members?,
-        leave: policy(@workspace).leave?
+        leave: policy(@workspace).leave?,
+        create_board: policy(Board.new(workspace: @workspace)).create?
       }
     }
   end
@@ -61,6 +66,21 @@ class WorkspacesController < ApplicationController
 
   def workspace_params
     params.permit(:name)
+  end
+
+  # Boards recentes de todos os workspaces: é o atalho que a home precisa ter.
+  def recent_boards_props
+    policy_scope(Board).active.includes(:workspace).order(updated_at: :desc).limit(6).map do |board|
+      { id: board.id, title: board.title, background: board.background,
+        workspace: { slug: board.workspace.slug, name: board.workspace.name } }
+    end
+  end
+
+  def board_props(relation)
+    relation.ordered.map do |board|
+      { id: board.id, title: board.title, background: board.background,
+        visibility: board.visibility, lists_count: board.lists_count }
+    end
   end
 
   def user_avatar_props(user)

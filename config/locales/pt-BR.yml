@@ -10,6 +10,18 @@ pt-BR:
     created: "Workspace criado."
     updated: "Workspace atualizado."
     destroyed: "Workspace excluído."
+  boards:
+    created: "Board criado."
+    updated: "Board atualizado."
+    archived: "Board arquivado."
+    restored: "Board restaurado."
+    destroyed: "Board excluído."
+  lists:
+    archived: "Lista arquivada."
+  cards:
+    archived: "Card arquivado."
+    restored: "Card restaurado."
+    destroyed: "Card excluído."
   memberships:
     updated: "Papel atualizado."
     removed: "Membro removido."
@@ -35,6 +47,17 @@ pt-BR:
       invitation:
         email_address: "E-mail"
         role: "Papel"
+      board:
+        title: "Título"
+        description: "Descrição"
+        background: "Cor"
+        visibility: "Visibilidade"
+      list:
+        title: "Título"
+      card:
+        title: "Título"
+        description: "Descrição"
+        due_at: "Prazo"
       user:
         name: "Nome"
         email: "E-mail"
@@ -49,6 +72,18 @@ pt-BR:
           attributes:
             base:
               quota_exceeded: "você atingiu o limite de workspaces."
+        board:
+          attributes:
+            base:
+              quota_exceeded: "este workspace já tem %{limit} boards."
+        list:
+          attributes:
+            base:
+              quota_exceeded: "este board já tem %{limit} listas."
+        card:
+          attributes:
+            base:
+              quota_exceeded: "este board já tem %{limit} cards."
         membership:
           attributes:
             role:

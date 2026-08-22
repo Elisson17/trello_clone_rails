@@ -18,7 +18,7 @@ RSpec.describe Workspace, type: :model do
 
   it "refuses more workspaces than the quota" do
     owner = create(:user)
-    stub_const("Workspace::MAX_PER_USER", 1)
+    stub_const("Limits", Limits.merge(workspaces_per_user: 1))
     create(:workspace, owner: owner)
 
     expect(build(:workspace, owner: owner)).to be_invalid

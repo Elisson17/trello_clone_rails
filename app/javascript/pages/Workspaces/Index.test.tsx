@@ -32,8 +32,26 @@ const workspace = {
 beforeEach(() => vi.clearAllMocks())
 
 describe('Workspaces/Index', () => {
+  it('shows recent boards across workspaces', () => {
+    render(
+      <WorkspacesIndex
+        workspaces={[workspace]}
+        recent_boards={[
+          {
+            id: 7,
+            title: 'Roadmap',
+            background: 'sky',
+            workspace: { slug: 'time-de-produto', name: 'Time de Produto' },
+          },
+        ]}
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: /Roadmap/ })).toHaveAttribute('href', '/boards/7')
+  })
+
   it('links each workspace to its page', () => {
-    render(<WorkspacesIndex workspaces={[workspace]} />)
+    render(<WorkspacesIndex workspaces={[workspace]} recent_boards={[]} />)
 
     expect(screen.getByRole('link', { name: /Time de Produto/ })).toHaveAttribute(
       'href',
@@ -42,20 +60,20 @@ describe('Workspaces/Index', () => {
   })
 
   it('sums the members not shown in the avatar stack', () => {
-    render(<WorkspacesIndex workspaces={[workspace]} />)
+    render(<WorkspacesIndex workspaces={[workspace]} recent_boards={[]} />)
 
     expect(screen.getByText('+2')).toBeInTheDocument()
     expect(screen.getByText('3 membros')).toBeInTheDocument()
   })
 
   it('invites the first workspace when the list is empty', () => {
-    render(<WorkspacesIndex workspaces={[]} />)
+    render(<WorkspacesIndex workspaces={[]} recent_boards={[]} />)
 
     expect(screen.getByText('Nenhum workspace ainda')).toBeInTheDocument()
   })
 
   it('creates a workspace from the dialog', async () => {
-    render(<WorkspacesIndex workspaces={[workspace]} />)
+    render(<WorkspacesIndex workspaces={[workspace]} recent_boards={[]} />)
 
     fireEvent.click(screen.getByRole('button', { name: /novo workspace/i }))
 

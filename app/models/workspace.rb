@@ -1,10 +1,9 @@
 class Workspace < ApplicationRecord
-  MAX_PER_USER = 50
-
   belongs_to :owner, class_name: "User"
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :invitations, dependent: :destroy
+  has_many :boards, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 80 }
   validates :slug, presence: true, uniqueness: true
@@ -31,8 +30,8 @@ class Workspace < ApplicationRecord
   end
 
   def owner_within_workspace_quota
-    return unless owner && owner.owned_workspaces.count >= MAX_PER_USER
+    return unless owner && owner.owned_workspaces.count >= Limits[:workspaces_per_user]
 
-    errors.add(:base, :quota_exceeded)
+    errors.add(:base, :quota_exceeded, limit: Limits[:workspaces_per_user])
   end
 end

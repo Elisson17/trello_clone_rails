@@ -12,6 +12,21 @@ Rails.application.routes.draw do
   resources :workspaces, except: %i[new edit] do
     resources :memberships, only: %i[index update destroy], module: :workspaces
     resources :invitations, only: %i[create destroy], module: :workspaces
+    resources :boards, only: %i[index create], module: :workspaces
+  end
+
+  resources :boards, only: %i[show update destroy] do
+    scope module: :boards do
+      resource :archive, only: %i[create destroy]
+    end
+    resources :lists, only: %i[create update destroy]
+  end
+
+  resources :cards, only: %i[create update destroy] do
+    scope module: :cards do
+      resource :completion, only: %i[create destroy]
+      resource :archive, only: %i[create destroy]
+    end
   end
 
   resources :invitations, only: [], param: :token do

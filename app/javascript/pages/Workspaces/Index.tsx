@@ -1,7 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
-
+import { BoardCard } from '@/components/BoardCard'
 import { Input } from '@/components/Input'
 import { MemberAvatars } from '@/components/MemberAvatars'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { accentStyle } from '@/lib/accent'
-import type { WorkspaceRole, WorkspaceSummary } from '@/types/inertia'
+import type { BoardBackground, WorkspaceRole, WorkspaceSummary } from '@/types/inertia'
+
+type RecentBoard = {
+  id: number
+  title: string
+  background: BoardBackground
+  workspace: { slug: string; name: string }
+}
 
 const ROLE_NOTE: Record<WorkspaceRole, string> = {
   owner: 'Você é owner',
@@ -23,7 +30,13 @@ const ROLE_NOTE: Record<WorkspaceRole, string> = {
   member: 'Você é membro',
 }
 
-export default function WorkspacesIndex({ workspaces }: { workspaces: WorkspaceSummary[] }) {
+export default function WorkspacesIndex({
+  workspaces,
+  recent_boards: recentBoards,
+}: {
+  workspaces: WorkspaceSummary[]
+  recent_boards: RecentBoard[]
+}) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <Head title="Workspaces" />
@@ -38,6 +51,24 @@ export default function WorkspacesIndex({ workspaces }: { workspaces: WorkspaceS
 
         <NewWorkspaceDialog />
       </div>
+
+      {recentBoards.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-sm font-semibold text-muted-foreground">Boards recentes</h2>
+          <ul className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {recentBoards.map((board) => (
+              <li key={board.id}>
+                <BoardCard
+                  id={board.id}
+                  title={board.title}
+                  background={board.background}
+                  meta={board.workspace.name}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {workspaces.length === 0 ? (
         <EmptyState />

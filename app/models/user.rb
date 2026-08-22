@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :workspaces, through: :memberships
   has_many :owned_workspaces, class_name: "Workspace", foreign_key: :owner_id, dependent: :destroy,
            inverse_of: :owner
+  has_many :board_memberships, dependent: :destroy
+  has_many :boards, through: :board_memberships
   has_many :sent_invitations, class_name: "Invitation", foreign_key: :invited_by_id, dependent: :destroy,
            inverse_of: :invited_by
 
