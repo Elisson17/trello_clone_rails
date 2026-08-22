@@ -22,6 +22,7 @@ export type WorkspaceSummary = {
   members_count: number
   role: WorkspaceRole | null
   membership_id: number | null
+  members_preview: { id: number; name: string; avatar_url: string | null }[]
 }
 
 export type Member = {

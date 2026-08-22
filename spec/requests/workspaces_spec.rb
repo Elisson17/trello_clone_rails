@@ -6,6 +6,13 @@ RSpec.describe "Workspaces", type: :request do
 
   before { sign_in user }
 
+  it "serves the workspace list as the home page" do
+    get root_path
+
+    expect(response).to have_http_status(:ok)
+    expect(inertia_props(response)).to have_key("workspaces")
+  end
+
   it "lists only the workspaces the user belongs to" do
     workspace
     create(:workspace, :owned)
@@ -13,7 +20,9 @@ RSpec.describe "Workspaces", type: :request do
     get workspaces_path
 
     expect(response).to have_http_status(:ok)
-    expect(inertia_props(response)["workspaces"].map { |w| w["id"] }).to eq([ workspace.id ])
+    props = inertia_props(response)["workspaces"]
+    expect(props.map { |w| w["id"] }).to eq([ workspace.id ])
+    expect(props.sole["members_preview"].sole["name"]).to eq(user.name)
   end
 
   it "creates a workspace with the creator as owner" do

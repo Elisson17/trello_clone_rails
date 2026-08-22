@@ -5,7 +5,8 @@ class WorkspacesController < ApplicationController
     authorize Workspace
 
     render inertia: "Workspaces/Index", props: {
-      workspaces: policy_scope(Workspace).ordered.includes(:memberships).map { |workspace| workspace_props(workspace) }
+      workspaces: policy_scope(Workspace).ordered.includes(memberships: { user: { avatar_attachment: :blob } })
+                                         .map { |workspace| workspace_props(workspace) }
     }
   end
 
@@ -62,6 +63,10 @@ class WorkspacesController < ApplicationController
     params.permit(:name)
   end
 
+  def user_avatar_props(user)
+    { id: user.id, name: user.name, avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil }
+  end
+
   def workspace_props(workspace)
     membership = workspace.membership_for(current_user)
 
@@ -72,7 +77,8 @@ class WorkspacesController < ApplicationController
       personal: workspace.personal,
       members_count: workspace.memberships.size,
       role: membership&.role,
-      membership_id: membership&.id
+      membership_id: membership&.id,
+      members_preview: workspace.memberships.first(5).map { |m| user_avatar_props(m.user) }
     }
   end
 end

@@ -62,11 +62,24 @@ describe('Workspaces/Members', () => {
   })
 
   it('shows the invite form only to who can manage members', () => {
-    renderPage()
+    const { unmount } = renderPage()
     expect(screen.getByLabelText(/convidar por e-mail/i)).toBeInTheDocument()
+    unmount()
 
     renderPage({ can: { manage_members: false } })
-    expect(screen.getAllByLabelText(/convidar por e-mail/i)).toHaveLength(1)
+    expect(screen.queryByLabelText(/convidar por e-mail/i)).not.toBeInTheDocument()
+  })
+
+  it('only removes a member after the confirmation is accepted', async () => {
+    renderPage()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remover Ana' }))
+    expect(await screen.findByText('Remover Ana?')).toBeInTheDocument()
+    expect(router.delete).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remover' }))
+
+    expect(router.delete).toHaveBeenCalledWith('/workspaces/time/memberships/2')
   })
 
   it('renders a role select only where the policy allows it', () => {
@@ -82,7 +95,11 @@ describe('Workspaces/Members', () => {
 
     fireEvent.change(screen.getByLabelText('Papel de Ana'), { target: { value: 'admin' } })
 
-    expect(router.patch).toHaveBeenCalledWith('/workspaces/time/memberships/2', { role: 'admin' })
+    expect(router.patch).toHaveBeenCalledWith(
+      '/workspaces/time/memberships/2',
+      { role: 'admin' },
+      { preserveScroll: true },
+    )
   })
 
   it('lists pending invitations', () => {

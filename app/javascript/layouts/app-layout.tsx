@@ -22,17 +22,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="flex h-14 items-center gap-1 border-b px-4">
-        <Link href="/" className="font-bold tracking-tight">
+        <Link
+          href="/"
+          className="rounded-sm font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+        >
           Trello Clone
         </Link>
-        {auth.user && (
-          <Link
-            href="/workspaces"
-            className="ml-4 text-sm text-muted-foreground hover:text-foreground"
-          >
-            Workspaces
-          </Link>
-        )}
         <div className="flex-1" />
         <ThemeToggle />
         {auth.user && <UserMenu user={auth.user} />}
