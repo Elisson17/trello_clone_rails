@@ -1,8 +1,8 @@
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vitest/config'
-import RubyPlugin from 'vite-plugin-ruby'
-import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import RubyPlugin from 'vite-plugin-ruby'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [RubyPlugin(), react(), tailwindcss()],
