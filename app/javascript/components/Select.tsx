@@ -1,0 +1,42 @@
+import type { ComponentProps, ReactNode } from 'react'
+
+import { Field, type FieldError } from '@/components/Field'
+import { cn } from '@/lib/utils'
+
+type SelectProps = ComponentProps<'select'> & {
+  label?: string
+  error?: FieldError
+  hint?: ReactNode
+  fieldClassName?: string
+}
+
+/**
+ * `<select>` nativo de propósito: dá busca por digitação, teclado e roda mobile
+ * de graça — nada disso vem sem trabalho num combobox custom.
+ */
+export function Select({
+  label,
+  error,
+  hint,
+  fieldClassName,
+  required,
+  className,
+  ...props
+}: SelectProps) {
+  return (
+    <Field label={label} error={error} hint={hint} required={required} className={fieldClassName}>
+      <select
+        required={required}
+        aria-invalid={!!error || undefined}
+        className={cn(
+          'h-9 w-full rounded-md border border-input bg-transparent px-2.5 text-sm shadow-xs outline-none',
+          'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+          'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+          'disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30',
+          className,
+        )}
+        {...props}
+      />
+    </Field>
+  )
+}

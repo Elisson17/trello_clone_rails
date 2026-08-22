@@ -2,7 +2,9 @@
 export type SharedUser = {
   id: number
   name: string
-  email_address: string
+  email: string
+  time_zone: string
+  avatar_url: string | null
 }
 
 export type SharedProps = {

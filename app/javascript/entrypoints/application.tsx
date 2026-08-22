@@ -15,7 +15,9 @@ initTheme()
 
 createInertiaApp({
   resolve: (name) => {
-    const pages = import.meta.glob<PageModule>('../pages/**/*.tsx', { eager: true })
+    // `!(*.test)` fica de fora de propósito: arquivo de teste importado aqui roda `vi.mock`
+    // no browser, estoura no eval e derruba o app inteiro em tela branca.
+    const pages = import.meta.glob<PageModule>('../pages/**/!(*.test).tsx', { eager: true })
     const page = pages[`../pages/${name}.tsx`]
     if (!page) throw new Error(`Página Inertia não encontrada: ${name}`)
 

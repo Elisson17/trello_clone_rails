@@ -56,7 +56,21 @@ group :development do
   gem "web-console"
 
   gem "annotaterb"
+
+  # Abre no navegador os e-mails enviados em desenvolvimento (default sem RESEND_API_KEY).
+  gem "letter_opener_web"
 end
 
 gem "vite_rails"
 gem "inertia_rails"
+
+# Autenticação (Devise em vez do generator nativo do Rails 8) e mensagens em pt-BR.
+gem "devise"
+gem "devise-i18n"
+gem "rails-i18n"
+
+# Variáveis de ambiente locais (ver .env.sample). Em produção use o secret manager da plataforma.
+gem "dotenv-rails"
+
+# Entrega de e-mail transacional; só é usada quando RESEND_API_KEY está presente.
+gem "resend"

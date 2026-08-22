@@ -4,8 +4,9 @@ import { toast } from 'sonner'
 import AppLayout from './app-layout'
 
 const flash = { notice: null as string | null, alert: null as string | null }
+const auth = { user: null }
 
-vi.mock('@inertiajs/react', () => ({ usePage: () => ({ props: { flash } }) }))
+vi.mock('@inertiajs/react', () => ({ usePage: () => ({ props: { auth, flash } }) }))
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
   Toaster: () => null,

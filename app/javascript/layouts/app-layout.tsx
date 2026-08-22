@@ -3,6 +3,7 @@ import { type ReactNode, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { ThemeToggle } from '@/components/theme-toggle'
+import { UserMenu } from '@/components/UserMenu'
 import { Toaster } from '@/components/ui/sonner'
 import type { SharedProps } from '@/types/inertia'
 
@@ -11,7 +12,7 @@ import type { SharedProps } from '@/types/inertia'
  * mantém os toasts na tela e o estado do header sobrevive à troca de página.
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { flash } = usePage<SharedProps>().props
+  const { auth, flash } = usePage<SharedProps>().props
 
   useEffect(() => {
     if (flash.notice) toast.success(flash.notice)
@@ -20,8 +21,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="flex h-14 items-center justify-end border-b px-4">
+      <header className="flex h-14 items-center justify-end gap-1 border-b px-4">
         <ThemeToggle />
+        {auth.user && <UserMenu user={auth.user} />}
       </header>
       {children}
       <Toaster position="bottom-right" />

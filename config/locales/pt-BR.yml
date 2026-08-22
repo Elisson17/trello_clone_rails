@@ -1,0 +1,23 @@
+pt-BR:
+  auth:
+    rate_limited: "Muitas tentativas. Espere alguns minutos e tente de novo."
+  profiles:
+    updated: "Perfil atualizado."
+    password_updated: "Senha alterada."
+  activerecord:
+    attributes:
+      user:
+        name: "Nome"
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+        current_password: "Senha atual"
+        time_zone: "Fuso horário"
+        avatar: "Avatar"
+    errors:
+      models:
+        user:
+          attributes:
+            avatar:
+              invalid_image: "precisa ser PNG, JPEG ou WebP"
+              too_big: "deve ter no máximo 2 MB"
