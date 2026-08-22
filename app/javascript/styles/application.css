@@ -73,6 +73,7 @@
 }
 
 @theme inline {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

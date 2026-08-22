@@ -19,13 +19,18 @@ Rails.application.routes.draw do
     scope module: :boards do
       resource :archive, only: %i[create destroy]
     end
-    resources :lists, only: %i[create update destroy]
+    resources :lists, only: %i[create update destroy] do
+      scope module: :lists do
+        resource :position, only: :update
+      end
+    end
   end
 
   resources :cards, only: %i[create update destroy] do
     scope module: :cards do
       resource :completion, only: %i[create destroy]
       resource :archive, only: %i[create destroy]
+      resource :position, only: :update
     end
   end
 

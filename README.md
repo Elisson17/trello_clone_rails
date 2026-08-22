@@ -3,8 +3,8 @@
 Kanban colaborativo em **Rails 8 + Inertia + React**, escrito como portfólio: sem serviço
 externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o app está no ar.
 
-> **Status:** etapa 2 de 11 do roadmap concluída (fundação, ferramental e autenticação).
-> Boards, listas e cards entram nas próximas etapas.
+> **Status:** em desenvolvimento. Autenticação, workspaces com convites, e boards com listas
+> e cards — incluindo drag & drop por mouse e por teclado — já funcionam.
 
 ## Stack
 
@@ -106,5 +106,3 @@ nos `.test.tsx`.
 - **SQLite + Solid \***: filas, cache e websocket no próprio banco. O diferencial do Rails 8 é
   não precisar de Redis, e o projeto existe para mostrar isso.
 - **Sem `active_storage_validations`**: duas validações no modelo resolvem; gem inteira não.
-- **`docs/` fora do git**: spec e roadmap internos ficam locais; o que interessa ao público
-  está aqui e, mais adiante, no `ARCHITECTURE.md`.

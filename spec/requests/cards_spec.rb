@@ -75,4 +75,46 @@ RSpec.describe "Cards", type: :request do
 
     expect(Card.count).to be_zero
   end
+  describe "moving" do
+    let(:other_list) { create(:list, board: board, position: 2048) }
+
+    it "reorders inside the list" do
+      first = create(:card, list: list, title: "A", position: 1024)
+      create(:card, list: list, title: "B", position: 2048)
+
+      patch card_position_path(first), params: { list_id: list.id, index: 1 }
+
+      expect(list.cards.active.ordered.pluck(:title)).to eq(%w[B A])
+    end
+
+    it "moves the card to another list of the board" do
+      card = create(:card, list: list)
+
+      patch card_position_path(card), params: { list_id: other_list.id, index: 0 }
+
+      expect(card.reload.list).to eq(other_list)
+    end
+
+    it "refuses a list from another board" do
+      card = create(:card, list: list)
+      foreign = create(:list)
+
+      patch card_position_path(card), params: { list_id: foreign.id, index: 0 }
+
+      expect(response).to have_http_status(:not_found)
+      expect(card.reload.list).to eq(list)
+    end
+
+    it "denies a viewer" do
+      viewer = create(:membership, workspace: workspace, user: create(:user), role: :member)
+      create(:board_membership, board: board, user: viewer.user, role: :viewer)
+      sign_in viewer.user
+      card = create(:card, list: list, position: 1024)
+      create(:card, list: list, position: 2048)
+
+      patch card_position_path(card), params: { list_id: list.id, index: 1 }
+
+      expect(card.reload.position).to eq(1024)
+    end
+  end
 end

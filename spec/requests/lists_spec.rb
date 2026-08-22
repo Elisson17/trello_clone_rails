@@ -49,4 +49,26 @@ RSpec.describe "Lists", type: :request do
 
     expect(board.lists).to be_empty
   end
+  describe "moving" do
+    it "reorders the lists of the board" do
+      first = create(:list, board: board, title: "A", position: 1024)
+      create(:list, board: board, title: "B", position: 2048)
+
+      patch board_list_position_path(board, first), params: { index: 1 }
+
+      expect(board.lists.active.ordered.pluck(:title)).to eq(%w[B A])
+    end
+
+    it "denies a viewer" do
+      viewer = create(:membership, workspace: workspace, user: create(:user), role: :member)
+      create(:board_membership, board: board, user: viewer.user, role: :viewer)
+      sign_in viewer.user
+      first = create(:list, board: board, position: 1024)
+      create(:list, board: board, position: 2048)
+
+      patch board_list_position_path(board, first), params: { index: 1 }
+
+      expect(first.reload.position).to eq(1024)
+    end
+  end
 end

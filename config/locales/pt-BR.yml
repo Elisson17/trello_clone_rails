@@ -18,7 +18,9 @@ pt-BR:
     destroyed: "Board excluído."
   lists:
     archived: "Lista arquivada."
+    move_failed: "Não deu para mover a lista. A ordem foi restaurada."
   cards:
+    move_failed: "Não deu para mover o card. A ordem foi restaurada."
     archived: "Card arquivado."
     restored: "Card restaurado."
     destroyed: "Card excluído."
