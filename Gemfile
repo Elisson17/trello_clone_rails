@@ -64,6 +64,9 @@ end
 gem "vite_rails"
 gem "inertia_rails"
 
+# Autorização por papel (policies em app/policies).
+gem "pundit"
+
 # Autenticação (Devise em vez do generator nativo do Rails 8) e mensagens em pt-BR.
 gem "devise"
 gem "devise-i18n"

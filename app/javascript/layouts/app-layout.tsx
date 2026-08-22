@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import { type ReactNode, useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -21,7 +21,19 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="flex h-14 items-center justify-end gap-1 border-b px-4">
+      <header className="flex h-14 items-center gap-1 border-b px-4">
+        <Link href="/" className="font-bold tracking-tight">
+          Trello Clone
+        </Link>
+        {auth.user && (
+          <Link
+            href="/workspaces"
+            className="ml-4 text-sm text-muted-foreground hover:text-foreground"
+          >
+            Workspaces
+          </Link>
+        )}
+        <div className="flex-1" />
         <ThemeToggle />
         {auth.user && <UserMenu user={auth.user} />}
       </header>

@@ -7,10 +7,11 @@ module Users
     end
 
     def create
-      build_resource(sign_up_params)
+      register = Users::Register.new(sign_up_params)
+      result = register.call
+      self.resource = register.user
 
-      if resource.save
-        # Com confirmable ninguém entra direto: o e-mail de confirmação é a porta.
+      if result.success?
         set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
         redirect_to new_user_session_path
       else

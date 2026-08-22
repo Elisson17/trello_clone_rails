@@ -7,6 +7,13 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  has_many :memberships, dependent: :destroy
+  has_many :workspaces, through: :memberships
+  has_many :owned_workspaces, class_name: "Workspace", foreign_key: :owner_id, dependent: :destroy,
+           inverse_of: :owner
+  has_many :sent_invitations, class_name: "Invitation", foreign_key: :invited_by_id, dependent: :destroy,
+           inverse_of: :invited_by
+
   validates :name, presence: true, length: { maximum: 80 }
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone::MAPPING.values }
   validate :avatar_must_be_a_small_image

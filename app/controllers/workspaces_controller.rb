@@ -1,0 +1,78 @@
+class WorkspacesController < ApplicationController
+  before_action :set_workspace, only: %i[show update destroy]
+
+  def index
+    authorize Workspace
+
+    render inertia: "Workspaces/Index", props: {
+      workspaces: policy_scope(Workspace).ordered.includes(:memberships).map { |workspace| workspace_props(workspace) }
+    }
+  end
+
+  def show
+    authorize @workspace
+
+    render inertia: "Workspaces/Show", props: {
+      workspace: workspace_props(@workspace),
+      can: {
+        update: policy(@workspace).update?,
+        destroy: policy(@workspace).destroy?,
+        manage_members: policy(@workspace).manage_members?,
+        leave: policy(@workspace).leave?
+      }
+    }
+  end
+
+  def create
+    authorize Workspace
+
+    workspace = Workspace.new(workspace_params.merge(owner: current_user))
+    if workspace.save
+      workspace.memberships.create!(user: current_user, role: :owner)
+      redirect_to workspace_path(workspace), notice: t("workspaces.created")
+    else
+      redirect_to workspaces_path, inertia: { errors: workspace.errors }
+    end
+  end
+
+  def update
+    authorize @workspace
+
+    if @workspace.update(workspace_params)
+      redirect_to workspace_path(@workspace), notice: t("workspaces.updated")
+    else
+      redirect_to workspace_path(@workspace), inertia: { errors: @workspace.errors }
+    end
+  end
+
+  def destroy
+    authorize @workspace
+
+    @workspace.destroy
+    redirect_to workspaces_path, notice: t("workspaces.destroyed")
+  end
+
+  private
+
+  def set_workspace
+    @workspace = Workspace.find_by!(slug: params[:id])
+  end
+
+  def workspace_params
+    params.permit(:name)
+  end
+
+  def workspace_props(workspace)
+    membership = workspace.membership_for(current_user)
+
+    {
+      id: workspace.id,
+      slug: workspace.slug,
+      name: workspace.name,
+      personal: workspace.personal,
+      members_count: workspace.memberships.size,
+      role: membership&.role,
+      membership_id: membership&.id
+    }
+  end
+end

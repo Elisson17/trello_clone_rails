@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 
 import Home from './Home'
 
@@ -8,6 +9,7 @@ const auth = {
 
 vi.mock('@inertiajs/react', () => ({
   Head: () => null,
+  Link: ({ children, ...props }: { children?: ReactNode }) => <a {...props}>{children}</a>,
   usePage: () => ({ props: { auth } }),
 }))
 

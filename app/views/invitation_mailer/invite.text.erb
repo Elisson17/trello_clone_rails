@@ -1,0 +1,8 @@
+Olá!
+
+<%= @invitation.invited_by.name %> convidou você para o workspace "<%= @workspace.name %>"
+no Trello Clone, como <%= @invitation.role %>.
+
+Aceitar convite: <%= @url %>
+
+O convite vale até <%= l @invitation.expires_at, format: :short %>.

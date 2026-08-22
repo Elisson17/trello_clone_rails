@@ -1,0 +1,10 @@
+<p>Olá!</p>
+
+<p>
+  <strong><%= @invitation.invited_by.name %></strong> convidou você para o workspace
+  <strong><%= @workspace.name %></strong> no Trello Clone, como <strong><%= @invitation.role %></strong>.
+</p>
+
+<p><%= link_to "Aceitar convite", @url %></p>
+
+<p>O convite vale até <%= l @invitation.expires_at, format: :short %>.</p>

@@ -6,6 +6,15 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  include Pundit::Authorization
+
+  # Nenhuma action escapa da autorização; quem não precisa pula o callback explicitamente.
+  after_action :verify_authorized, unless: :devise_controller?
+
+  rescue_from Pundit::NotAuthorizedError do
+    redirect_back fallback_location: root_path, alert: t("policies.denied")
+  end
+
   inertia_share do
     {
       auth: { user: current_user && user_props(current_user) },

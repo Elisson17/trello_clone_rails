@@ -9,6 +9,16 @@ Rails.application.routes.draw do
   resource :profile, only: %i[show update], controller: "profiles"
   patch "profile/password" => "profiles#update_password", as: :profile_password
 
+  resources :workspaces, except: %i[new edit] do
+    resources :memberships, only: %i[index update destroy], module: :workspaces
+    resources :invitations, only: %i[create destroy], module: :workspaces
+  end
+
+  resources :invitations, only: [], param: :token do
+    get  "accept", on: :member, action: :show, as: :accept
+    post "accept", on: :member, action: :accept
+  end
+
   # Caixa de entrada local: sem RESEND_API_KEY os e-mails caem aqui.
   mount LetterOpenerWeb::Engine, at: "/dev/mails" if Rails.env.development?
 

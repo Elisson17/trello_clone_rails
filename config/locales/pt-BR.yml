@@ -4,8 +4,37 @@ pt-BR:
   profiles:
     updated: "Perfil atualizado."
     password_updated: "Senha alterada."
+  policies:
+    denied: "Você não tem permissão para isso."
+  workspaces:
+    created: "Workspace criado."
+    updated: "Workspace atualizado."
+    destroyed: "Workspace excluído."
+  memberships:
+    updated: "Papel atualizado."
+    removed: "Membro removido."
+    left: "Você saiu do workspace."
+  invitations:
+    sent: "Convite enviado."
+    revoked: "Convite cancelado."
+    accepted: "Convite aceito. Bem-vindo(a)!"
+    errors:
+      expired: "Este convite expirou. Peça um novo."
+      already_accepted: "Este convite já foi aceito."
+      wrong_email: "Este convite é para outro e-mail. Entre com a conta convidada."
+  invitation_mailer:
+    invite:
+      subject: "Convite para o workspace %{workspace}"
   activerecord:
     attributes:
+      workspace:
+        name: "Nome"
+        slug: "Identificador"
+      membership:
+        role: "Papel"
+      invitation:
+        email_address: "E-mail"
+        role: "Papel"
       user:
         name: "Nome"
         email: "E-mail"
@@ -16,6 +45,21 @@ pt-BR:
         avatar: "Avatar"
     errors:
       models:
+        workspace:
+          attributes:
+            base:
+              quota_exceeded: "você atingiu o limite de workspaces."
+        membership:
+          attributes:
+            role:
+              last_owner: "não pode mudar: o workspace ficaria sem owner."
+            base:
+              last_owner: "O último owner não pode sair do workspace."
+        invitation:
+          attributes:
+            email_address:
+              already_member: "já é membro deste workspace"
+              taken: "já tem um convite pendente"
         user:
           attributes:
             avatar:

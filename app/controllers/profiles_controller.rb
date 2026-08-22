@@ -1,4 +1,6 @@
 class ProfilesController < ApplicationController
+  skip_after_action :verify_authorized
+
   def show
     render inertia: "Profile/Show", props: { time_zones: ActiveSupport::TimeZone::MAPPING.values.sort }
   end
