@@ -6,6 +6,7 @@ module Lists
       authorize @list, :update?
 
       result = Lists::Move.call(list: @list, index: params.expect(:index))
+      record_activity("list.moved", @list, title: @list.title) if result.success?
       redirect_to board_path(@list.board), alert: (t("lists.move_failed") if result.failure?)
     end
 

@@ -1,6 +1,4 @@
 module Boards
-  # A tela de membros do board, herdada da etapa 4: só agora ela tem um segundo uso
-  # (é a lista de quem pode ser responsável por um card).
   class MembershipsController < ApplicationController
     before_action :set_board
 
@@ -10,7 +8,7 @@ module Boards
       user = @board.workspace.users.find(params.expect(:user_id))
       membership = @board.board_memberships.new(user: user, role: params[:role] || :member)
 
-      membership.save
+      record_activity("member.added", @board, name: user.name, role: membership.role) if membership.save
       respond_with(membership.errors)
     end
 
@@ -19,13 +17,17 @@ module Boards
 
       membership = @board.board_memberships.find(params[:id])
       membership.update(role: params.expect(:role))
+      record_activity("member.role_changed", @board, name: membership.user.name, role: membership.role)
       respond_with(membership.errors)
     end
 
     def destroy
       authorize @board, :manage_members?
 
-      @board.board_memberships.find(params[:id]).destroy
+      membership = @board.board_memberships.find(params[:id])
+
+      membership.destroy
+      record_activity("member.removed", @board, name: membership.user.name)
       redirect_to board_path(@board), notice: t("board_memberships.removed")
     end
 

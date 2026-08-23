@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react'
 import { type ReactNode, useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { NotificationBell } from '@/components/NotificationBell'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { UserMenu } from '@/components/UserMenu'
 import { Toaster } from '@/components/ui/sonner'
@@ -12,7 +13,7 @@ import type { SharedProps } from '@/types/inertia'
  * mantém os toasts na tela e o estado do header sobrevive à troca de página.
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { auth, flash } = usePage<SharedProps>().props
+  const { auth, flash, unread_notifications_count } = usePage<SharedProps>().props
 
   useEffect(() => {
     if (flash.notice) toast.success(flash.notice)
@@ -30,6 +31,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </Link>
         <div className="flex-1" />
         <ThemeToggle />
+        {auth.user && <NotificationBell count={unread_notifications_count} />}
         {auth.user && <UserMenu user={auth.user} />}
       </header>
       {children}

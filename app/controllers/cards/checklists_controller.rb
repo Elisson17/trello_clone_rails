@@ -6,14 +6,17 @@ module Cards
       authorize @card, :update?
       checklist = @card.checklists.new(title: params[:title], position: @card.checklists.next_position)
 
-      checklist.save
+      record_activity("checklist.created", @card, title: @card.title, name: checklist.title) if checklist.save
       back_to_card_with(checklist.errors)
     end
 
     def destroy
       authorize @card, :update?
 
-      @card.checklists.find(params[:id]).destroy
+      checklist = @card.checklists.find(params[:id])
+
+      checklist.destroy
+      record_activity("checklist.removed", @card, title: @card.title, name: checklist.title)
       back_to_card
     end
 

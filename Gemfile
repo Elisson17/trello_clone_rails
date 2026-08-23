@@ -78,3 +78,6 @@ gem "dotenv-rails"
 
 # Entrega de e-mail transacional; só é usada quando RESEND_API_KEY está presente.
 gem "resend"
+
+# Paginação do feed de atividades e da central de notificações.
+gem "pagy"

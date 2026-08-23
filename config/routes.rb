@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   resource :profile, only: %i[show update], controller: "profiles"
   patch "profile/password" => "profiles#update_password", as: :profile_password
 
+  resources :notifications, only: :index do
+    patch :read, on: :collection
+  end
+
   resources :workspaces, except: %i[new edit] do
     resources :memberships, only: %i[index update destroy], module: :workspaces
     resources :invitations, only: %i[create destroy], module: :workspaces
@@ -21,6 +25,7 @@ Rails.application.routes.draw do
       resource :duplicate, only: :create
       resources :labels, only: %i[create destroy]
       resources :memberships, only: %i[create update destroy]
+      resources :activities, only: :index
     end
     resources :lists, only: %i[create update destroy] do
       scope module: :lists do

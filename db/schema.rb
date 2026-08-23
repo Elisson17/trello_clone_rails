@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activities", force: :cascade do |t|
+    t.string "action", null: false
+    t.integer "board_id", null: false
+    t.datetime "created_at", null: false
+    t.json "metadata", default: {}, null: false
+    t.integer "subject_id", null: false
+    t.string "subject_type", null: false
+    t.integer "user_id"
+    t.index ["board_id", "created_at"], name: "index_activities_on_board_id_and_created_at"
+    t.index ["board_id"], name: "index_activities_on_board_id"
+    t.index ["subject_type", "subject_id", "created_at"], name: "index_activities_on_subject_and_created_at"
+    t.index ["subject_type", "subject_id"], name: "index_activities_on_subject"
+    t.index ["user_id"], name: "index_activities_on_user_id"
   end
 
   create_table "board_memberships", force: :cascade do |t|
@@ -183,6 +198,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
     t.index ["workspace_id"], name: "index_memberships_on_workspace_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.integer "activity_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "read_at"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["activity_id", "user_id"], name: "index_notifications_on_activity_id_and_user_id", unique: true
+    t.index ["activity_id"], name: "index_notifications_on_activity_id"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -220,6 +247,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activities", "boards"
+  add_foreign_key "activities", "users"
   add_foreign_key "board_memberships", "boards"
   add_foreign_key "board_memberships", "users"
   add_foreign_key "boards", "users", column: "creator_id"
@@ -240,5 +269,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
   add_foreign_key "lists", "boards"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"
+  add_foreign_key "notifications", "activities"
+  add_foreign_key "notifications", "users"
   add_foreign_key "workspaces", "users", column: "owner_id"
 end

@@ -6,7 +6,10 @@ externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o ap
 > **Status:** em desenvolvimento. Autenticação, workspaces com convites, e boards com listas
 > e cards — incluindo drag & drop por mouse e por teclado — já funcionam. O card abre em
 > painel lateral próprio (`/cards/:id`) com descrição em Markdown, etiquetas, responsáveis,
-> checklists, comentários e anexos. O visual segue o GitHub Projects (paleta do Primer).
+> checklists, comentários e anexos. Toda mutação vira atividade num feed por board e por
+> card, e menção, atribuição e prazo chegando viram notificação — tudo fora do request, em
+> filas nomeadas do Solid Queue, com dois jobs recorrentes rodando dentro do Puma. O visual
+> segue o GitHub Projects (paleta do Primer).
 
 ## Stack
 
@@ -108,3 +111,8 @@ nos `.test.tsx`.
 - **SQLite + Solid \***: filas, cache e websocket no próprio banco. O diferencial do Rails 8 é
   não precisar de Redis, e o projeto existe para mostrar isso.
 - **Sem `active_storage_validations`**: duas validações no modelo resolvem; gem inteira não.
+- **Cron sem gem de cron**: `config/recurring.yml` do Solid Queue, e em desenvolvimento o
+  supervisor sobe dentro do Puma (`SOLID_QUEUE_IN_PUMA=1` no `Procfile.dev`) — `bin/dev`
+  continua sendo dois processos.
+- **Atividade é gravada em job, sempre**: o request nunca paga por ela, e o texto de cada
+  linha do feed é montado no front a partir de `action` + `metadata` — o feed não faz join.

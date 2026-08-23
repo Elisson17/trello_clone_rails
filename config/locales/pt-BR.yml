@@ -35,6 +35,8 @@ pt-BR:
     not_a_member: "Só quem é membro do board pode ser responsável."
   comments:
     destroyed: "Comentário excluído."
+  notifications:
+    all_read: "Notificações marcadas como lidas."
   attachments:
     destroyed: "Anexo excluído."
   memberships:

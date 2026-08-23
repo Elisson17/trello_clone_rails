@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   include Pundit::Authorization
+  include Pagy::Method
+  include ActivityRecording
 
   # Nenhuma action escapa da autorização; quem não precisa pula o callback explicitamente.
   after_action :verify_authorized, unless: :devise_controller?
@@ -18,7 +20,8 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       auth: { user: current_user && user_props(current_user) },
-      flash: { notice: flash.notice, alert: flash.alert }
+      flash: { notice: flash.notice, alert: flash.alert },
+      unread_notifications_count: -> { current_user&.notifications&.unread&.count.to_i }
     }
   end
 

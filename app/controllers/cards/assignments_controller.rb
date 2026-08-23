@@ -7,14 +7,19 @@ module Cards
       authorize @card, :update?
       assignment = @card.card_assignments.new(user_id: params.expect(:user_id))
 
-      assignment.save
+      if assignment.save
+        record_activity("card.assigned", @card, title: @card.title,
+                        assignee_id: assignment.user_id, name: assignment.user.name)
+      end
       back_to_card(alert: (t("card_assignments.not_a_member") if assignment.errors.any?))
     end
 
     def destroy
       authorize @card, :update?
 
-      @card.card_assignments.find_by(user_id: params[:id])&.destroy
+      removed = @card.card_assignments.find_by(user_id: params[:id])
+      removed&.destroy
+      record_activity("card.unassigned", @card, title: @card.title, name: removed.user.name) if removed
       back_to_card
     end
   end

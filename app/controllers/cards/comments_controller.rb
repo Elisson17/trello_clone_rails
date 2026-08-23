@@ -8,7 +8,7 @@ module Cards
       comment = @card.comments.new(body: params[:body], user: current_user)
       authorize comment
 
-      comment.save
+      record_activity("comment.created", @card, title: @card.title, body: comment.body) if comment.save
       back_to_card_with(comment.errors)
     end
 
@@ -16,7 +16,7 @@ module Cards
     def update
       authorize @comment
 
-      @comment.update(body: params[:body], edited_at: Time.current)
+      record_activity("comment.updated", @card, title: @card.title) if @comment.update(body: params[:body], edited_at: Time.current)
       back_to_card_with(@comment.errors)
     end
 
@@ -24,6 +24,7 @@ module Cards
       authorize @comment
 
       @comment.destroy
+      record_activity("comment.removed", @card, title: @card.title)
       back_to_card(notice: t("comments.destroyed"))
     end
 

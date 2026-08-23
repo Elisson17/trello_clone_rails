@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :card_assignments, dependent: :destroy
   has_many :assigned_cards, through: :card_assignments, source: :card
   has_many :comments, dependent: :destroy
+  has_many :activities, dependent: :destroy
+  has_many :notifications, dependent: :destroy
   has_many :sent_invitations, class_name: "Invitation", foreign_key: :invited_by_id, dependent: :destroy,
            inverse_of: :invited_by
 

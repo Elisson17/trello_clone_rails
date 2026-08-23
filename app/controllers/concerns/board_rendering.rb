@@ -1,13 +1,12 @@
-# Board e card compartilham a mesma página Inertia: o modal do card é a página do board
-# com uma prop a mais. É isso que mantém o board vivo por trás sem recarregar nada.
 module BoardRendering
   extend ActiveSupport::Concern
 
   private
 
-  def render_board(board, card: nil)
+  def render_board(board, card: nil, activities: nil)
     props = { board: BoardPresenter.new(board).as_json, can: board_permissions(board) }
     props[:card] = CardPresenter.new(card, user: current_user).as_json if card
+    props[:activities] = activities.as_json if activities
 
     render inertia: "Boards/Show", props: props
   end

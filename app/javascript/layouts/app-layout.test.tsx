@@ -8,7 +8,7 @@ const flash = { notice: null as string | null, alert: null as string | null }
 const auth = { user: null }
 
 vi.mock('@inertiajs/react', () => ({
-  usePage: () => ({ props: { auth, flash } }),
+  usePage: () => ({ props: { auth, flash, unread_notifications_count: 0 } }),
   Link: ({ children, ...props }: { children?: ReactNode }) => <a {...props}>{children}</a>,
 }))
 vi.mock('sonner', () => ({

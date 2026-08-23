@@ -33,12 +33,14 @@ import {
   CopyIcon,
   EllipsisIcon,
   GripVerticalIcon,
+  HistoryIcon,
   MessageSquareIcon,
   PaperclipIcon,
   UsersIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 
+import { ActivityFeed } from '@/components/ActivityFeed'
 import { BoardMembersDialog } from '@/components/BoardMembersDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { CardDrawer } from '@/components/card/CardDrawer'
@@ -53,12 +55,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { useOptimisticMove } from '@/hooks/use-optimistic-move'
 import { accentStyle } from '@/lib/accent'
 import { indexOfCard, listOfCard, moveCard, moveList } from '@/lib/board-move'
 import { BOARD_THEME } from '@/lib/board-theme'
 import { cn } from '@/lib/utils'
-import type { BoardPayload, CardDetail, CardPayload, ListPayload } from '@/types/inertia'
+import type {
+  ActivityPayload,
+  BoardPayload,
+  CardDetail,
+  CardPayload,
+  FeedPage,
+  ListPayload,
+} from '@/types/inertia'
 
 type Can = { update: boolean; destroy: boolean; archive: boolean; manage_members: boolean }
 
@@ -95,11 +105,14 @@ export default function BoardShow({
   board,
   can,
   card,
+  activities,
 }: {
   board: BoardPayload
   can: Can
   // Presente só na rota `/cards/:id`: é o modal do card sobre este mesmo board.
   card?: CardDetail
+  // Em `/cards/:id` é o feed do card; em `/boards/:id/activities`, o do board.
+  activities?: FeedPage<ActivityPayload>
 }) {
   const theme = BOARD_THEME[board.background]
   const { lists, setDraft, moveCard: commitCard, moveList: commitList } = useOptimisticMove(board)
@@ -203,6 +216,12 @@ export default function BoardShow({
               />
             )}
 
+            <Button asChild variant="ghost" size="icon">
+              <Link href={`/boards/${board.id}/activities`} aria-label="Atividade do board">
+                <HistoryIcon />
+              </Link>
+            </Button>
+
             {can.archive && <BoardMenu board={board} can={can} />}
           </div>
         </div>
@@ -252,8 +271,43 @@ export default function BoardShow({
         </DragOverlay>
       </DndContext>
 
-      {card && <CardDrawer key={card.id} board={board} card={card} canWrite={can.update} />}
+      {card && (
+        <CardDrawer
+          key={card.id}
+          board={board}
+          card={card}
+          canWrite={can.update}
+          activities={activities}
+        />
+      )}
+
+      {activities && !card && <ActivitySheet board={board} feed={activities} />}
     </div>
+  )
+}
+
+/** O feed do board também é rota (`/boards/:id/activities`), não estado de front. */
+function ActivitySheet({ board, feed }: { board: BoardPayload; feed: FeedPage<ActivityPayload> }) {
+  return (
+    <Sheet
+      open
+      onOpenChange={(open) =>
+        !open && router.get(`/boards/${board.id}`, {}, { preserveScroll: true })
+      }
+    >
+      <SheetContent aria-describedby={undefined} className="md:max-w-md">
+        <header className="border-b px-6 pt-5 pb-4">
+          <SheetTitle className="text-base">Atividade</SheetTitle>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Toda mutação deste board, da mais recente para a mais antiga.
+          </p>
+        </header>
+
+        <div className="px-6 py-4">
+          <ActivityFeed feed={feed} baseUrl={`/boards/${board.id}/activities`} />
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }
 

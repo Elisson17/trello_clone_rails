@@ -10,6 +10,7 @@ export type SharedUser = {
 export type SharedProps = {
   auth: { user: SharedUser | null }
   flash: { notice: string | null; alert: string | null }
+  unread_notifications_count: number
 }
 
 export type WorkspaceRole = 'owner' | 'admin' | 'member'
@@ -142,4 +143,31 @@ export type BoardPayload = {
   labels: LabelPayload[]
   lists: ListPayload[]
   cards_count: number
+}
+
+/** Uma linha do feed. O texto da frase é montado no front a partir de `action` + `metadata`. */
+export type ActivityPayload = {
+  id: number
+  action: string
+  metadata: Record<string, string | string[] | number | null>
+  created_at: string
+  /** Nulo quando foi o sistema — o lembrete de prazo não tem autor. */
+  actor: { id: number; name: string; avatar_url: string | null } | null
+  url: string | null
+}
+
+/** Página do feed. Vai e volta por `?page=`, sem estado no cliente. */
+export type FeedPage<T> = {
+  items: T[]
+  page: number
+  prev_page: number | null
+  next_page: number | null
+}
+
+export type NotificationPayload = {
+  id: number
+  read: boolean
+  created_at: string
+  board: { id: number; title: string }
+  activity: ActivityPayload
 }

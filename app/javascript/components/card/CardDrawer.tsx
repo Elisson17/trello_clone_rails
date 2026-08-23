@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react'
 import { ArchiveIcon, CircleCheckIcon, CircleDotIcon, ClockIcon } from 'lucide-react'
+import { ActivityFeed } from '@/components/ActivityFeed'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { AssigneePicker } from '@/components/card/AssigneePicker'
 import { CardAttachments } from '@/components/card/CardAttachments'
@@ -16,16 +17,18 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 import { BOARD_THEME } from '@/lib/board-theme'
 import { relativeTime, toLocalInput } from '@/lib/card-format'
 import { cn } from '@/lib/utils'
-import type { BoardPayload, CardDetail } from '@/types/inertia'
+import type { ActivityPayload, BoardPayload, CardDetail, FeedPage } from '@/types/inertia'
 
 export function CardDrawer({
   board,
   card,
   canWrite,
+  activities,
 }: {
   board: BoardPayload
   card: CardDetail
   canWrite: boolean
+  activities?: FeedPage<ActivityPayload>
 }) {
   const labels = board.labels.filter((label) => card.label_ids.includes(label.id))
   const assignees = board.members.filter((member) => card.assignee_ids.includes(member.user.id))
@@ -89,6 +92,12 @@ export function CardDrawer({
                 canWrite={canWrite}
               />
             </Section>
+
+            {activities && (
+              <Section title="Atividade">
+                <ActivityFeed feed={activities} baseUrl={`/cards/${card.id}`} bare />
+              </Section>
+            )}
 
             <Section title={`Comentários (${card.comments.length})`}>
               <CardComments

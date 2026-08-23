@@ -8,14 +8,17 @@ module Boards
       authorize @board, :update?
       label = @board.labels.new(label_params)
 
-      label.save
+      record_activity("label.created", @board, name: label.name, color: label.color) if label.save
       respond_with(label.errors)
     end
 
     def destroy
       authorize @board, :update?
 
-      @board.labels.find(params[:id]).destroy
+      label = @board.labels.find(params[:id])
+
+      label.destroy
+      record_activity("label.removed", @board, name: label.name)
       redirect_back fallback_location: board_path(@board), notice: t("labels.destroyed")
     end
 

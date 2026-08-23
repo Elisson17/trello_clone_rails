@@ -7,12 +7,11 @@ module Cards
 
     private
 
-    # Concluir acontece nos dois lugares — no tile do board e dentro do modal —, então a
-    # resposta volta para a página de onde veio, em vez de fechar o modal.
     def toggle(value)
       authorize @card, :update?
 
       @card.update!(completed_at: value)
+      record_activity(value ? "card.completed" : "card.reopened", @card, title: @card.title)
       redirect_back fallback_location: board_path(board)
     end
   end

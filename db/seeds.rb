@@ -73,6 +73,35 @@ if board.new_record?
   primeiro.comments.create!(user: ana, body: "Dá para reaproveitar o `EditableTitle` no título do card.")
 
   board.lists.find_by(title: "Fazendo").cards.first&.update!(cover_color: "amber")
+
+  # Etapa 7: feed vazio não demonstra feed. As atividades entram pelo mesmo job que o
+  # controller usa — nada de INSERT paralelo só para as seeds.
+  historico = [
+    [ "board.created", board, demo, { title: board.title } ],
+    [ "list.created", board.lists.ordered.first, demo, { title: "A fazer" } ],
+    [ "card.created", primeiro, demo, { title: primeiro.title } ],
+    [ "card.labeled", primeiro, ana, { title: primeiro.title, name: "produto" } ],
+    [ "card.assigned", primeiro, ana, { title: primeiro.title, assignee_id: demo.id, name: demo.name } ]
+  ]
+  historico.each.with_index do |(action, subject, autor, metadata), index|
+    RecordActivityJob.perform_now(action: action, board_id: board.id, user_id: autor.id,
+                                  subject_type: subject.class.name, subject_id: subject.id,
+                                  metadata: metadata)
+    Activity.last.update_columns(created_at: (historico.size - index).hours.ago)
+  end
+
+  # Menção e prazo chegando: as duas notificações que a central mostra.
+  mencao = primeiro.comments.create!(user: ana, body: "@demo confere o payload do feed?")
+  RecordActivityJob.perform_now(action: "comment.created", board_id: board.id, user_id: ana.id,
+                                subject_type: "Card", subject_id: primeiro.id,
+                                metadata: { title: primeiro.title, body: mencao.body })
+  NotifyMentionsJob.perform_now(Activity.last.id)
+
+  board.lists.find_by(title: "Fazendo").cards.first&.tap do |card|
+    card.update!(due_at: 8.hours.from_now)
+    card.card_assignments.create!(user: demo)
+  end
+  DueSoonReminderJob.perform_now
 end
 
 puts <<~INFO

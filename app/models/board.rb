@@ -13,6 +13,7 @@ class Board < ApplicationRecord
   has_many :lists, dependent: :destroy
   has_many :labels, dependent: :destroy
   has_many :cards, through: :lists
+  has_many :activities, dependent: :destroy
 
   enum :visibility, { private_to_members: 0, workspace_wide: 1 }, validate: true
 

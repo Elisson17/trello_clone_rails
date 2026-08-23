@@ -6,6 +6,7 @@ module Boards
       authorize @board, :archive?
 
       @board.archive!
+      record_activity("board.archived", @board, title: @board.title)
       redirect_to workspace_path(@board.workspace), notice: t("boards.archived")
     end
 
@@ -13,6 +14,7 @@ module Boards
       authorize @board, :archive?
 
       @board.restore!
+      record_activity("board.restored", @board, title: @board.title)
       redirect_to board_path(@board), notice: t("boards.restored")
     end
 

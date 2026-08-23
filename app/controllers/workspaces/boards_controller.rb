@@ -19,6 +19,7 @@ module Workspaces
                                      attributes: board_params)
 
       if result.success?
+        record_activity("board.created", result.value, title: result.value.title)
         redirect_to board_path(result.value), notice: t("boards.created")
       else
         redirect_to workspace_path(@workspace), inertia: { errors: result.errors.first }

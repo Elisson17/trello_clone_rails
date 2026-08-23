@@ -13,6 +13,7 @@ class BoardsController < ApplicationController
     authorize @board
 
     if @board.update(board_params)
+      record_activity("board.updated", @board, title: @board.title)
       redirect_to board_path(@board), notice: t("boards.updated")
     else
       redirect_to board_path(@board), inertia: { errors: @board.errors }

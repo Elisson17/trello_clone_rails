@@ -7,13 +7,14 @@ class ListsController < ApplicationController
     authorize list
 
     result = Lists::Create.call(board: @board, attributes: list_params)
+    record_activity("list.created", result.value, title: result.value.title) if result.success?
     respond_to_board(@board, result.errors.first)
   end
 
   def update
     authorize @list
 
-    @list.update(list_params)
+    record_activity("list.renamed", @list, title: @list.title) if @list.update(list_params)
     respond_to_board(@list.board, @list.errors)
   end
 
@@ -22,6 +23,7 @@ class ListsController < ApplicationController
     authorize @list
 
     @list.archive!
+    record_activity("list.archived", @list, title: @list.title)
     redirect_to board_path(@list.board), notice: t("lists.archived")
   end
 
