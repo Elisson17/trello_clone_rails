@@ -4,7 +4,9 @@ Kanban colaborativo em **Rails 8 + Inertia + React**, escrito como portfólio: s
 externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o app está no ar.
 
 > **Status:** em desenvolvimento. Autenticação, workspaces com convites, e boards com listas
-> e cards — incluindo drag & drop por mouse e por teclado — já funcionam.
+> e cards — incluindo drag & drop por mouse e por teclado — já funcionam. O card abre em
+> painel lateral próprio (`/cards/:id`) com descrição em Markdown, etiquetas, responsáveis,
+> checklists, comentários e anexos. O visual segue o GitHub Projects (paleta do Primer).
 
 ## Stack
 

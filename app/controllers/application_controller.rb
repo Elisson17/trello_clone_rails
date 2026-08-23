@@ -34,7 +34,7 @@ class ApplicationController < ActionController::Base
       name: user.name,
       email: user.email,
       time_zone: user.time_zone,
-      avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil
+      avatar_url: user.avatar_url
     }
   end
 end

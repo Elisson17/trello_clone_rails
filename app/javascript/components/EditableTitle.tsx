@@ -8,7 +8,7 @@ type EditableTitleProps = {
   value: string
   url: string
   field?: string
-  as?: 'h1' | 'h2' | 'h3'
+  as?: 'h1' | 'h2' | 'h3' | 'span'
   className?: string
   readOnly?: boolean
 }

@@ -1,13 +1,12 @@
 class BoardsController < ApplicationController
+  include BoardRendering
+
   before_action :set_board
 
   def show
     authorize @board
 
-    render inertia: "Boards/Show", props: {
-      board: BoardPresenter.new(@board).as_json,
-      can: board_permissions
-    }
+    render_board(@board)
   end
 
   def update
@@ -36,11 +35,5 @@ class BoardsController < ApplicationController
 
   def board_params
     params.permit(:title, :description, :background, :visibility)
-  end
-
-  def board_permissions
-    policy = policy(@board)
-
-    { update: policy.update?, destroy: policy.destroy?, archive: policy.archive? }
   end
 end

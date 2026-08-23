@@ -10,6 +10,11 @@ const card = (id: number): CardPayload => ({
   completed: false,
   overdue: false,
   cover_color: null,
+  attachments_count: 0,
+  has_description: false,
+  labels: [],
+  assignees: [],
+  checklist: null,
   comments_count: 0,
 })
 

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import BoardShow from './Show'
 
-const router = vi.hoisted(() => ({ post: vi.fn(), patch: vi.fn(), delete: vi.fn() }))
+const router = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn() }))
 const form = vi.hoisted(() => ({
   data: { title: '' },
   errors: {} as Record<string, string>,
@@ -30,6 +30,11 @@ const card = {
   overdue: false,
   cover_color: null,
   comments_count: 0,
+  attachments_count: 0,
+  has_description: false,
+  labels: [],
+  assignees: [],
+  checklist: null,
 }
 
 const board = {
@@ -40,6 +45,15 @@ const board = {
   background: 'sky' as const,
   archived: false,
   workspace: { slug: 'time', name: 'Time' },
+  members: [
+    {
+      id: 1,
+      role: 'admin' as const,
+      user: { id: 1, name: 'Demo', email: 'demo@example.com', avatar_url: null },
+    },
+  ],
+  workspace_members: [{ id: 1, name: 'Demo', avatar_url: null }],
+  labels: [],
   lists: [
     { id: 10, title: 'A fazer', position: 1024, cards: [card] },
     { id: 11, title: 'Feito', position: 2048, cards: [] },
@@ -47,7 +61,25 @@ const board = {
   cards_count: 1,
 }
 
-const can = { update: true, destroy: true, archive: true }
+const can = { update: true, destroy: true, archive: true, manage_members: true }
+
+const detail = {
+  id: 5,
+  list: { id: 10, title: 'A fazer' },
+  title: 'Escrever o README',
+  description: '# Plano',
+  due_at: null,
+  completed: false,
+  overdue: false,
+  cover_color: null,
+  created_at: '2026-08-22T12:00:00Z',
+  creator: { id: 1, name: 'Demo' },
+  label_ids: [],
+  assignee_ids: [],
+  checklists: [],
+  comments: [],
+  attachments: [],
+}
 
 function renderBoard(overrides: Partial<Parameters<typeof BoardShow>[0]> = {}) {
   return render(<BoardShow board={board} can={can} {...overrides} />)
@@ -110,6 +142,47 @@ describe('Boards/Show', () => {
     expect(router.delete).toHaveBeenCalledWith('/cards/5/completion', { preserveScroll: true })
   })
 
+  it('opens the card as a link to its own route', () => {
+    renderBoard()
+
+    expect(screen.getByRole('link', { name: 'Escrever o README' })).toHaveAttribute(
+      'href',
+      '/cards/5',
+    )
+  })
+
+  it('shows the checklist progress on the tile', () => {
+    renderBoard({
+      board: {
+        ...board,
+        lists: [{ ...board.lists[0], cards: [{ ...card, checklist: { done: 1, total: 3 } }] }],
+      },
+    })
+
+    expect(screen.getByText('1/3')).toBeInTheDocument()
+  })
+
+  // O modal é a prop `card`, não um estado local: sem ela a página é só o board.
+  it('renders the card modal when the card prop arrives', () => {
+    renderBoard({ card: detail })
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('renders the markdown description inside the modal', () => {
+    renderBoard({ card: detail })
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Plano' })).toBeInTheDocument()
+  })
+
+  it('closes the modal by going back to the board', () => {
+    renderBoard({ card: detail })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }))
+
+    expect(router.get).toHaveBeenCalledWith('/boards/1', {}, { preserveScroll: true })
+  })
+
   it('renames a list in place', () => {
     renderBoard()
 
@@ -135,7 +208,7 @@ describe('Boards/Show', () => {
   })
 
   it('hides every write affordance from a viewer', () => {
-    renderBoard({ can: { update: false, destroy: false, archive: false } })
+    renderBoard({ can: { update: false, destroy: false, archive: false, manage_members: false } })
 
     expect(screen.queryByRole('button', { name: 'Adicionar lista' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Adicionar card/ })).not.toBeInTheDocument()

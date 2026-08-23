@@ -53,6 +53,14 @@ export type BoardSummary = {
   lists_count: number
 }
 
+export type LabelPayload = { id: number; name: string; color: BoardBackground }
+
+export type BoardMember = {
+  id: number
+  role: 'admin' | 'member' | 'viewer'
+  user: { id: number; name: string; email: string; avatar_url: string | null }
+}
+
 export type CardPayload = {
   id: number
   title: string
@@ -60,8 +68,58 @@ export type CardPayload = {
   due_at: string | null
   completed: boolean
   overdue: boolean
-  cover_color: string | null
+  cover_color: BoardBackground | null
   comments_count: number
+  attachments_count: number
+  has_description: boolean
+  labels: LabelPayload[]
+  assignees: { id: number; name: string; avatar_url: string | null }[]
+  checklist: { done: number; total: number } | null
+}
+
+export type ChecklistPayload = {
+  id: number
+  title: string
+  done: number
+  total: number
+  items: { id: number; content: string; completed: boolean }[]
+}
+
+export type CommentPayload = {
+  id: number
+  body: string
+  created_at: string
+  edited: boolean
+  author: { id: number; name: string; avatar_url: string | null }
+  can_edit: boolean
+  can_destroy: boolean
+}
+
+export type AttachmentPayload = {
+  id: number
+  filename: string
+  byte_size: number
+  content_type: string
+  url: string
+}
+
+/** Prop extra da página do board quando a rota é `/cards/:id` — é o modal do card. */
+export type CardDetail = {
+  id: number
+  list: { id: number; title: string }
+  title: string
+  description: string | null
+  due_at: string | null
+  completed: boolean
+  overdue: boolean
+  cover_color: BoardBackground | null
+  created_at: string
+  creator: { id: number; name: string }
+  label_ids: number[]
+  assignee_ids: number[]
+  checklists: ChecklistPayload[]
+  comments: CommentPayload[]
+  attachments: AttachmentPayload[]
 }
 
 export type ListPayload = {
@@ -79,6 +137,9 @@ export type BoardPayload = {
   background: BoardBackground
   archived: boolean
   workspace: { slug: string; name: string }
+  members: BoardMember[]
+  workspace_members: { id: number; name: string; avatar_url: string | null }[]
+  labels: LabelPayload[]
   lists: ListPayload[]
   cards_count: number
 }

@@ -10,11 +10,20 @@ type InlineAddProps = {
   label: string
   placeholder: string
   url: string
+  /** Nome do campo enviado: item de checklist chama isso de `content`, não de `title`. */
+  name?: string
   payload?: Record<string, string | number>
   className?: string
 }
 
-export function InlineAdd({ label, placeholder, url, payload, className }: InlineAddProps) {
+export function InlineAdd({
+  label,
+  placeholder,
+  url,
+  name = 'title',
+  payload,
+  className,
+}: InlineAddProps) {
   const [open, setOpen] = useState(false)
   const field = useRef<HTMLInputElement>(null)
   const form = useForm<{ title: string }>({ title: '' })
@@ -23,7 +32,7 @@ export function InlineAdd({ label, placeholder, url, payload, className }: Inlin
     if (!form.data.title.trim()) return
 
     // `transform` devolve void neste release do adapter: não dá para encadear com `.post`.
-    form.transform((data) => ({ ...data, ...payload }))
+    form.transform(({ title }) => ({ [name]: title, ...payload }))
     form.post(url, {
       preserveScroll: true,
       preserveState: true,

@@ -13,12 +13,22 @@ class User < ApplicationRecord
            inverse_of: :owner
   has_many :board_memberships, dependent: :destroy
   has_many :boards, through: :board_memberships
+  has_many :card_assignments, dependent: :destroy
+  has_many :assigned_cards, through: :card_assignments, source: :card
+  has_many :comments, dependent: :destroy
   has_many :sent_invitations, class_name: "Invitation", foreign_key: :invited_by_id, dependent: :destroy,
            inverse_of: :invited_by
 
   validates :name, presence: true, length: { maximum: 80 }
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone::MAPPING.values }
   validate :avatar_must_be_a_small_image
+
+  # O front só precisa do caminho, e presenter não tem `url_for` de controller à mão.
+  def avatar_url
+    return nil unless avatar.attached?
+
+    Rails.application.routes.url_helpers.rails_blob_path(avatar, only_path: true)
+  end
 
   private
 

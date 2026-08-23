@@ -62,7 +62,7 @@ module Workspaces
             id: membership.user.id,
             name: membership.user.name,
             email: membership.user.email,
-            avatar_url: membership.user.avatar.attached? ? url_for(membership.user.avatar) : nil
+            avatar_url: membership.user.avatar_url
           }
         }
       end

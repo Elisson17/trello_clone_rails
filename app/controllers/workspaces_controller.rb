@@ -84,7 +84,7 @@ class WorkspacesController < ApplicationController
   end
 
   def user_avatar_props(user)
-    { id: user.id, name: user.name, avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil }
+    { id: user.id, name: user.name, avatar_url: user.avatar_url }
   end
 
   def workspace_props(workspace)

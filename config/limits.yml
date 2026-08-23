@@ -3,3 +3,5 @@ shared:
   boards_per_workspace: 25
   lists_per_board: 20
   cards_per_board: 500
+  attachments_per_card: 5
+  attachment_megabytes: 10

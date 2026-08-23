@@ -18,6 +18,9 @@ Rails.application.routes.draw do
   resources :boards, only: %i[show update destroy] do
     scope module: :boards do
       resource :archive, only: %i[create destroy]
+      resource :duplicate, only: :create
+      resources :labels, only: %i[create destroy]
+      resources :memberships, only: %i[create update destroy]
     end
     resources :lists, only: %i[create update destroy] do
       scope module: :lists do
@@ -26,13 +29,21 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :cards, only: %i[create update destroy] do
+  # `show` do card é o modal: renderiza a mesma página do board, com uma prop a mais.
+  resources :cards, only: %i[show create update destroy] do
     scope module: :cards do
       resource :completion, only: %i[create destroy]
       resource :archive, only: %i[create destroy]
       resource :position, only: :update
+      resources :labels, only: %i[create destroy]
+      resources :assignments, only: %i[create destroy]
+      resources :checklists, only: %i[create destroy]
+      resources :comments, only: %i[create update destroy]
+      resources :attachments, only: %i[create destroy]
     end
   end
+
+  resources :checklist_items, only: %i[create update destroy]
 
   resources :invitations, only: [], param: :token do
     get  "accept", on: :member, action: :show, as: :accept

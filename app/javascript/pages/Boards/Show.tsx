@@ -23,18 +23,29 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Head, Link, router } from '@inertiajs/react'
 import {
+  AlignLeftIcon,
   ArchiveIcon,
   ArrowLeftIcon,
-  CheckIcon,
+  CheckSquareIcon,
+  CircleCheckIcon,
+  CircleDotIcon,
   ClockIcon,
+  CopyIcon,
   EllipsisIcon,
   GripVerticalIcon,
+  MessageSquareIcon,
+  PaperclipIcon,
+  UsersIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 
+import { BoardMembersDialog } from '@/components/BoardMembersDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { CardDrawer } from '@/components/card/CardDrawer'
+import { LabelChips } from '@/components/card/LabelPicker'
 import { EditableTitle } from '@/components/EditableTitle'
 import { InlineAdd } from '@/components/InlineAdd'
+import { MemberAvatars } from '@/components/MemberAvatars'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -43,12 +54,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useOptimisticMove } from '@/hooks/use-optimistic-move'
+import { accentStyle } from '@/lib/accent'
 import { indexOfCard, listOfCard, moveCard, moveList } from '@/lib/board-move'
 import { BOARD_THEME } from '@/lib/board-theme'
 import { cn } from '@/lib/utils'
-import type { BoardPayload, CardPayload, ListPayload } from '@/types/inertia'
+import type { BoardPayload, CardDetail, CardPayload, ListPayload } from '@/types/inertia'
 
-type Can = { update: boolean; destroy: boolean; archive: boolean }
+type Can = { update: boolean; destroy: boolean; archive: boolean; manage_members: boolean }
 
 // Ids do dnd-kit são planos, então o prefixo é o que diz de que tipo é o alvo.
 // `cards:` é a área de soltar da coluna — sem ela, lista vazia não recebe card.
@@ -79,7 +91,16 @@ const orderOf = (lists: ListPayload[]) =>
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-export default function BoardShow({ board, can }: { board: BoardPayload; can: Can }) {
+export default function BoardShow({
+  board,
+  can,
+  card,
+}: {
+  board: BoardPayload
+  can: Can
+  // Presente só na rota `/cards/:id`: é o modal do card sobre este mesmo board.
+  card?: CardDetail
+}) {
   const theme = BOARD_THEME[board.background]
   const { lists, setDraft, moveCard: commitCard, moveList: commitList } = useOptimisticMove(board)
   const [dragging, setDragging] = useState<string | null>(null)
@@ -135,31 +156,55 @@ export default function BoardShow({ board, can }: { board: BoardPayload; can: Ca
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
       <Head title={board.title} />
 
-      <header className="border-b px-4 py-4">
-        <div className="mx-auto flex max-w-full flex-wrap items-center gap-3">
+      <header className="border-b px-4 py-2.5">
+        <div className="mx-auto flex max-w-full flex-wrap items-center gap-2">
           <Link
             href={`/workspaces/${board.workspace.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeftIcon className="size-3.5" />
             {board.workspace.name}
           </Link>
 
-          <span aria-hidden className={cn('h-5 w-1 rounded-full', theme.rail)} />
+          <span className="text-xs text-muted-foreground/50">/</span>
+
+          <span aria-hidden className={cn('size-2.5 shrink-0 rounded-full', theme.rail)} />
 
           <EditableTitle
             as="h1"
             value={board.title}
             url={`/boards/${board.id}`}
             readOnly={!can.update}
-            className="text-lg font-semibold tracking-tight"
+            className="text-sm font-semibold tracking-tight"
           />
 
-          <span className="text-xs text-muted-foreground">
-            {board.cards_count === 1 ? '1 card' : `${board.cards_count} cards`}
+          <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
+            {board.cards_count}
           </span>
 
-          <div className="ml-auto">{can.archive && <BoardMenu board={board} can={can} />}</div>
+          <div className="ml-auto flex items-center gap-2">
+            {can.manage_members ? (
+              <BoardMembersDialog board={board}>
+                <button
+                  type="button"
+                  className="rounded-full transition-opacity hover:opacity-80"
+                  aria-label="Membros do board"
+                >
+                  <MemberAvatars
+                    users={board.members.slice(0, 4).map((member) => member.user)}
+                    total={board.members.length}
+                  />
+                </button>
+              </BoardMembersDialog>
+            ) : (
+              <MemberAvatars
+                users={board.members.slice(0, 4).map((member) => member.user)}
+                total={board.members.length}
+              />
+            )}
+
+            {can.archive && <BoardMenu board={board} can={can} />}
+          </div>
         </div>
       </header>
 
@@ -206,6 +251,8 @@ export default function BoardShow({ board, can }: { board: BoardPayload; can: Ca
           <DragPreview dragging={dragging} lists={lists} />
         </DragOverlay>
       </DndContext>
+
+      {card && <CardDrawer key={card.id} board={board} card={card} canWrite={can.update} />}
     </div>
   )
 }
@@ -230,7 +277,7 @@ function DragPreview({ dragging, lists }: { dragging: string | null; lists: List
     const list = lists.find((item) => item.id === id)
 
     return list ? (
-      <div className="w-72 rounded-xl border bg-card px-2 py-2 text-sm font-semibold shadow-lg">
+      <div className="w-80 rounded-md border bg-card px-3 py-2.5 text-[13px] font-semibold shadow-lg">
         {list.title}
       </div>
     ) : null
@@ -239,7 +286,7 @@ function DragPreview({ dragging, lists }: { dragging: string | null; lists: List
   const card = listOfCard(lists, id)?.cards.find((item) => item.id === id)
 
   return card ? (
-    <div className="w-68 rotate-2 shadow-lg">
+    <div className="w-76 rotate-1 shadow-lg">
       <CardTile card={card} canWrite={false} />
     </div>
   ) : null
@@ -255,6 +302,18 @@ function BoardMenu({ board, can }: { board: BoardPayload; can: Can }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
+        <BoardMembersDialog board={board}>
+          <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+            <UsersIcon />
+            Membros
+          </DropdownMenuItem>
+        </BoardMembersDialog>
+
+        <DropdownMenuItem onSelect={() => router.post(`/boards/${board.id}/duplicate`)}>
+          <CopyIcon />
+          Duplicar board
+        </DropdownMenuItem>
+
         <DropdownMenuItem onSelect={() => router.post(`/boards/${board.id}/archive`)}>
           <ArchiveIcon />
           Arquivar board
@@ -318,14 +377,11 @@ function ListColumn({
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition: transition ?? undefined }}
       className={cn(
-        'flex max-h-full w-72 shrink-0 flex-col rounded-xl border bg-card',
+        'flex max-h-full w-80 shrink-0 flex-col rounded-md border bg-muted/40',
         isDragging && 'opacity-40',
       )}
     >
-      <header
-        className="flex items-center gap-1 border-b px-2 py-2"
-        onPointerDown={drag?.onPointerDown}
-      >
+      <header className="flex items-center gap-1.5 px-3 py-2.5" onPointerDown={drag?.onPointerDown}>
         {canWrite && (
           <button
             type="button"
@@ -339,13 +395,25 @@ function ListColumn({
           </button>
         )}
 
+        {/* Bolinha de status da coluna. A cor sai do próprio nome da lista pelo
+            `accentStyle` — a mesma derivação que os workspaces já usavam, sem coluna
+            nova no banco só para guardar uma cor. */}
+        <span
+          aria-hidden
+          style={accentStyle(list.title)}
+          className="size-2.5 shrink-0 rounded-full bg-[var(--accent-solid)]"
+        />
+
         <EditableTitle
           value={list.title}
           url={`/boards/${board.id}/lists/${list.id}`}
           readOnly={!canWrite}
-          className="flex-1 text-sm font-semibold"
+          className="text-[13px] font-semibold"
         />
-        <span className="px-1 text-xs tabular-nums text-muted-foreground">{list.cards.length}</span>
+
+        <span className="shrink-0 rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
+          {list.cards.length}
+        </span>
 
         {canWrite && (
           <ConfirmDialog
@@ -357,7 +425,7 @@ function ListColumn({
             <Button
               variant="ghost"
               size="icon"
-              className="size-7 text-muted-foreground hover:text-foreground"
+              className="ml-auto size-7 text-muted-foreground hover:text-foreground"
               aria-label={`Arquivar ${list.title}`}
             >
               <ArchiveIcon className="size-3.5" />
@@ -371,7 +439,7 @@ function ListColumn({
         strategy={verticalListSortingStrategy}
       >
         {/* `min-h` dá alvo de soltura para a coluna vazia. */}
-        <ul ref={setDropRef} className="flex min-h-12 flex-col gap-2 overflow-y-auto p-2">
+        <ul ref={setDropRef} className="flex min-h-12 flex-col gap-2 overflow-y-auto px-2 pb-2">
           {list.cards.map((card) => (
             <SortableCard key={card.id} card={card} canWrite={canWrite} />
           ))}
@@ -384,7 +452,7 @@ function ListColumn({
           placeholder="Título do card"
           url="/cards"
           payload={{ list_id: list.id }}
-          className="p-2 pt-0"
+          className="px-2 pb-2"
         />
       )}
     </section>
@@ -447,65 +515,141 @@ function CardTile({
   handle?: React.ReactNode
 }) {
   const completionUrl = `/cards/${card.id}/completion`
+  const StateIcon = card.completed ? CircleCheckIcon : CircleDotIcon
 
   return (
-    <article
-      className={cn(
-        'group rounded-lg border bg-background p-2.5 transition-colors hover:border-foreground/20',
-        card.completed && 'opacity-60',
+    <article className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-ring/60">
+      {/* A capa colorida ficou como uma faixa fina: o GitHub não tem capa, e um bloco de
+          28px roubava a atenção do título, que é o que se lê ao escanear a coluna. */}
+      {card.cover_color && (
+        <div aria-hidden className={cn('h-1 w-full', BOARD_THEME[card.cover_color].rail)} />
       )}
-    >
-      <div className="flex items-start gap-2">
-        {handle}
 
-        {canWrite && (
-          <button
-            type="button"
-            aria-label={card.completed ? `Reabrir ${card.title}` : `Concluir ${card.title}`}
-            aria-pressed={card.completed}
-            className={cn(
-              'mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border transition-colors',
-              card.completed
-                ? 'border-transparent bg-primary text-primary-foreground'
-                : 'border-input hover:border-foreground',
-            )}
-            onClick={() =>
-              card.completed
-                ? router.delete(completionUrl, { preserveScroll: true })
-                : router.post(completionUrl, {}, { preserveScroll: true })
-            }
-          >
-            {card.completed && <CheckIcon className="size-2.5" />}
-          </button>
-        )}
+      <div className="px-3 py-2.5">
+        {/* Linha de meta, como o `repo #123` de uma issue: o ícone de estado é o botão de
+            concluir, então marcar não precisa de um segundo controle. */}
+        <div className="flex items-center gap-1.5">
+          {handle}
 
-        <span className={cn('flex-1 text-sm', card.completed && 'line-through')}>{card.title}</span>
+          {canWrite ? (
+            <button
+              type="button"
+              aria-label={card.completed ? `Reabrir ${card.title}` : `Concluir ${card.title}`}
+              aria-pressed={card.completed}
+              className={cn(
+                'shrink-0 rounded-full transition-colors',
+                card.completed ? 'text-done' : 'text-open hover:text-foreground',
+              )}
+              onClick={() =>
+                card.completed
+                  ? router.delete(completionUrl, { preserveScroll: true })
+                  : router.post(completionUrl, {}, { preserveScroll: true })
+              }
+            >
+              <StateIcon className="size-3.5" />
+            </button>
+          ) : (
+            <StateIcon
+              aria-hidden
+              className={cn('size-3.5 shrink-0', card.completed ? 'text-done' : 'text-open')}
+            />
+          )}
 
-        {canWrite && (
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={`Arquivar ${card.title}`}
-            className="size-6 shrink-0 text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
-            onClick={() => router.post(`/cards/${card.id}/archive`, {}, { preserveScroll: true })}
-          >
-            <ArchiveIcon className="size-3" />
-          </Button>
-        )}
+          <span className="text-xs text-muted-foreground">#{card.id}</span>
+
+          {card.assignees.length > 0 && (
+            <MemberAvatars
+              users={card.assignees.slice(0, 3)}
+              total={card.assignees.length}
+              className="ml-auto scale-75 origin-right"
+            />
+          )}
+
+          {canWrite && (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={`Arquivar ${card.title}`}
+              className={cn(
+                'size-6 shrink-0 text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100',
+                card.assignees.length === 0 && 'ml-auto',
+              )}
+              onClick={() => router.post(`/cards/${card.id}/archive`, {}, { preserveScroll: true })}
+            >
+              <ArchiveIcon className="size-3" />
+            </Button>
+          )}
+        </div>
+
+        {/* Abrir o card é navegar: o painel é a rota `/cards/:id`, então isto é um link
+            de verdade — abre em outra aba, aparece na barra de status, volta no back. */}
+        <Link
+          href={`/cards/${card.id}`}
+          className={cn(
+            'mt-0.5 block rounded-sm text-[13px] leading-snug focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+            card.completed && 'text-muted-foreground line-through',
+          )}
+        >
+          {card.title}
+        </Link>
+
+        <CardBadges card={card} />
       </div>
+    </article>
+  )
+}
+
+// A linha de baixo do tile: o que existe dentro do card sem precisar abri-lo.
+function CardBadges({ card }: { card: CardPayload }) {
+  const meta = [
+    card.has_description && { key: 'description', icon: AlignLeftIcon, text: null },
+    card.checklist && {
+      key: 'checklist',
+      icon: CheckSquareIcon,
+      text: `${card.checklist.done}/${card.checklist.total}`,
+    },
+    card.comments_count > 0 && {
+      key: 'comments',
+      icon: MessageSquareIcon,
+      text: String(card.comments_count),
+    },
+    card.attachments_count > 0 && {
+      key: 'attachments',
+      icon: PaperclipIcon,
+      text: String(card.attachments_count),
+    },
+  ].filter(Boolean) as { key: string; icon: typeof AlignLeftIcon; text: string | null }[]
+
+  if (!card.due_at && meta.length === 0 && card.labels.length === 0) return null
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+      <LabelChips labels={card.labels} />
 
       {card.due_at && (
         <span
           className={cn(
-            'mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium',
-            card.overdue ? 'bg-destructive/15 text-destructive' : 'bg-muted text-muted-foreground',
+            'inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] font-medium',
+            card.overdue
+              ? 'border-destructive/40 bg-destructive/15 text-destructive'
+              : 'border-transparent bg-muted text-muted-foreground',
           )}
         >
           <ClockIcon className="size-3" />
           {new Date(card.due_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
         </span>
       )}
-    </article>
+
+      {meta.map(({ key, icon: Icon, text }) => (
+        <span
+          key={key}
+          className="inline-flex items-center gap-1 text-[11px] tabular-nums text-muted-foreground"
+        >
+          <Icon className="size-3" />
+          {text}
+        </span>
+      ))}
+    </div>
   )
 }
 

@@ -1,6 +1,15 @@
 class CardsController < ApplicationController
+  include BoardRendering
+
   before_action :set_list, only: :create
-  before_action :set_card, only: %i[update destroy]
+  before_action :set_card, only: %i[show update destroy]
+
+  # O modal do card é esta action: mesma página do board, uma prop a mais.
+  def show
+    authorize @card, :show?
+
+    render_board(@card.list.board, card: @card)
+  end
 
   def create
     card = @list.cards.new
@@ -14,7 +23,7 @@ class CardsController < ApplicationController
     authorize @card
 
     @card.update(card_params)
-    respond_to_board(@card.list.board, @card.errors)
+    respond_to_card(@card.errors)
   end
 
   def destroy
@@ -35,7 +44,12 @@ class CardsController < ApplicationController
   end
 
   def card_params
-    params.permit(:title, :description, :due_at, :cover_color)
+    attributes = params.permit(:title, :description, :due_at, :cover_color)
+
+    # Campo vazio no front quer dizer "sem valor", não string vazia: é assim que o prazo
+    # e a capa são limpos, e é o que a validação de `cover_color` espera (`allow_nil`).
+    %i[due_at cover_color].each { |key| attributes[key] = nil if attributes[key].blank? }
+    attributes
   end
 
   def respond_to_board(board, errors)
@@ -43,6 +57,15 @@ class CardsController < ApplicationController
       redirect_to board_path(board)
     else
       redirect_to board_path(board), inertia: { errors: errors }
+    end
+  end
+
+  # Editar campo do card acontece dentro do modal: a resposta tem que mantê-lo aberto.
+  def respond_to_card(errors)
+    if errors.blank?
+      redirect_to card_path(@card)
+    else
+      redirect_to card_path(@card), inertia: { errors: errors }
     end
   end
 end

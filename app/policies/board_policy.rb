@@ -12,6 +12,9 @@ class BoardPolicy < ApplicationPolicy
   def manage_lists? = update?
   def manage_cards? = update?
 
+  # Quem entra e sai do board, e quem pode apagar comentário de outro: admin do board.
+  def manage_members? = destroy?
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       return scope.none if user.nil?

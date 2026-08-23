@@ -16,6 +16,8 @@ pt-BR:
     archived: "Board arquivado."
     restored: "Board restaurado."
     destroyed: "Board excluído."
+    duplicated: "Board duplicado."
+    duplicate_failed: "Não deu para duplicar o board."
   lists:
     archived: "Lista arquivada."
     move_failed: "Não deu para mover a lista. A ordem foi restaurada."
@@ -24,6 +26,17 @@ pt-BR:
     archived: "Card arquivado."
     restored: "Card restaurado."
     destroyed: "Card excluído."
+  board_memberships:
+    removed: "Membro removido do board."
+  labels:
+    destroyed: "Etiqueta excluída."
+    other_board: "Esta etiqueta é de outro board."
+  card_assignments:
+    not_a_member: "Só quem é membro do board pode ser responsável."
+  comments:
+    destroyed: "Comentário excluído."
+  attachments:
+    destroyed: "Anexo excluído."
   memberships:
     updated: "Papel atualizado."
     removed: "Membro removido."
@@ -60,6 +73,17 @@ pt-BR:
         title: "Título"
         description: "Descrição"
         due_at: "Prazo"
+        cover_color: "Capa"
+        attachments: "Anexos"
+      label:
+        name: "Nome"
+        color: "Cor"
+      checklist:
+        title: "Título"
+      checklist_item:
+        content: "Item"
+      comment:
+        body: "Comentário"
       user:
         name: "Nome"
         email: "E-mail"
@@ -86,6 +110,18 @@ pt-BR:
           attributes:
             base:
               quota_exceeded: "este board já tem %{limit} cards."
+            attachments:
+              invalid_type: "só aceitam imagem, PDF ou texto"
+              too_big: "cada anexo deve ter no máximo %{limit} MB"
+              too_many: "no máximo %{limit} anexos por card"
+        card_label:
+          attributes:
+            label:
+              other_board: "é de outro board"
+        card_assignment:
+          attributes:
+            user:
+              not_a_member: "não é membro deste board"
         membership:
           attributes:
             role:

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_22_160000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -67,6 +67,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
     t.index ["workspace_id"], name: "index_boards_on_workspace_id"
   end
 
+  create_table "card_assignments", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["card_id", "user_id"], name: "index_card_assignments_on_card_id_and_user_id", unique: true
+    t.index ["card_id"], name: "index_card_assignments_on_card_id"
+    t.index ["user_id"], name: "index_card_assignments_on_user_id"
+  end
+
+  create_table "card_labels", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.integer "label_id", null: false
+    t.index ["card_id", "label_id"], name: "index_card_labels_on_card_id_and_label_id", unique: true
+    t.index ["card_id"], name: "index_card_labels_on_card_id"
+    t.index ["label_id"], name: "index_card_labels_on_label_id"
+  end
+
   create_table "cards", force: :cascade do |t|
     t.datetime "archived_at"
     t.integer "comments_count", default: 0, null: false
@@ -86,6 +104,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
     t.index ["list_id"], name: "index_cards_on_list_id"
   end
 
+  create_table "checklist_items", force: :cascade do |t|
+    t.integer "checklist_id", null: false
+    t.datetime "completed_at"
+    t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.decimal "position", precision: 16, scale: 8, null: false
+    t.datetime "updated_at", null: false
+    t.index ["checklist_id"], name: "index_checklist_items_on_checklist_id"
+  end
+
+  create_table "checklists", force: :cascade do |t|
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "position", precision: 16, scale: 8, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id"], name: "index_checklists_on_card_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.integer "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "edited_at"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["card_id"], name: "index_comments_on_card_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "invitations", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -100,6 +148,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
     t.index ["token"], name: "index_invitations_on_token", unique: true
     t.index ["workspace_id", "email_address"], name: "index_invitations_on_workspace_id_and_email_address", unique: true, where: "accepted_at IS NULL"
     t.index ["workspace_id"], name: "index_invitations_on_workspace_id"
+  end
+
+  create_table "labels", force: :cascade do |t|
+    t.integer "board_id", null: false
+    t.string "color", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "name"], name: "index_labels_on_board_id_and_name", unique: true
+    t.index ["board_id"], name: "index_labels_on_board_id"
   end
 
   create_table "lists", force: :cascade do |t|
@@ -166,10 +224,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_120732) do
   add_foreign_key "board_memberships", "users"
   add_foreign_key "boards", "users", column: "creator_id"
   add_foreign_key "boards", "workspaces"
+  add_foreign_key "card_assignments", "cards"
+  add_foreign_key "card_assignments", "users"
+  add_foreign_key "card_labels", "cards"
+  add_foreign_key "card_labels", "labels"
   add_foreign_key "cards", "lists"
   add_foreign_key "cards", "users", column: "creator_id"
+  add_foreign_key "checklist_items", "checklists"
+  add_foreign_key "checklists", "cards"
+  add_foreign_key "comments", "cards"
+  add_foreign_key "comments", "users"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "invitations", "workspaces"
+  add_foreign_key "labels", "boards"
   add_foreign_key "lists", "boards"
   add_foreign_key "memberships", "users"
   add_foreign_key "memberships", "workspaces"

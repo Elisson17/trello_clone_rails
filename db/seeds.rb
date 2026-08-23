@@ -52,6 +52,27 @@ if board.new_record?
     end
   end
   board.lists.find_by(title: "A fazer").cards.first&.update!(due_at: 2.days.from_now)
+
+  # Etapa 6: o modal do card só se demonstra com etiqueta, checklist e comentário dentro.
+  labels = { "bug" => "rose", "produto" => "sky", "infra" => "amber" }.map do |name, color|
+    board.labels.create!(name: name, color: color)
+  end
+
+  primeiro = board.lists.find_by(title: "A fazer").cards.ordered.first
+  primeiro.update!(
+    description: "Rota `/cards/:id` com o board vivo atrás.\n\n- [x] Decidir a rota\n- [ ] Desenhar a barra lateral",
+    cover_color: "sky"
+  )
+  primeiro.labels = labels.first(2)
+  primeiro.assignees = [ demo, ana ]
+  passos = primeiro.checklists.create!(title: "Passos", position: 1024)
+  [ [ "Levantar o payload", true ], [ "Montar o modal", true ], [ "Anexos", false ] ]
+    .each.with_index(1) do |(content, done), index|
+      passos.items.create!(content: content, position: index * 1024, completed_at: (Time.current if done))
+    end
+  primeiro.comments.create!(user: ana, body: "Dá para reaproveitar o `EditableTitle` no título do card.")
+
+  board.lists.find_by(title: "Fazendo").cards.first&.update!(cover_color: "amber")
 end
 
 puts <<~INFO

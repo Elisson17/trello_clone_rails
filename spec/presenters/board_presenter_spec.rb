@@ -41,12 +41,22 @@ RSpec.describe BoardPresenter do
     expect_no_n_plus_one { described_class.new(Board.find(big.id)).as_json }
   end
 
-  it "costs the same three queries no matter how big the board is" do
+  # O número importa menos do que ele ser **fixo**: cada badge do card (labels,
+  # responsáveis, checklist, anexos) custa uma query de eager load, e nenhuma delas
+  # cresce com o tamanho do board. Se este número subir junto com o board, é N+1 de volta.
+  it "costs the same ten queries no matter how big the board is" do
     big = create(:board)
     create_list(:list, 5, board: big).each { |list| create_list(:card, 10, list: list) }
     board = Board.find(big.id)
 
-    # workspace + listas + cards. Cresce com o tamanho do board = N+1 de volta.
-    assert_queries_count(3) { described_class.new(board).as_json }
+    assert_queries_count(10) { described_class.new(board).as_json }
+  end
+
+  it "keeps that query count when the board is ten times bigger" do
+    big = create(:board)
+    create_list(:list, 5, board: big).each { |list| create_list(:card, 100, list: list) }
+    board = Board.find(big.id)
+
+    assert_queries_count(10) { described_class.new(board).as_json }
   end
 end
