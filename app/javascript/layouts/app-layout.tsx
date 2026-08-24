@@ -74,7 +74,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <MenuIcon />
             </Button>
 
-            <div className="flex-1" />
+            <div id="page-header" className="flex min-w-0 flex-1 items-center gap-2" />
 
             <NotificationBell count={unread_notifications_count} />
           </header>

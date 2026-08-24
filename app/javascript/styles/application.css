@@ -133,3 +133,19 @@
     @apply bg-background text-[13px] text-foreground;
   }
 }
+
+/* Card recém-inserido na coluna. `@starting-style` só dispara no nó que acabou de entrar
+   no DOM, e a classe só é aplicada depois da primeira pintura — abrir o board não faz a
+   coluna inteira entrar de uma vez. */
+@media (prefers-reduced-motion: no-preference) {
+  .card-enter {
+    transition:
+      opacity 180ms var(--ease-out-strong),
+      transform 180ms var(--ease-out-strong);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+}

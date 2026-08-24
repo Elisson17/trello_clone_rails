@@ -25,7 +25,6 @@ import { Head, Link, router } from '@inertiajs/react'
 import {
   AlignLeftIcon,
   ArchiveIcon,
-  ArrowLeftIcon,
   CheckSquareIcon,
   CircleCheckIcon,
   CircleDotIcon,
@@ -38,7 +37,7 @@ import {
   PaperclipIcon,
   UsersIcon,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ActivityFeed } from '@/components/ActivityFeed'
 import { BoardFilters } from '@/components/BoardFilters'
@@ -49,6 +48,7 @@ import { LabelChips } from '@/components/card/LabelPicker'
 import { EditableTitle } from '@/components/EditableTitle'
 import { InlineAdd } from '@/components/InlineAdd'
 import { MemberAvatars } from '@/components/MemberAvatars'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -190,66 +190,66 @@ export default function BoardShow({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+    // A barra do shell tem 3rem; o board ocupa o resto e só as colunas rolam.
+    <div className="flex h-[calc(100dvh-3rem)] flex-col">
       <Head title={board.title} />
 
-      <header className="border-b px-4 py-2.5">
-        <div className="mx-auto flex max-w-full flex-wrap items-center gap-2">
-          <Link
-            href={`/workspaces/${board.workspace.slug}`}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeftIcon className="size-3.5" />
-            {board.workspace.name}
-          </Link>
+      <PageHeader>
+        <Link
+          href={`/workspaces/${board.workspace.slug}`}
+          className="hidden shrink-0 items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+        >
+          {board.workspace.name}
+        </Link>
 
-          <span className="text-xs text-muted-foreground/50">/</span>
+        <span aria-hidden className="hidden text-xs text-muted-foreground/40 sm:inline">
+          /
+        </span>
 
-          <span aria-hidden className={cn('size-2.5 shrink-0 rounded-full', theme.rail)} />
+        <span aria-hidden className={cn('size-2.5 shrink-0 rounded-full', theme.rail)} />
 
-          <EditableTitle
-            as="h1"
-            value={board.title}
-            url={`/boards/${board.id}`}
-            readOnly={!can.update}
-            className="text-sm font-semibold tracking-tight"
-          />
+        <EditableTitle
+          as="h1"
+          value={board.title}
+          url={`/boards/${board.id}`}
+          readOnly={!can.update}
+          className="min-w-0 truncate text-sm font-semibold tracking-tight"
+        />
 
-          <span className="rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
-            {board.cards_count}
-          </span>
+        <span className="shrink-0 rounded-full bg-muted px-1.5 text-xs tabular-nums text-muted-foreground">
+          {board.cards_count}
+        </span>
 
-          <div className="ml-auto flex items-center gap-2">
-            {can.manage_members ? (
-              <BoardMembersDialog board={board}>
-                <button
-                  type="button"
-                  className="rounded-full transition-opacity hover:opacity-80"
-                  aria-label="Membros do board"
-                >
-                  <MemberAvatars
-                    users={board.members.slice(0, 4).map((member) => member.user)}
-                    total={board.members.length}
-                  />
-                </button>
-              </BoardMembersDialog>
-            ) : (
-              <MemberAvatars
-                users={board.members.slice(0, 4).map((member) => member.user)}
-                total={board.members.length}
-              />
-            )}
+        <div className="ml-auto flex items-center gap-2">
+          {can.manage_members ? (
+            <BoardMembersDialog board={board}>
+              <button
+                type="button"
+                className="rounded-full transition-opacity hover:opacity-80"
+                aria-label="Membros do board"
+              >
+                <MemberAvatars
+                  users={board.members.slice(0, 4).map((member) => member.user)}
+                  total={board.members.length}
+                />
+              </button>
+            </BoardMembersDialog>
+          ) : (
+            <MemberAvatars
+              users={board.members.slice(0, 4).map((member) => member.user)}
+              total={board.members.length}
+            />
+          )}
 
-            <Button asChild variant="ghost" size="icon">
-              <Link href={`/boards/${board.id}/activities`} aria-label="Atividade do board">
-                <HistoryIcon />
-              </Link>
-            </Button>
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/boards/${board.id}/activities`} aria-label="Atividade do board">
+              <HistoryIcon />
+            </Link>
+          </Button>
 
-            {can.archive && <BoardMenu board={board} can={can} />}
-          </div>
+          {can.archive && <BoardMenu board={board} can={can} />}
         </div>
-      </header>
+      </PageHeader>
 
       {board.lists.length > 0 && (
         <BoardFilters
@@ -274,8 +274,8 @@ export default function BoardShow({
         }}
       >
         {/* Rolagem horizontal fica só nas colunas; a página nunca rola de lado. */}
-        <div className="flex-1 overflow-x-auto p-4">
-          <div className="flex h-full items-start gap-3">
+        <div className="min-h-0 flex-1 overflow-x-auto p-3">
+          <div className="flex h-full items-start gap-2.5">
             <SortableContext
               items={visibleLists.map((list) => listId(list.id))}
               strategy={horizontalListSortingStrategy}
@@ -297,7 +297,7 @@ export default function BoardShow({
                 label="Adicionar lista"
                 placeholder="Nome da lista"
                 url={`/boards/${board.id}/lists`}
-                className="w-72 shrink-0 rounded-xl border border-dashed p-2"
+                className="w-72 shrink-0 rounded-lg border border-dashed p-1.5"
               />
             )}
 
@@ -439,6 +439,16 @@ function BoardMenu({ board, can }: { board: BoardPayload; can: Can }) {
   )
 }
 
+// Verdadeiro só a partir da segunda pintura: é o que separa "card novo chegou" de
+// "o board acabou de abrir", que não deve animar coluna nenhuma.
+function useSettled() {
+  const [settled, setSettled] = useState(false)
+
+  useEffect(() => setSettled(true), [])
+
+  return settled
+}
+
 // Transição curta, só para dar a leitura de onde o card saiu e para onde foi.
 // Nada disso para quem pediu menos movimento.
 const sortableTransition = () =>
@@ -473,6 +483,8 @@ function ListColumn({
   })
   const drag = listeners as DragListeners | undefined
 
+  const settled = useSettled()
+
   const { setNodeRef: setDropRef } = useDroppable({
     id: dropId(list.id),
     data: { label: `a lista ${list.title}` },
@@ -483,11 +495,11 @@ function ListColumn({
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition: transition ?? undefined }}
       className={cn(
-        'flex max-h-full w-80 shrink-0 flex-col rounded-md border bg-muted/40',
+        'flex max-h-full w-72 shrink-0 flex-col rounded-lg border bg-muted/40',
         isDragging && 'opacity-40',
       )}
     >
-      <header className="flex items-center gap-1.5 px-3 py-2.5" onPointerDown={drag?.onPointerDown}>
+      <header className="flex items-center gap-1.5 px-2.5 py-2" onPointerDown={drag?.onPointerDown}>
         {canDrag && (
           <button
             type="button"
@@ -545,9 +557,18 @@ function ListColumn({
         strategy={verticalListSortingStrategy}
       >
         {/* `min-h` dá alvo de soltura para a coluna vazia. */}
-        <ul ref={setDropRef} className="flex min-h-12 flex-col gap-2 overflow-y-auto px-2 pb-2">
+        <ul
+          ref={setDropRef}
+          className="flex min-h-12 flex-col gap-1.5 overflow-y-auto px-1.5 pb-1.5"
+        >
           {list.cards.map((card) => (
-            <SortableCard key={card.id} card={card} canWrite={canWrite} canDrag={canDrag} />
+            <SortableCard
+              key={card.id}
+              card={card}
+              canWrite={canWrite}
+              canDrag={canDrag}
+              animateIn={settled}
+            />
           ))}
         </ul>
       </SortableContext>
@@ -559,7 +580,7 @@ function ListColumn({
           placeholder="Título do card"
           url="/cards"
           payload={{ list_id: list.id }}
-          className="px-2 pb-2"
+          className="px-1.5 pb-1.5"
         />
       )}
     </section>
@@ -570,10 +591,12 @@ function SortableCard({
   card,
   canWrite,
   canDrag,
+  animateIn,
 }: {
   card: CardPayload
   canWrite: boolean
   canDrag: boolean
+  animateIn: boolean
 }) {
   const {
     attributes,
@@ -595,7 +618,7 @@ function SortableCard({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition: transition ?? undefined }}
-      className={cn(isDragging && 'opacity-40')}
+      className={cn(animateIn && 'card-enter', isDragging && 'opacity-40')}
       onPointerDown={drag?.onPointerDown}
     >
       <CardTile
@@ -639,7 +662,7 @@ function CardTile({
         <div aria-hidden className={cn('h-1 w-full', BOARD_THEME[card.cover_color].rail)} />
       )}
 
-      <div className="px-3 py-2.5">
+      <div className="px-2.5 py-2">
         {/* Linha de meta, como o `repo #123` de uma issue: o ícone de estado é o botão de
             concluir, então marcar não precisa de um segundo controle. */}
         <div className="flex items-center gap-1.5">
@@ -651,7 +674,7 @@ function CardTile({
               aria-label={card.completed ? `Reabrir ${card.title}` : `Concluir ${card.title}`}
               aria-pressed={card.completed}
               className={cn(
-                'shrink-0 rounded-full transition-colors',
+                'shrink-0 rounded-full transition-[color,transform] duration-100 ease-(--ease-out-strong) motion-safe:active:scale-90',
                 card.completed ? 'text-done' : 'text-open hover:text-foreground',
               )}
               onClick={() =>
