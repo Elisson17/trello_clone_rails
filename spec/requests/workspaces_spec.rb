@@ -6,25 +6,6 @@ RSpec.describe "Workspaces", type: :request do
 
   before { sign_in user }
 
-  it "serves the workspace list as the home page" do
-    get root_path
-
-    expect(response).to have_http_status(:ok)
-    expect(inertia_props(response)).to have_key("workspaces")
-  end
-
-  it "lists only the workspaces the user belongs to" do
-    workspace
-    create(:workspace, :owned)
-
-    get workspaces_path
-
-    expect(response).to have_http_status(:ok)
-    props = inertia_props(response)["workspaces"]
-    expect(props.map { |w| w["id"] }).to eq([ workspace.id ])
-    expect(props.sole["members_preview"].sole["name"]).to eq(user.name)
-  end
-
   it "creates a workspace with the creator as owner" do
     post workspaces_path, params: { name: "Time de Produto" }
 
@@ -73,6 +54,7 @@ RSpec.describe "Workspaces", type: :request do
     delete workspace_path(workspace)
 
     expect(Workspace.exists?(workspace.id)).to be(false)
+    expect(response).to redirect_to(root_path)
   end
 
   it "refuses destroying the personal workspace" do

@@ -62,7 +62,7 @@ RSpec.describe "Workspace memberships", type: :request do
 
     delete workspace_membership_path(workspace, member)
 
-    expect(response).to redirect_to(workspaces_path)
+    expect(response).to redirect_to(root_path)
     expect(Membership.exists?(member.id)).to be(false)
   end
 

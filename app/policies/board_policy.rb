@@ -1,4 +1,5 @@
 class BoardPolicy < ApplicationPolicy
+  def index? = user.present?
   def show? = board_membership.present? || workspace_wide_access?
 
   def create? = workspace_membership.present?

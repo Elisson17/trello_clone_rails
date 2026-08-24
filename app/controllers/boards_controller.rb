@@ -1,7 +1,16 @@
 class BoardsController < ApplicationController
   include BoardRendering
 
-  before_action :set_board
+  before_action :set_board, except: :index
+
+  def index
+    authorize Board
+
+    render inertia: "Boards/Index", props: {
+      boards: BoardsIndexPresenter.new(boards: policy_scope(Board).active, user: current_user).as_json,
+      backgrounds: Board::BACKGROUNDS
+    }
+  end
 
   def show
     authorize @board

@@ -31,7 +31,7 @@ module Workspaces
       leaving = @membership.user_id == current_user.id
 
       if @membership.destroy
-        redirect_to(leaving ? workspaces_path : workspace_memberships_path(@workspace),
+        redirect_to(leaving ? root_path : workspace_memberships_path(@workspace),
                     notice: t(leaving ? "memberships.left" : "memberships.removed"))
       else
         redirect_to workspace_memberships_path(@workspace), alert: @membership.errors.full_messages.to_sentence

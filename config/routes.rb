@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     patch :read, on: :collection
   end
 
-  resources :workspaces, except: %i[new edit] do
+  resources :workspaces, except: %i[new edit index] do
     resources :memberships, only: %i[index update destroy], module: :workspaces
     resources :invitations, only: %i[create destroy], module: :workspaces
     resources :boards, only: %i[index create], module: :workspaces
@@ -73,8 +73,8 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # A lista de workspaces é a home: é de onde se navega para tudo.
-  root "workspaces#index"
+  # A home é o índice de boards: quem entra quer o board de ontem, não escolher um ambiente.
+  root "boards#index"
 
   # Rota que não existe é 404 na mesma página das outras — precisa ser a última.
   match "*path", to: "errors#show", via: :all, defaults: { status: 404 },
