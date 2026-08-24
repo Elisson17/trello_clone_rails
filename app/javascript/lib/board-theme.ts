@@ -1,35 +1,20 @@
 import type { BoardBackground } from '@/types/inertia'
 
 /**
- * Os seis tokens da paleta em duas formas: `chip` é a pílula de etiqueta (borda e texto
- * na cor, fundo translúcido) e `rail` é a cor sólida, usada no trilho do board, na
- * bolinha de status da coluna e nas amostras dos seletores de cor.
+ * Os seis tokens da paleta em duas formas. `chip` é a pílula neutra da etiqueta e `dot` é
+ * o marcador colorido dentro dela: quatro etiquetas num card viram quatro pontos, e não
+ * quatro pílulas coloridas disputando a atenção do título. `rail` é a cor sólida, usada no
+ * trilho do board, na bolinha de status da coluna e nas amostras dos seletores de cor.
  */
-export const BOARD_THEME: Record<BoardBackground, { chip: string; rail: string }> = {
-  slate: {
-    chip: 'border-slate-500/40 bg-slate-500/15 text-slate-700 dark:text-slate-300',
-    rail: 'bg-slate-500',
-  },
-  rose: {
-    chip: 'border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300',
-    rail: 'bg-rose-500',
-  },
-  amber: {
-    chip: 'border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300',
-    rail: 'bg-amber-500',
-  },
-  emerald: {
-    chip: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
-    rail: 'bg-emerald-500',
-  },
-  sky: {
-    chip: 'border-sky-500/40 bg-sky-500/15 text-sky-700 dark:text-sky-300',
-    rail: 'bg-sky-500',
-  },
-  violet: {
-    chip: 'border-violet-500/40 bg-violet-500/15 text-violet-700 dark:text-violet-300',
-    rail: 'bg-violet-500',
-  },
+const CHIP = 'border-border bg-secondary text-secondary-foreground'
+
+export const BOARD_THEME: Record<BoardBackground, { chip: string; dot: string; rail: string }> = {
+  slate: { chip: CHIP, dot: 'bg-slate-500', rail: 'bg-slate-500' },
+  rose: { chip: CHIP, dot: 'bg-rose-500', rail: 'bg-rose-500' },
+  amber: { chip: CHIP, dot: 'bg-amber-500', rail: 'bg-amber-500' },
+  emerald: { chip: CHIP, dot: 'bg-emerald-500', rail: 'bg-emerald-500' },
+  sky: { chip: CHIP, dot: 'bg-sky-500', rail: 'bg-sky-500' },
+  violet: { chip: CHIP, dot: 'bg-violet-500', rail: 'bg-violet-500' },
 }
 
 export const BACKGROUND_LABELS: Record<BoardBackground, string> = {

@@ -22,7 +22,8 @@ class ApplicationController < ActionController::Base
     {
       auth: { user: current_user && user_props(current_user) },
       flash: { notice: flash.notice, alert: flash.alert },
-      unread_notifications_count: -> { current_user&.notifications&.unread&.count.to_i }
+      unread_notifications_count: -> { current_user&.notifications&.unread&.count.to_i },
+      nav: -> { current_user && NavigationPresenter.new(current_user).as_json }
     }
   end
 

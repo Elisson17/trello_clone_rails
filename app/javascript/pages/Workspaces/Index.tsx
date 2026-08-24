@@ -1,19 +1,7 @@
-import { Head, Link, useForm } from '@inertiajs/react'
-import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
+import { Head, Link } from '@inertiajs/react'
 import { BoardCard } from '@/components/BoardCard'
-import { Input } from '@/components/Input'
 import { MemberAvatars } from '@/components/MemberAvatars'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { NewWorkspaceDialog } from '@/components/NewWorkspaceDialog'
 import { accentStyle } from '@/lib/accent'
 import type { BoardBackground, WorkspaceRole, WorkspaceSummary } from '@/types/inertia'
 
@@ -136,67 +124,5 @@ function EmptyState() {
         <NewWorkspaceDialog />
       </div>
     </div>
-  )
-}
-
-function NewWorkspaceDialog() {
-  const [open, setOpen] = useState(false)
-  const form = useForm({ name: '' })
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) form.reset()
-      }}
-    >
-      <DialogTrigger asChild>
-        <Button>
-          <PlusIcon />
-          Novo workspace
-        </Button>
-      </DialogTrigger>
-
-      <DialogContent className="sm:max-w-md">
-        <form
-          onSubmit={(event) => {
-            event.preventDefault()
-            form.post('/workspaces', {
-              onSuccess: () => {
-                form.reset()
-                setOpen(false)
-              },
-            })
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>Novo workspace</DialogTitle>
-            <DialogDescription>
-              Você entra como owner e pode convidar outras pessoas depois.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="py-5">
-            <Input
-              label="Nome"
-              required
-              autoFocus
-              maxLength={80}
-              placeholder="Time de produto"
-              value={form.data.name}
-              error={form.errors.name}
-              onChange={(event) => form.setData('name', event.target.value)}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button type="submit" disabled={form.processing}>
-              {form.processing ? 'Criando…' : 'Criar workspace'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }

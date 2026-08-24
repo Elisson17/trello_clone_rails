@@ -5,21 +5,31 @@ import { XIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
- * Painel ancorado na direita, no lugar do diálogo centralizado. É o mesmo primitivo de
- * diálogo do Radix (foco preso, `esc`, overlay) — só a ancoragem e a animação mudam.
- * Um lado só: o app não tem painel na esquerda nem embaixo, e `side` com quatro valores
- * seria flexibilidade sem uso.
+ * Painel ancorado numa borda, no lugar do diálogo centralizado. É o mesmo primitivo de
+ * diálogo do Radix (foco preso, `esc`, overlay); mudam a ancoragem e a animação.
+ * Dois lados, não quatro: `right` é o painel do card e `left` é a gaveta de navegação.
+ * Topo e base não têm uso nenhum no app.
  */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
 
+const SIDES = {
+  right:
+    'inset-y-0 right-0 max-w-[52rem] border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
+  left: 'inset-y-0 left-0 max-w-[20rem] border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left',
+}
+
 function SheetContent({
   className,
   children,
+  side = 'right',
   closeLabel = 'Fechar',
   ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & { closeLabel?: string }) {
+}: React.ComponentProps<typeof SheetPrimitive.Content> & {
+  side?: keyof typeof SIDES
+  closeLabel?: string
+}) {
   return (
     <SheetPrimitive.Portal>
       <SheetPrimitive.Overlay
@@ -30,8 +40,9 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          'fixed inset-y-0 right-0 z-50 flex w-full max-w-[52rem] flex-col overflow-y-auto border-l bg-background shadow-2xl outline-none',
-          'duration-200 ease-(--ease-out-strong) data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:animate-in data-[state=open]:slide-in-from-right',
+          'fixed z-50 flex w-full flex-col overflow-y-auto bg-background shadow-2xl outline-none',
+          'duration-200 ease-(--ease-out-strong) data-[state=closed]:animate-out data-[state=open]:animate-in',
+          SIDES[side],
           className,
         )}
         {...props}

@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input'
 import { useShortcut } from '@/hooks/use-shortcut'
 
 /**
- * Busca global do header. O resultado é uma página (`/search?q=`), não um popover: assim o
- * link é compartilhável, o back funciona e não existe estado de busca no cliente.
+ * Busca global, no topo da sidebar. O resultado é uma página (`/search?q=`) e não um
+ * popover: assim o link é compartilhável, o back funciona e não existe estado de busca
+ * no cliente.
  */
 export function GlobalSearch() {
   const { term } = usePage<{ term?: string }>().props
@@ -17,7 +18,7 @@ export function GlobalSearch() {
   useShortcut('/', () => field.current?.focus())
 
   return (
-    <search className="relative ml-2 hidden w-56 sm:block">
+    <search className="relative block w-full">
       <form
         onSubmit={(event) => {
           event.preventDefault()

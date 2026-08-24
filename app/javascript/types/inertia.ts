@@ -7,10 +7,14 @@ export type SharedUser = {
   avatar_url: string | null
 }
 
+export type NavWorkspace = { slug: string; name: string }
+export type NavBoard = { id: number; title: string; workspace_slug: string }
+
 export type SharedProps = {
   auth: { user: SharedUser | null }
   flash: { notice: string | null; alert: string | null }
   unread_notifications_count: number
+  nav: { workspaces: NavWorkspace[]; recent_boards: NavBoard[] } | null
 }
 
 export type WorkspaceRole = 'owner' | 'admin' | 'member'

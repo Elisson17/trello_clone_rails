@@ -4,80 +4,81 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Paleta do Primer, o design system do GitHub. Os nomes de token são os mesmos de
-     antes de propósito: toda tela do app herda o ar novo sem eu reescrever nenhuma. */
+  /* Paleta da Linear: cinza sem viés de matiz, índigo como único acento. Os nomes de
+     token continuam os mesmos de propósito, então toda tela herda a paleta sem ser
+     reescrita. */
   --radius: 0.375rem;
   --background: #ffffff;
-  --foreground: #1f2328;
+  --foreground: #0d0e10;
   --card: #ffffff;
-  --card-foreground: #1f2328;
+  --card-foreground: #0d0e10;
   --popover: #ffffff;
-  --popover-foreground: #1f2328;
-  /* Botão primário verde: no GitHub a ação principal é verde, não a cor do texto. */
-  --primary: #1f883d;
+  --popover-foreground: #0d0e10;
+  --primary: #5e6ad2;
   --primary-foreground: #ffffff;
-  --secondary: #f6f8fa;
-  --secondary-foreground: #1f2328;
-  --muted: #f6f8fa;
-  --muted-foreground: #59636e;
-  --accent: #f6f8fa;
-  --accent-foreground: #1f2328;
-  --destructive: #cf222e;
-  --border: #d1d9e0;
-  --input: #d1d9e0;
-  --ring: #0969da;
-  /* Estado do item, como o círculo de issue aberta/fechada do GitHub. */
-  --open: #1a7f37;
-  --done: #8250df;
-  --chart-1: #0969da;
-  --chart-2: #1f883d;
-  --chart-3: #9a6700;
-  --chart-4: #8250df;
-  --chart-5: #cf222e;
-  --sidebar: #f6f8fa;
-  --sidebar-foreground: #1f2328;
-  --sidebar-primary: #1f883d;
+  --secondary: #f7f7f8;
+  --secondary-foreground: #0d0e10;
+  --muted: #f7f7f8;
+  --muted-foreground: #6c6f75;
+  --accent: #f7f7f8;
+  --accent-foreground: #0d0e10;
+  --destructive: #d4493f;
+  --border: #e6e6e7;
+  --input: #e6e6e7;
+  --ring: #5e6ad2;
+  /* Estado do item. Verde só no estado: o primário agora é índigo, então os dois
+     pararam de disputar a mesma leitura. */
+  --open: #3d9a50;
+  --done: #5e6ad2;
+  --chart-1: #5e6ad2;
+  --chart-2: #3d9a50;
+  --chart-3: #b07d18;
+  --chart-4: #9c5bd0;
+  --chart-5: #d4493f;
+  --sidebar: #f7f7f8;
+  --sidebar-foreground: #0d0e10;
+  --sidebar-primary: #5e6ad2;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eaeef2;
-  --sidebar-accent-foreground: #1f2328;
-  --sidebar-border: #d1d9e0;
-  --sidebar-ring: #0969da;
+  --sidebar-accent: #ececed;
+  --sidebar-accent-foreground: #0d0e10;
+  --sidebar-border: #e6e6e7;
+  --sidebar-ring: #5e6ad2;
 }
 
 .dark {
-  --background: #0d1117;
-  --foreground: #f0f6fc;
-  --card: #151b23;
-  --card-foreground: #f0f6fc;
-  --popover: #151b23;
-  --popover-foreground: #f0f6fc;
-  --primary: #238636;
-  --primary-foreground: #ffffff;
-  --secondary: #212830;
-  --secondary-foreground: #f0f6fc;
-  --muted: #212830;
-  --muted-foreground: #9198a1;
-  --accent: #212830;
-  --accent-foreground: #f0f6fc;
-  --destructive: #f85149;
-  --border: #3d444d;
-  --input: #3d444d;
-  --ring: #4493f8;
-  --open: #3fb950;
-  --done: #a371f7;
-  --chart-1: #4493f8;
-  --chart-2: #3fb950;
-  --chart-3: #d29922;
-  --chart-4: #a371f7;
-  --chart-5: #f85149;
-  --sidebar: #151b23;
-  --sidebar-foreground: #f0f6fc;
-  --sidebar-primary: #238636;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #212830;
-  --sidebar-accent-foreground: #f0f6fc;
-  --sidebar-border: #3d444d;
-  --sidebar-ring: #4493f8;
+  --background: #08090a;
+  --foreground: #f7f8f8;
+  --card: #16171a;
+  --card-foreground: #f7f8f8;
+  --popover: #16171a;
+  --popover-foreground: #f7f8f8;
+  --primary: #7b84e8;
+  --primary-foreground: #0b0c14;
+  --secondary: #0f1011;
+  --secondary-foreground: #f7f8f8;
+  --muted: #0f1011;
+  --muted-foreground: #8a8f98;
+  --accent: #1c1d21;
+  --accent-foreground: #f7f8f8;
+  --destructive: #e5484d;
+  --border: #23252a;
+  --input: #23252a;
+  --ring: #7b84e8;
+  --open: #4cb782;
+  --done: #9c9ff0;
+  --chart-1: #7b84e8;
+  --chart-2: #4cb782;
+  --chart-3: #d9a83a;
+  --chart-4: #b48ae8;
+  --chart-5: #e5484d;
+  --sidebar: #0f1011;
+  --sidebar-foreground: #f7f8f8;
+  --sidebar-primary: #7b84e8;
+  --sidebar-primary-foreground: #0b0c14;
+  --sidebar-accent: #1c1d21;
+  --sidebar-accent-foreground: #f7f8f8;
+  --sidebar-border: #23252a;
+  --sidebar-ring: #7b84e8;
 }
 
 @theme inline {
@@ -126,8 +127,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    /* 13px é o corpo de texto do GitHub. Fica no `body`, não no `html`: o `rem` do
-       Tailwind é a raiz, e mexer nele encolheria todo o espaçamento do app junto. */
+    /* Corpo de 13px, a densidade que uma ferramenta de trabalho pede. Fica no `body` e
+       não no `html`: o `rem` do Tailwind é a raiz, e mexer nele encolheria todo o
+       espaçamento do app junto. */
     @apply bg-background text-[13px] text-foreground;
   }
 }

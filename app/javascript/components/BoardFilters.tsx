@@ -55,15 +55,20 @@ export function BoardFilters({
           type="button"
           aria-pressed={filter.labelIds.includes(label.id)}
           onClick={() => onChange({ ...filter, labelIds: toggleId(filter.labelIds, label.id) })}
-          // Chip apagado por opacidade perde contraste no tema claro; fora do filtro a
-          // etiqueta vira só borda e texto neutro.
+          // O ponto carrega a identidade da etiqueta nos dois estados; ligado ou
+          // desligado é dito pelo acento, que é estado de interface e não da etiqueta.
           className={cn(
-            'rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+            'inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
             filter.labelIds.includes(label.id)
-              ? BOARD_THEME[label.color].chip
+              ? 'border-primary/50 bg-primary/10 text-foreground'
               : 'border-input text-muted-foreground hover:text-foreground',
           )}
         >
+          <i
+            aria-hidden
+            data-label-dot
+            className={cn('size-1.5 shrink-0 rounded-full', BOARD_THEME[label.color].dot)}
+          />
           {label.name}
         </button>
       ))}
