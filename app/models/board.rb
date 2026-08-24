@@ -1,6 +1,7 @@
 class Board < ApplicationRecord
   include Positioned
   include Archivable
+  include Searchable
 
   DEFAULT_LISTS = [ "A fazer", "Fazendo", "Feito" ].freeze
   BACKGROUNDS = %w[slate rose amber emerald sky violet].freeze

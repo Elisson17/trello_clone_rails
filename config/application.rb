@@ -37,6 +37,10 @@ module TrelloCloneRails
     config.i18n.available_locales = [ :"pt-BR", :en ]
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Erro também é tela do app: 404 e 500 passam pelas rotas e viram página Inertia,
+    # em vez do HTML estático de `public/`.
+    config.exceptions_app = routes
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

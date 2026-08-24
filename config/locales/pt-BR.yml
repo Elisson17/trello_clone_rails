@@ -20,6 +20,7 @@ pt-BR:
     duplicate_failed: "Não deu para duplicar o board."
   lists:
     archived: "Lista arquivada."
+    restored: "Lista restaurada."
     move_failed: "Não deu para mover a lista. A ordem foi restaurada."
   cards:
     move_failed: "Não deu para mover o card. A ordem foi restaurada."

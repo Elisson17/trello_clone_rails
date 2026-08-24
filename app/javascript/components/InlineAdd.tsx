@@ -14,6 +14,8 @@ type InlineAddProps = {
   name?: string
   payload?: Record<string, string | number>
   className?: string
+  /** Id do botão fechado: é por ele que o atalho de teclado do board abre o formulário. */
+  id?: string
 }
 
 export function InlineAdd({
@@ -23,6 +25,7 @@ export function InlineAdd({
   name = 'title',
   payload,
   className,
+  id,
 }: InlineAddProps) {
   const [open, setOpen] = useState(false)
   const field = useRef<HTMLInputElement>(null)
@@ -46,6 +49,7 @@ export function InlineAdd({
   if (!open) {
     return (
       <Button
+        id={id}
         variant="ghost"
         className={cn('w-full justify-start text-muted-foreground', className)}
         onClick={() => setOpen(true)}

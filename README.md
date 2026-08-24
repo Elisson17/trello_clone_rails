@@ -10,7 +10,9 @@ externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o ap
 > card, e menção, atribuição e prazo chegando viram notificação — tudo fora do request, em
 > filas nomeadas do Solid Queue, com dois jobs recorrentes rodando dentro do Puma. Duas
 > abas no mesmo board se sincronizam por WebSocket (Solid Cable) e o payload do board vive
-> em Solid Cache. O visual segue o GitHub Projects (paleta do Primer).
+> em Solid Cache. Busca global em FTS5, filtro no board, painel de arquivados, atalhos de
+> teclado e páginas de erro próprias fecham o acabamento. O visual segue o GitHub Projects
+> (paleta do Primer).
 
 ## Stack
 
@@ -124,6 +126,32 @@ requests reais em desenvolvimento, SQLite local):
 
 O ganho é quase todo custo fixo do presenter, não do tamanho do board: é por isso que ele
 aparece já no board pequeno.
+
+## Busca, filtros e atalhos
+
+**Busca global** (campo no header, `/` para focar) é uma tabela **FTS5** do próprio SQLite
+(`search_index`), com board e card na mesma tabela porque o resultado é uma lista só.
+Casamento por prefixo de palavra e sem acento (`tokenize='unicode61 remove_diacritics 2'`),
+ordenado pelo `rank` do FTS. Quem mantém a tabela é um `after_commit` do
+`Searchable` — callback de Ruby, não trigger de SQLite, porque trigger não vai para o
+`schema.rb` e o banco de teste nasceria sem ele. Permissão e arquivamento não moram no
+índice: o `policy_scope` de board filtra o resultado depois.
+
+**Filtro do board** (texto, etiqueta, responsável, atrasados) roda no cliente — o payload do
+board já veio inteiro na página, então esconder card não vale um request. Etiqueta e
+responsável são OU dentro do critério e E entre critérios. Com filtro ligado o arrasto
+desliga: índice dentro de coluna filtrada não é a posição real.
+
+**Atalhos:** `/` foca a busca, `n` abre o formulário de card da primeira coluna, `Esc` fecha
+modal e painel. O board é operável só por teclado — mover lista e card também
+(`KeyboardSensor` do dnd-kit, com anúncio por leitor de tela).
+
+**Arquivados:** boards em `/workspaces/:slug/boards`, listas e cards em
+`/boards/:id/archived`. Restaurar é `DELETE` no arquivamento e volta para a mesma página.
+
+**Erro é tela do app:** `config.exceptions_app = routes` manda 404, 422 e 500 para uma página
+Inertia (`pages/Errors/Show.tsx`), e `RecordNotFound` é resgatado no `ApplicationController`
+para que dev, teste e produção mostrem exatamente a mesma tela.
 
 ## Testes e qualidade
 

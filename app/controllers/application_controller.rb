@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Method
   include ActivityRecording
+  include ErrorRendering
 
   # Nenhuma action escapa da autorização; quem não precisa pula o callback explicitamente.
   after_action :verify_authorized, unless: :devise_controller?

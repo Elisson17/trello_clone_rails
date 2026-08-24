@@ -41,6 +41,7 @@ import {
 import { useState } from 'react'
 
 import { ActivityFeed } from '@/components/ActivityFeed'
+import { BoardFilters } from '@/components/BoardFilters'
 import { BoardMembersDialog } from '@/components/BoardMembersDialog'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { CardDrawer } from '@/components/card/CardDrawer'
@@ -58,7 +59,15 @@ import {
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { useBoardChannel } from '@/hooks/use-board-channel'
 import { useOptimisticMove } from '@/hooks/use-optimistic-move'
+import { useShortcut } from '@/hooks/use-shortcut'
 import { accentStyle } from '@/lib/accent'
+import {
+  type BoardFilter,
+  countCards,
+  EMPTY_FILTER,
+  filterLists,
+  isFiltering,
+} from '@/lib/board-filter'
 import { indexOfCard, listOfCard, moveCard, moveList } from '@/lib/board-move'
 import { BOARD_THEME } from '@/lib/board-theme'
 import { cn } from '@/lib/utils'
@@ -85,6 +94,9 @@ type DragListeners = {
   onPointerDown?: React.PointerEventHandler
   onKeyDown?: React.KeyboardEventHandler
 }
+
+// O atalho `n` precisa de um alvo estável no DOM, e o botão de adicionar já existe.
+const ADD_CARD_ID = 'board-add-card'
 
 const parseId = (raw: string) => ({ kind: raw.split(':')[0], id: Number(raw.split(':')[1]) })
 
@@ -120,6 +132,16 @@ export default function BoardShow({
 
   useBoardChannel(board.id)
   const [dragging, setDragging] = useState<string | null>(null)
+  const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER)
+
+  // Com filtro ligado o arrasto sai: índice dentro de coluna filtrada não é a posição real,
+  // e mover pelo que está escondido é como o card acaba no lugar errado.
+  const filtering = isFiltering(filter)
+  const visibleLists = filterLists(lists, filter)
+  const canDrag = can.update && !filtering
+
+  // `n` abre o formulário de card da primeira coluna — o mesmo botão que o mouse clica.
+  useShortcut('n', () => document.getElementById(ADD_CARD_ID)?.click())
 
   const sensors = useSensors(
     // 5px de folga: sem isso o clique no botão de concluir vira um drag de zero pixel.
@@ -230,6 +252,16 @@ export default function BoardShow({
         </div>
       </header>
 
+      {board.lists.length > 0 && (
+        <BoardFilters
+          board={board}
+          filter={filter}
+          onChange={setFilter}
+          visible={countCards(visibleLists)}
+          total={countCards(lists)}
+        />
+      )}
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -246,11 +278,18 @@ export default function BoardShow({
         <div className="flex-1 overflow-x-auto p-4">
           <div className="flex h-full items-start gap-3">
             <SortableContext
-              items={lists.map((list) => listId(list.id))}
+              items={visibleLists.map((list) => listId(list.id))}
               strategy={horizontalListSortingStrategy}
             >
-              {lists.map((list) => (
-                <ListColumn key={list.id} board={board} list={list} canWrite={can.update} />
+              {visibleLists.map((list, index) => (
+                <ListColumn
+                  key={list.id}
+                  board={board}
+                  list={list}
+                  canWrite={can.update}
+                  canDrag={canDrag}
+                  addCardId={index === 0 ? ADD_CARD_ID : undefined}
+                />
               ))}
             </SortableContext>
 
@@ -366,6 +405,13 @@ function BoardMenu({ board, can }: { board: BoardPayload; can: Can }) {
           </DropdownMenuItem>
         </BoardMembersDialog>
 
+        <DropdownMenuItem asChild>
+          <Link href={`/boards/${board.id}/archived`}>
+            <ArchiveIcon />
+            Arquivados
+          </Link>
+        </DropdownMenuItem>
+
         <DropdownMenuItem onSelect={() => router.post(`/boards/${board.id}/duplicate`)}>
           <CopyIcon />
           Duplicar board
@@ -403,10 +449,14 @@ function ListColumn({
   board,
   list,
   canWrite,
+  canDrag,
+  addCardId,
 }: {
   board: BoardPayload
   list: ListPayload
   canWrite: boolean
+  canDrag: boolean
+  addCardId?: string
 }) {
   const {
     attributes,
@@ -418,7 +468,7 @@ function ListColumn({
     isDragging,
   } = useSortable({
     id: listId(list.id),
-    disabled: !canWrite,
+    disabled: !canDrag,
     transition: sortableTransition(),
     data: { label: `a lista ${list.title}` },
   })
@@ -439,7 +489,7 @@ function ListColumn({
       )}
     >
       <header className="flex items-center gap-1.5 px-3 py-2.5" onPointerDown={drag?.onPointerDown}>
-        {canWrite && (
+        {canDrag && (
           <button
             type="button"
             ref={setActivatorNodeRef}
@@ -498,13 +548,14 @@ function ListColumn({
         {/* `min-h` dá alvo de soltura para a coluna vazia. */}
         <ul ref={setDropRef} className="flex min-h-12 flex-col gap-2 overflow-y-auto px-2 pb-2">
           {list.cards.map((card) => (
-            <SortableCard key={card.id} card={card} canWrite={canWrite} />
+            <SortableCard key={card.id} card={card} canWrite={canWrite} canDrag={canDrag} />
           ))}
         </ul>
       </SortableContext>
 
       {canWrite && (
         <InlineAdd
+          id={addCardId}
           label="Adicionar card"
           placeholder="Título do card"
           url="/cards"
@@ -516,7 +567,15 @@ function ListColumn({
   )
 }
 
-function SortableCard({ card, canWrite }: { card: CardPayload; canWrite: boolean }) {
+function SortableCard({
+  card,
+  canWrite,
+  canDrag,
+}: {
+  card: CardPayload
+  canWrite: boolean
+  canDrag: boolean
+}) {
   const {
     attributes,
     listeners,
@@ -527,7 +586,7 @@ function SortableCard({ card, canWrite }: { card: CardPayload; canWrite: boolean
     isDragging,
   } = useSortable({
     id: cardId(card.id),
-    disabled: !canWrite,
+    disabled: !canDrag,
     transition: sortableTransition(),
     data: { label: `o card ${card.title}` },
   })
@@ -544,7 +603,7 @@ function SortableCard({ card, canWrite }: { card: CardPayload; canWrite: boolean
         card={card}
         canWrite={canWrite}
         handle={
-          canWrite ? (
+          canDrag ? (
             <button
               type="button"
               ref={setActivatorNodeRef}

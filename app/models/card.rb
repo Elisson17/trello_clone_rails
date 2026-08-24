@@ -1,6 +1,7 @@
 class Card < ApplicationRecord
   include Positioned
   include Archivable
+  include Searchable
 
   # Allowlist de anexo: imagem, PDF e texto. Nada executável, nada de arquivo comprimido —
   # é um demo público, o upload é a porta de entrada mais barata que existe.
