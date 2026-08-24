@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_24_130000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -63,6 +63,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_120000) do
     t.index ["board_id", "user_id"], name: "index_board_memberships_on_board_id_and_user_id", unique: true
     t.index ["board_id"], name: "index_board_memberships_on_board_id"
     t.index ["user_id"], name: "index_board_memberships_on_user_id"
+  end
+
+  create_table "board_visits", force: :cascade do |t|
+    t.integer "board_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.datetime "viewed_at", null: false
+    t.index ["board_id"], name: "index_board_visits_on_board_id"
+    t.index ["user_id", "board_id"], name: "index_board_visits_on_user_id_and_board_id", unique: true
+    t.index ["user_id", "viewed_at"], name: "index_board_visits_on_user_id_and_viewed_at"
+    t.index ["user_id"], name: "index_board_visits_on_user_id"
   end
 
   create_table "boards", force: :cascade do |t|
@@ -251,6 +263,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_120000) do
   add_foreign_key "activities", "users"
   add_foreign_key "board_memberships", "boards"
   add_foreign_key "board_memberships", "users"
+  add_foreign_key "board_visits", "boards"
+  add_foreign_key "board_visits", "users"
   add_foreign_key "boards", "users", column: "creator_id"
   add_foreign_key "boards", "workspaces"
   add_foreign_key "card_assignments", "cards"
