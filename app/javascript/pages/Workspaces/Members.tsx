@@ -1,8 +1,9 @@
 import { Head, Link, router, useForm } from '@inertiajs/react'
-import { ArrowLeftIcon, MailIcon, Trash2Icon } from 'lucide-react'
+import { MailIcon, Trash2Icon } from 'lucide-react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Input } from '@/components/Input'
+import { PageHeader } from '@/components/PageHeader'
 import { ROLE_LABELS, RoleBadge } from '@/components/RoleBadge'
 import { Select } from '@/components/Select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -22,19 +23,25 @@ export default function WorkspaceMembers({ workspace, members, invitations, role
   const base = `/workspaces/${workspace.slug}`
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10" style={accentStyle(workspace.slug)}>
+    <div className="mx-auto max-w-2xl px-4 py-8" style={accentStyle(workspace.slug)}>
       <Head title={`Membros · ${workspace.name}`} />
 
-      <Link
-        href={base}
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-3.5" />
-        {workspace.name}
-      </Link>
+      <PageHeader>
+        <Link
+          href={base}
+          className="shrink-0 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {workspace.name}
+        </Link>
 
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight">Membros</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+        <span aria-hidden className="text-xs text-muted-foreground/40">
+          /
+        </span>
+
+        <h1 className="min-w-0 truncate text-sm font-semibold tracking-tight">Membros</h1>
+      </PageHeader>
+
+      <p className="text-sm text-muted-foreground">
         {can.manage_members
           ? 'Owners e admins convidam, mudam papéis e removem pessoas.'
           : 'Só owners e admins podem convidar ou mudar papéis.'}
@@ -42,7 +49,7 @@ export default function WorkspaceMembers({ workspace, members, invitations, role
 
       {can.manage_members && <InviteForm base={base} roles={roles} />}
 
-      <ul className="mt-6 divide-y rounded-xl border bg-card">
+      <ul className="mt-5 divide-y rounded-xl border bg-card">
         {members.map((member) => (
           <MemberRow key={member.id} base={base} member={member} roles={roles} />
         ))}
@@ -51,7 +58,7 @@ export default function WorkspaceMembers({ workspace, members, invitations, role
       {invitations.length > 0 && (
         <section className="mt-8">
           <h2 className="text-sm font-semibold">Convites pendentes</h2>
-          <ul className="mt-2 flex flex-col gap-2">
+          <ul className="mt-2 divide-y rounded-xl border bg-card">
             {invitations.map((invitation) => (
               <InvitationRow key={invitation.id} base={base} invitation={invitation} />
             ))}
@@ -131,58 +138,62 @@ function MemberRow({
         <span className="block truncate text-xs text-muted-foreground">{member.user.email}</span>
       </span>
 
-      {member.can_update ? (
-        <Select
-          aria-label={`Papel de ${member.user.name}`}
-          fieldClassName="w-32"
-          value={member.role}
-          onChange={(event) =>
-            router.patch(
-              `${base}/memberships/${member.id}`,
-              { role: event.target.value },
-              { preserveScroll: true },
-            )
-          }
-        >
-          {roles.map((role) => (
-            <option key={role} value={role}>
-              {ROLE_LABELS[role]}
-            </option>
-          ))}
-        </Select>
-      ) : (
-        <RoleBadge role={member.role} />
-      )}
-
-      {member.can_destroy && (
-        <ConfirmDialog
-          title={member.is_self ? 'Sair do workspace?' : `Remover ${member.user.name}?`}
-          description={
-            member.is_self
-              ? 'Você perde o acesso ao workspace. Para voltar, alguém precisa convidar você de novo.'
-              : `${member.user.name} perde o acesso ao workspace imediatamente.`
-          }
-          confirmLabel={member.is_self ? 'Sair' : 'Remover'}
-          destructive
-          onConfirm={() => router.delete(`${base}/memberships/${member.id}`)}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={member.is_self ? 'Sair do workspace' : `Remover ${member.user.name}`}
-            className="text-muted-foreground hover:text-destructive"
+      <div className="flex w-32 shrink-0 justify-end">
+        {member.can_update ? (
+          <Select
+            aria-label={`Papel de ${member.user.name}`}
+            fieldClassName="w-32"
+            value={member.role}
+            onChange={(event) =>
+              router.patch(
+                `${base}/memberships/${member.id}`,
+                { role: event.target.value },
+                { preserveScroll: true },
+              )
+            }
           >
-            <Trash2Icon />
-          </Button>
-        </ConfirmDialog>
-      )}
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {ROLE_LABELS[role]}
+              </option>
+            ))}
+          </Select>
+        ) : (
+          <RoleBadge role={member.role} />
+        )}
+      </div>
+
+      <div className="flex w-9 shrink-0 justify-end">
+        {member.can_destroy && (
+          <ConfirmDialog
+            title={member.is_self ? 'Sair do workspace?' : `Remover ${member.user.name}?`}
+            description={
+              member.is_self
+                ? 'Você perde o acesso ao workspace. Para voltar, alguém precisa convidar você de novo.'
+                : `${member.user.name} perde o acesso ao workspace imediatamente.`
+            }
+            confirmLabel={member.is_self ? 'Sair' : 'Remover'}
+            destructive
+            onConfirm={() => router.delete(`${base}/memberships/${member.id}`)}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={member.is_self ? 'Sair do workspace' : `Remover ${member.user.name}`}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2Icon />
+            </Button>
+          </ConfirmDialog>
+        )}
+      </div>
     </li>
   )
 }
 
 function InvitationRow({ base, invitation }: { base: string; invitation: PendingInvitation }) {
   return (
-    <li className="flex items-center gap-3 rounded-xl border border-dashed px-4 py-3">
+    <li className="flex items-center gap-3 px-4 py-3">
       <span
         aria-hidden
         className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground"
@@ -199,24 +210,28 @@ function InvitationRow({ base, invitation }: { base: string; invitation: Pending
         </span>
       </span>
 
-      <RoleBadge role={invitation.role} />
+      <div className="flex w-32 shrink-0 justify-end">
+        <RoleBadge role={invitation.role} />
+      </div>
 
-      <ConfirmDialog
-        title="Cancelar convite?"
-        description={`O link enviado para ${invitation.email_address} deixa de funcionar.`}
-        confirmLabel="Cancelar convite"
-        destructive
-        onConfirm={() => router.delete(`${base}/invitations/${invitation.id}`)}
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={`Cancelar convite de ${invitation.email_address}`}
-          className="text-muted-foreground hover:text-destructive"
+      <div className="flex w-9 shrink-0 justify-end">
+        <ConfirmDialog
+          title="Cancelar convite?"
+          description={`O link enviado para ${invitation.email_address} deixa de funcionar.`}
+          confirmLabel="Cancelar convite"
+          destructive
+          onConfirm={() => router.delete(`${base}/invitations/${invitation.id}`)}
         >
-          <Trash2Icon />
-        </Button>
-      </ConfirmDialog>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Cancelar convite de ${invitation.email_address}`}
+            className="text-muted-foreground hover:text-destructive"
+          >
+            <Trash2Icon />
+          </Button>
+        </ConfirmDialog>
+      </div>
     </li>
   )
 }

@@ -632,7 +632,7 @@ function SortableCard({
               {...attributes}
               onKeyDown={drag?.onKeyDown}
               aria-label={`Mover o card ${card.title}`}
-              className="mt-0.5 shrink-0 cursor-grab rounded text-muted-foreground/40 opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring group-hover:opacity-100"
+              className="grid size-6 shrink-0 cursor-grab place-items-center rounded bg-card text-muted-foreground/50 opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring group-hover:opacity-100"
             >
               <GripVerticalIcon className="size-3.5" />
             </button>
@@ -656,25 +656,21 @@ function CardTile({
   const StateIcon = card.completed ? CircleCheckIcon : CircleDotIcon
 
   return (
-    <article className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-ring/60">
+    <article className="group relative overflow-hidden rounded-md border bg-card transition-colors hover:border-ring/60">
       {/* Capa como faixa fina: um bloco de 28px roubava a atenção do título. */}
       {card.cover_color && (
         <div aria-hidden className={cn('h-1 w-full', BOARD_THEME[card.cover_color].rail)} />
       )}
 
-      <div className="px-2.5 py-2">
-        {/* Linha de meta, como o `repo #123` de uma issue: o ícone de estado é o botão de
-            concluir, então marcar não precisa de um segundo controle. */}
-        <div className="flex items-center gap-1.5">
-          {handle}
-
+      <div className="flex flex-col gap-1.5 px-2.5 py-2">
+        <div className="flex items-start gap-1.5">
           {canWrite ? (
             <button
               type="button"
               aria-label={card.completed ? `Reabrir ${card.title}` : `Concluir ${card.title}`}
               aria-pressed={card.completed}
               className={cn(
-                'shrink-0 rounded-full transition-[color,transform] duration-100 ease-(--ease-out-strong) motion-safe:active:scale-90',
+                'relative z-10 mt-0.5 shrink-0 rounded-full transition-[color,transform] duration-100 ease-(--ease-out-strong) motion-safe:active:scale-90',
                 card.completed ? 'text-done' : 'text-open hover:text-foreground',
               )}
               onClick={() =>
@@ -688,56 +684,52 @@ function CardTile({
           ) : (
             <StateIcon
               aria-hidden
-              className={cn('size-3.5 shrink-0', card.completed ? 'text-done' : 'text-open')}
+              className={cn('mt-0.5 size-3.5 shrink-0', card.completed ? 'text-done' : 'text-open')}
             />
           )}
 
-          <span className="text-xs text-muted-foreground">#{card.id}</span>
+          {/* O painel é a rota `/cards/:id`, então isto é link de verdade: abre em outra
+              aba, aparece na barra de status e volta no back. O `after` estica a área de
+              clique por cima do card inteiro, e os controles sobem de camada com `z-10`
+              para continuarem clicáveis. */}
+          <Link
+            href={`/cards/${card.id}`}
+            className={cn(
+              'min-w-0 flex-1 rounded-sm text-[13px] leading-snug after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+              card.completed && 'text-muted-foreground line-through',
+            )}
+          >
+            {card.title}
+          </Link>
+        </div>
 
-          {card.assignees.length > 0 && (
-            <MemberAvatars
-              users={card.assignees.slice(0, 3)}
-              total={card.assignees.length}
-              className="ml-auto scale-75 origin-right"
-            />
-          )}
+        <CardMeta card={card} />
+      </div>
+
+      {/* Fora do fluxo: aparecem no hover sem empurrar o título nem mexer na altura. */}
+      {(handle || canWrite) && (
+        <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-0.5">
+          {handle}
 
           {canWrite && (
             <Button
               variant="ghost"
               size="icon"
               aria-label={`Arquivar ${card.title}`}
-              className={cn(
-                'size-6 shrink-0 text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100',
-                card.assignees.length === 0 && 'ml-auto',
-              )}
+              className="size-6 bg-card text-muted-foreground opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
               onClick={() => router.post(`/cards/${card.id}/archive`, {}, { preserveScroll: true })}
             >
               <ArchiveIcon className="size-3" />
             </Button>
           )}
         </div>
-
-        {/* O painel é a rota `/cards/:id`, então isto é link de verdade: abre em outra
-            aba, aparece na barra de status e volta no back. */}
-        <Link
-          href={`/cards/${card.id}`}
-          className={cn(
-            'mt-0.5 block rounded-sm text-[13px] leading-snug focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
-            card.completed && 'text-muted-foreground line-through',
-          )}
-        >
-          {card.title}
-        </Link>
-
-        <CardBadges card={card} />
-      </div>
+      )}
     </article>
   )
 }
 
-// A linha de baixo do tile: o que existe dentro do card sem precisar abri-lo.
-function CardBadges({ card }: { card: CardPayload }) {
+// A linha de baixo do tile: o número do card, o que existe dentro dele e quem responde.
+function CardMeta({ card }: { card: CardPayload }) {
   const meta = [
     card.has_description && { key: 'description', icon: AlignLeftIcon, text: null },
     card.checklist && {
@@ -757,35 +749,47 @@ function CardBadges({ card }: { card: CardPayload }) {
     },
   ].filter(Boolean) as { key: string; icon: typeof AlignLeftIcon; text: string | null }[]
 
-  if (!card.due_at && meta.length === 0 && card.labels.length === 0) return null
-
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-      <LabelChips labels={card.labels} />
+    // Os avatares ficam presos à direita: dentro do `flex-wrap` eles caíam sozinhos para
+    // uma terceira linha assim que a meta enchia.
+    <div className="flex min-h-5 items-start gap-1.5">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1.5 gap-y-1">
+        <span className="text-[11px] tabular-nums text-muted-foreground">#{card.id}</span>
 
-      {card.due_at && (
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] font-medium',
-            card.overdue
-              ? 'border-destructive/40 bg-destructive/15 text-destructive'
-              : 'border-transparent bg-muted text-muted-foreground',
-          )}
-        >
-          <ClockIcon className="size-3" />
-          {new Date(card.due_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-        </span>
+        <LabelChips labels={card.labels} />
+
+        {card.due_at && (
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] font-medium',
+              card.overdue
+                ? 'border-destructive/40 bg-destructive/15 text-destructive'
+                : 'border-transparent bg-muted text-muted-foreground',
+            )}
+          >
+            <ClockIcon className="size-3" />
+            {new Date(card.due_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+          </span>
+        )}
+
+        {meta.map(({ key, icon: Icon, text }) => (
+          <span
+            key={key}
+            className="inline-flex items-center gap-1 text-[11px] tabular-nums text-muted-foreground"
+          >
+            <Icon className="size-3" />
+            {text}
+          </span>
+        ))}
+      </div>
+
+      {card.assignees.length > 0 && (
+        <MemberAvatars
+          users={card.assignees.slice(0, 3)}
+          total={card.assignees.length}
+          className="shrink-0 origin-right scale-75"
+        />
       )}
-
-      {meta.map(({ key, icon: Icon, text }) => (
-        <span
-          key={key}
-          className="inline-flex items-center gap-1 text-[11px] tabular-nums text-muted-foreground"
-        >
-          <Icon className="size-3" />
-          {text}
-        </span>
-      ))}
     </div>
   )
 }
