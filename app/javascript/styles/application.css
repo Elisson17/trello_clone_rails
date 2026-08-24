@@ -26,10 +26,11 @@
   --border: #e6e6e7;
   --input: #e6e6e7;
   --ring: #5e6ad2;
-  /* Estado do item. Verde só no estado: o primário agora é índigo, então os dois
-     pararam de disputar a mesma leitura. */
-  --open: #3d9a50;
-  --done: #5e6ad2;
+  /* Estado do item. Aberto é verde; concluído é neutro, porque é estado de repouso e
+     porque o índigo do `--done` era a mesma cor do `--primary`: card concluído vestia a
+     cor de ação. O ícone e a palavra é que dizem o estado, não a cor sozinha. */
+  --open: #2f7d40;
+  --done: #5b6270;
   --chart-1: #5e6ad2;
   --chart-2: #3d9a50;
   --chart-3: #b07d18;
@@ -65,7 +66,7 @@
   --input: #23252a;
   --ring: #7b84e8;
   --open: #4cb782;
-  --done: #9c9ff0;
+  --done: #9aa0ad;
   --chart-1: #7b84e8;
   --chart-2: #4cb782;
   --chart-3: #d9a83a;

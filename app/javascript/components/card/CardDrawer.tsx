@@ -111,7 +111,7 @@ export function CardDrawer({
 
           {/* Trilha de propriedades, como a coluna da direita de uma issue: rótulo
               pequeno, valor embaixo, e a engrenagem abre quem edita. */}
-          <aside className="flex flex-col border-t px-5 py-2 md:border-t-0 md:border-l">
+          <aside className="flex flex-col border-t bg-muted/25 px-5 py-2 md:border-t-0 md:border-l">
             <RailRow
               label="Responsáveis"
               action={
@@ -222,15 +222,15 @@ export function CardDrawer({
   )
 }
 
-/** A pílula de estado da issue: verde quando aberta, roxa quando concluída. */
+/** Fundo tingido e texto na própria cor: branco sobre verde saturado não passava de 3:1. */
 function StatePill({ completed }: { completed: boolean }) {
   const Icon = completed ? CircleCheckIcon : CircleDotIcon
 
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium text-white',
-        completed ? 'bg-done' : 'bg-open',
+        'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium',
+        completed ? 'border-done/25 bg-done/12 text-done' : 'border-open/25 bg-open/12 text-open',
       )}
     >
       <Icon className="size-3.5" />
