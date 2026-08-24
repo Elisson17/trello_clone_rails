@@ -2,7 +2,6 @@ import type * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-/** A engrenagem que abre o editor de uma propriedade na trilha da direita. */
 export function RailTrigger({
   label,
   className,

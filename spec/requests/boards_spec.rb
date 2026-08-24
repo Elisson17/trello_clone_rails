@@ -60,7 +60,7 @@ RSpec.describe "Boards", type: :request do
       expect(response).to redirect_to(root_path)
     end
 
-    # Critério de saída: o payload não faz uma query por lista nem por card.
+    # O payload não faz uma query por lista nem por card.
     it "loads a full board without a single N+1" do
       big = create(:board, :with_admin, workspace: workspace, creator: user)
       create_list(:list, 5, board: big).each { |list| create_list(:card, 10, list: list) }

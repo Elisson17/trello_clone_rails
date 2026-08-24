@@ -75,8 +75,7 @@ export function CardComments({
   )
 }
 
-// Caixa com cabeçalho, como o comentário de uma issue: quem falou e quando ficam numa
-// faixa própria, separada do corpo.
+// Caixa com cabeçalho: quem falou e quando ficam numa faixa própria, separada do corpo.
 function Comment({ cardId, comment }: { cardId: number; comment: CommentPayload }) {
   const [draft, setDraft] = useState<string | null>(null)
   const url = `/cards/${cardId}/comments/${comment.id}`

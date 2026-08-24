@@ -42,7 +42,6 @@ function Checklist({
   checklist: ChecklistPayload
   canWrite: boolean
 }) {
-  // Sem item, a barra fica vazia em vez de dividir por zero.
   const percent = checklist.total === 0 ? 0 : Math.round((checklist.done / checklist.total) * 100)
 
   return (

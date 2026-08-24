@@ -1,9 +1,9 @@
 import type { BoardBackground } from '@/types/inertia'
 
 /**
- * Os seis tokens da paleta, em duas formas: `chip` é a pílula de etiqueta no estilo do
- * GitHub (borda e texto na cor, fundo translúcido) e `rail` é a cor sólida — serve de
- * trilho do board, de bolinha de status da coluna e de amostra nos seletores de cor.
+ * Os seis tokens da paleta em duas formas: `chip` é a pílula de etiqueta (borda e texto
+ * na cor, fundo translúcido) e `rail` é a cor sólida, usada no trilho do board, na
+ * bolinha de status da coluna e nas amostras dos seletores de cor.
  */
 export const BOARD_THEME: Record<BoardBackground, { chip: string; rail: string }> = {
   slate: {

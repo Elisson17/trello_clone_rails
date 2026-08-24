@@ -13,8 +13,7 @@ class BoardPresenter
       archived: @board.archived?,
       workspace: { slug: @board.workspace.slug, name: @board.workspace.name },
       members: memberships.map { |membership| member_props(membership) },
-      # Quem do workspace ainda pode entrar no board — é a única lista que a tela de
-      # membros não consegue derivar do que já está na página.
+      # Única lista que a tela de membros não consegue derivar do que já está na página.
       workspace_members: @board.workspace.users.order(:name).map { |user| user_props(user) },
       labels: @board.labels.order(:name).map { |label| label_props(label) },
       lists: lists.map { |list| list_props(list) },
@@ -39,10 +38,9 @@ class BoardPresenter
 
   def lists = @lists ||= @board.lists.active.ordered.to_a
 
-  # Uma query para todos os cards do board, agrupados em memória. Nada de `list.cards`
-  # dentro do loop, que é exatamente o N+1 que este presenter existe para evitar.
-  # Os badges do card (labels, responsáveis, checklist, anexos) entram por eager load:
-  # mais queries, mas um número fixo — nenhuma delas cresce com o tamanho do board.
+  # Uma query para todos os cards do board, agrupados em memória, em vez de `list.cards`
+  # dentro do loop. Os badges (labels, responsáveis, checklist, anexos) entram por eager
+  # load: mais queries, mas um número fixo, que não cresce com o tamanho do board.
   def cards_by_list
     @cards_by_list ||= Card.active
                            .where(list_id: lists.map(&:id))
@@ -81,7 +79,6 @@ class BoardPresenter
 
   def user_props(user) = { id: user.id, name: user.name, avatar_url: user.avatar_url }
 
-  # `nil` quando não há checklist: o badge só aparece quando existe algo para contar.
   def checklist_progress(card)
     items = card.checklists.flat_map(&:items)
     return nil if items.empty?

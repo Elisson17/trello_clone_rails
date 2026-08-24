@@ -1,9 +1,7 @@
 /**
  * Cor de acento derivada do slug: o mesmo workspace tem sempre a mesma cor, em toda
- * tela, sem coluna no banco. Serve para escanear a lista — não para decorar.
- *
- * Luminosidade e croma são fixos e o tema só troca a luminosidade, então o acento
- * tem contraste parecido no claro e no escuro.
+ * tela, sem coluna no banco. Luminosidade e croma são fixos e o tema só troca a
+ * luminosidade, então o contraste fica parecido no claro e no escuro.
  */
 const HUES = [12, 48, 96, 152, 196, 232, 268, 312]
 

@@ -15,8 +15,7 @@ module Cards
 
       @card.restore!
       record_activity("card.restored", @card, title: @card.title)
-      # `redirect_back`: restaurar acontece no painel de arquivados, e quem está
-      # restaurando três cards não quer voltar ao board a cada um.
+      # `redirect_back` para não sair do painel de arquivados a cada card restaurado.
       redirect_back fallback_location: board_path(board), notice: t("cards.restored")
     end
   end

@@ -11,8 +11,8 @@ type SelectProps = ComponentProps<'select'> & {
 }
 
 /**
- * `<select>` nativo de propósito: dá busca por digitação, teclado e roda mobile
- * de graça — nada disso vem sem trabalho num combobox custom.
+ * `<select>` nativo de propósito: busca por digitação, teclado e roda mobile saem de
+ * graça, e nenhum deles é trivial num combobox custom.
  */
 export function Select({
   label,

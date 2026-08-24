@@ -57,7 +57,7 @@ RSpec.describe Cards::Move do
   end
 
   # Mover é reescrever a posição de um card, nunca renumerar a coluna. Os `UPDATE` de
-  # `lists` e `boards` que vêm depois são o `touch` que invalida o cache do board (§9).
+  # `lists` e `boards` que vêm depois são o `touch` que invalida o cache do board.
   it "spends a single UPDATE on cards when the card stays in its list" do
     create(:card, list: list, position: 1024)
     card = create(:card, list: list, position: 2048)

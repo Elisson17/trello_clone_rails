@@ -1,6 +1,5 @@
 class BoardChannel < ApplicationCable::Channel
-  # Assinar é ler o board: a mesma policy do `BoardsController#show`, porque o evento conta
-  # que algo mudou naquele board — e isso já é informação.
+  # Assinar o canal é ler o board, então vale a mesma policy do `BoardsController#show`.
   def subscribed
     board = Board.find_by(id: params[:id])
 

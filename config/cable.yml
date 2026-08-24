@@ -1,7 +1,5 @@
-# Solid Cable em desenvolvimento também: o banco `cable` é o mesmo mecanismo da produção,
-# então duas abas sincronizam local pelo mesmo caminho que vai sincronizar no deploy.
-# O adapter `async` seria mais barato, mas só funciona dentro de um processo — e o
-# broadcast sai de um job, não do request.
+# Solid Cable também em desenvolvimento: o adapter `async` seria mais barato, mas só
+# funciona dentro de um processo, e o broadcast sai de um job.
 development:
   adapter: solid_cable
   connects_to:

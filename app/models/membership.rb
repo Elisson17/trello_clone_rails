@@ -12,12 +12,11 @@ class Membership < ApplicationRecord
 
   def manages? = owner? || admin?
 
-  # Único owner do workspace: não pode sair nem ser rebaixado (§3.3).
+  # O último owner não pode sair nem ser rebaixado.
   def last_owner? = owner? && workspace.memberships.owner.where.not(id: id).none?
 
   private
 
-  # O último owner não pode ser rebaixado (§3.3).
   def workspace_keeps_an_owner
     return unless role_changed?(from: "owner")
 

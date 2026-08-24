@@ -12,7 +12,7 @@ module Cards
       back_to_card_with(comment.errors)
     end
 
-    # A janela de 15 min do §3.6 vive na policy, não aqui: expirou, a policy recusa.
+    # A janela de 15 min para editar vive na policy.
     def update
       authorize @comment
 

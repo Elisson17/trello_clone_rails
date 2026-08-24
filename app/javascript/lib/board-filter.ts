@@ -4,7 +4,7 @@ export type BoardFilter = {
   text: string
   labelIds: number[]
   assigneeIds: number[]
-  /** Só cards com prazo vencido e não concluídos — é o `overdue?` do servidor. */
+  /** Cards com prazo vencido e não concluídos: o `overdue?` do servidor. */
   overdue: boolean
 }
 
@@ -21,8 +21,8 @@ export const isFiltering = (filter: BoardFilter) =>
   filter.assigneeIds.length > 0 ||
   filter.overdue
 
-// Etiqueta e responsável são OU dentro do próprio critério e E entre critérios: marcar duas
-// etiquetas alarga, marcar etiqueta e responsável estreita. É o que o Trello faz.
+// Etiqueta e responsável são OU dentro do próprio critério e E entre critérios: marcar
+// duas etiquetas alarga, marcar etiqueta e responsável estreita.
 function matches(card: CardPayload, filter: BoardFilter, text: string) {
   if (text && !card.title.toLowerCase().includes(text)) return false
   if (filter.overdue && !card.overdue) return false
@@ -53,6 +53,5 @@ export function filterLists(lists: ListPayload[], filter: BoardFilter): ListPayl
 export const countCards = (lists: ListPayload[]) =>
   lists.reduce((total, list) => total + list.cards.length, 0)
 
-/** Liga/desliga um id numa das listas de ids do filtro. */
 export const toggleId = (ids: number[], id: number) =>
   ids.includes(id) ? ids.filter((current) => current !== id) : [...ids, id]

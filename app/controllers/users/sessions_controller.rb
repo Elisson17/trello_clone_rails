@@ -6,12 +6,10 @@ module Users
       render inertia: "Auth/SignIn"
     end
 
-    # create/destroy padrão do Devise já respondem com redirect + flash, que o Inertia entende.
 
     private
 
-    # Sair volta para o login, não para a raiz: evita o pulo pelo 401 e o notice
-    # "saiu com sucesso" sobrevive até a tela.
+    # Voltar para a raiz passaria pelo 401 e perderia o flash no caminho.
     def after_sign_out_path_for(_resource)
       new_user_session_path
     end

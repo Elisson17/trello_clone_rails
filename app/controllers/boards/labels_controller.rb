@@ -1,6 +1,5 @@
 module Boards
-  # Labels são do board, não do card: criar aqui e marcar no card são coisas diferentes
-  # (ver `Cards::LabelsController`).
+  # Label pertence ao board. Marcar no card é o `Cards::LabelsController`.
   class LabelsController < ApplicationController
     before_action :set_board
 

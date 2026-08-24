@@ -27,7 +27,6 @@ class ApplicationPolicy
 
   private
 
-  # Membership do usuário atual no workspace (nil se não for membro).
   def membership_in(workspace)
     return nil if user.nil? || workspace.nil?
 

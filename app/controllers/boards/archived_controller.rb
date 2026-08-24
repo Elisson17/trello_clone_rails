@@ -19,8 +19,7 @@ module Boards
         cards_count: list.cards.active.count }
     end
 
-    # Card arquivado à parte da lista: se a lista também está arquivada, restaurar o card
-    # não o traz de volta ao board, e é isso que a tela avisa.
+    # Se a lista também está arquivada, restaurar o card não o traz de volta ao board.
     def archived_cards
       Card.archived.where(list_id: @board.lists.select(:id)).includes(:list).ordered
     end

@@ -10,10 +10,9 @@ import { cn } from '@/lib/utils'
 import type { BoardPayload } from '@/types/inertia'
 
 /**
- * Filtro do board: acontece no cliente, porque o payload do board já veio inteiro na
- * página — pedir de novo ao servidor para esconder cards que já estão aqui seria request
- * de graça. Não vai para a URL: filtro é o que *eu* estou olhando agora, e o link do board
- * continua sendo o board.
+ * Filtro do board no cliente: o payload já veio inteiro na página, então esconder card
+ * não vale um request. Também não vai para a URL, para o link do board continuar sendo
+ * o board.
  */
 export function BoardFilters({
   board,
@@ -56,8 +55,8 @@ export function BoardFilters({
           type="button"
           aria-pressed={filter.labelIds.includes(label.id)}
           onClick={() => onChange({ ...filter, labelIds: toggleId(filter.labelIds, label.id) })}
-          // Desmarcada não é "quase transparente": chip apagado por opacidade perde
-          // contraste justo no claro. Fora do filtro ela vira só borda e texto neutro.
+          // Chip apagado por opacidade perde contraste no tema claro; fora do filtro a
+          // etiqueta vira só borda e texto neutro.
           className={cn(
             'rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
             filter.labelIds.includes(label.id)

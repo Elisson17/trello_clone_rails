@@ -3,16 +3,15 @@
 Kanban colaborativo em **Rails 8 + Inertia + React**, escrito como portfólio: sem serviço
 externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o app está no ar.
 
-> **Status:** v1.0 — completo para o que se propõe. Autenticação, workspaces com convites, e boards com listas
-> e cards — incluindo drag & drop por mouse e por teclado — já funcionam. O card abre em
-> painel lateral próprio (`/cards/:id`) com descrição em Markdown, etiquetas, responsáveis,
-> checklists, comentários e anexos. Toda mutação vira atividade num feed por board e por
-> card, e menção, atribuição e prazo chegando viram notificação — tudo fora do request, em
-> filas nomeadas do Solid Queue, com dois jobs recorrentes rodando dentro do Puma. Duas
-> abas no mesmo board se sincronizam por WebSocket (Solid Cable) e o payload do board vive
-> em Solid Cache. Busca global em FTS5, filtro no board, painel de arquivados, atalhos de
-> teclado e páginas de erro próprias fecham o acabamento. O visual segue o GitHub Projects
-> (paleta do Primer).
+> **Status:** v1.0. Autenticação, workspaces com convites, boards com listas e cards, e
+> drag & drop por mouse e por teclado. O card abre em painel lateral próprio (`/cards/:id`)
+> com descrição em Markdown, etiquetas, responsáveis, checklists, comentários e anexos.
+> Toda mutação vira atividade num feed por board e por card; menção, atribuição e prazo
+> chegando viram notificação, sempre fora do request, em filas nomeadas do Solid Queue e
+> com dois jobs recorrentes rodando dentro do Puma. Duas abas no mesmo board se sincronizam
+> por WebSocket (Solid Cable), e o payload do board fica em Solid Cache. Busca global em
+> FTS5, filtro no board, painel de arquivados, atalhos de teclado e páginas de erro
+> próprias fecham o acabamento. O visual segue o GitHub Projects (paleta do Primer).
 
 ## Stack
 
@@ -48,7 +47,7 @@ Os e-mails do app (confirmação, reset de senha) ficam em
 
 ### Com Docker
 
-Um comando, sem Ruby nem Bun na máquina — sobe a **imagem de produção** com o banco migrado
+Um comando, sem Ruby nem Bun na máquina. Sobe a **imagem de produção** com o banco migrado
 e as seeds carregadas:
 
 ```bash
@@ -56,21 +55,21 @@ docker compose up --build   # http://localhost:3000
 ```
 
 É um container só: Puma serve o app e o supervisor do Solid Queue roda dentro dele
-(`SOLID_QUEUE_IN_PUMA=1`), com cache e cable no mesmo SQLite — o desenho que o projeto existe
-para demonstrar. Os bancos e os uploads ficam no volume `storage`; `docker compose down -v`
-zera o demo. O `SECRET_KEY_BASE` no `docker-compose.yml` é do demo local: em deploy de verdade
-ele vem do secret manager da plataforma (ou use `RAILS_MASTER_KEY`).
+(`SOLID_QUEUE_IN_PUMA=1`), com cache e cable no mesmo SQLite. Os bancos e os uploads ficam
+no volume `storage`; `docker compose down -v` zera o demo. O `SECRET_KEY_BASE` no
+`docker-compose.yml` é do demo local: em deploy de verdade ele vem do secret manager da
+plataforma (ou use `RAILS_MASTER_KEY`).
 
 ## Arquitetura
 
 [`ARCHITECTURE.md`](ARCHITECTURE.md) tem o resumo em uma página: diagrama do schema, as
-camadas (`Controller → Interactor → Model/Job`, com Pundit e presenters ao lado), o caminho de
-uma mutação até feed, notificação e broadcast, e o porquê de cada decisão. As seções abaixo
-detalham as partes que rendem conversa.
+camadas (`Controller → Interactor → Model/Job`, com Pundit e presenters ao lado), o caminho
+de uma mutação até feed, notificação e broadcast, e o porquê de cada decisão. As seções
+abaixo detalham as partes principais.
 
 ## Variáveis de ambiente
 
-Copie `.env.sample` para `.env` e preencha só o que for usar — **nenhuma chave é obrigatória**.
+Copie `.env.sample` para `.env` e preencha só o que for usar. **Nenhuma chave é obrigatória.**
 
 | Variável | Efeito quando preenchida |
 |---|---|
@@ -80,7 +79,7 @@ Copie `.env.sample` para `.env` e preencha só o que for usar — **nenhuma chav
 
 A troca de entrega vive em `config/initializers/mail.rb`: com `RESEND_API_KEY` o
 `delivery_method` vira `:resend`; sem ela, `letter_opener_web` em desenvolvimento e `:test`
-nos testes. Nenhum segredo é versionado — `.env` está no `.gitignore`.
+nos testes. Nenhum segredo é versionado: `.env` está no `.gitignore`.
 
 ## Autenticação
 
@@ -88,9 +87,9 @@ nos testes. Nenhum segredo é versionado — `.env` está no `.gitignore`.
   página Inertia (`Auth/SignIn`, `Auth/SignUp`, `Auth/ForgotPassword`, `Auth/ResetPassword`,
   `Auth/ResendConfirmation`) e cada falha volta como `redirect_to … inertia: { errors: }`,
   caindo no `errors` do `useForm`. Nenhuma view ERB de formulário no projeto.
-- Login errado responde **redirect + flash** em vez de 422: `auth_options` sem `:recall`, que é
-  o que o protocolo do Inertia espera.
-- `config.paranoid = true` — recuperação de senha e reenvio de confirmação respondem igual para
+- Login errado responde **redirect + flash** em vez de 422: `auth_options` sem `:recall`, que
+  é o que o protocolo do Inertia espera.
+- `config.paranoid = true`: recuperação de senha e reenvio de confirmação respondem igual para
   e-mail existente ou não.
 - `rate_limit` nativo do Rails 8 em login, cadastro, reset e reenvio de confirmação.
 - `before_action :authenticate_user!` no `ApplicationController`: o app é todo autenticado.
@@ -103,8 +102,8 @@ Componentes do shadcn/ui ficam em `app/javascript/components/ui` e são tratados
 primitivos: as regras do projeto moram em componentes próprios um nível acima
 (`components/Field.tsx`, `Input.tsx`, `Select.tsx`, `AuthShell.tsx`, `UserMenu.tsx`).
 Toda anatomia label/campo/erro passa pelo `Field`, então formulário nenhum reinventa
-mensagem de erro. O fuso horário usa `<select>` nativo — busca por digitação, teclado e
-roda mobile de graça.
+mensagem de erro. O fuso horário usa `<select>` nativo, que dá busca por digitação,
+teclado e roda mobile de graça.
 
 Dark mode sem flash via `hooks/use-theme.ts` (classe `.dark`, sem `next-themes`), toasts com
 `sonner` alimentados pelo `flash` do Rails no layout persistente do Inertia.
@@ -120,23 +119,22 @@ app/javascript
 ## Realtime e cache
 
 O board é colaborativo, então quem está com ele aberto vê o que outra pessoa fez sem
-recarregar — e sem que o app mantenha duas cópias do estado:
+recarregar, e sem que o app mantenha duas cópias do estado:
 
 - `BoardChannel` (Solid Cable) autoriza a assinatura com a mesma `BoardPolicy` do
   `BoardsController#show`, e o `BroadcastBoardJob` publica um **evento magro**:
   `{ type: "board.updated", by: <user_id> }`. Nenhum dado de board trafega no WebSocket.
-- Quem enfileira o broadcast é o `RecordActivityJob` — o mesmo lugar que já sabia o que
+- Quem enfileira o broadcast é o `RecordActivityJob`, o mesmo lugar que já sabia o que
   aconteceu para gravar a atividade. Nenhum controller conhece o WebSocket.
 - No front, o `useBoardChannel` só chama `router.reload({ only: ["board", …] })`. O Inertia
   refaz a prop e o servidor continua sendo a única fonte de verdade. Quem originou a
-  mudança ignora o próprio evento — ele já recebeu os props na resposta.
+  mudança ignora o próprio evento, porque já recebeu os props na resposta.
 
 O payload do board (uma dezena de queries e todo o `as_json`) é igual para todo mundo que
 vê aquele board, então ele fica em **Solid Cache** com a chave em `board.updated_at`.
 Invalidar é `touch`: lista, card, comentário, checklist, item, etiqueta, responsável e
 membro têm `touch: true` subindo a cadeia até o board, e uma coluna só invalida a página
-inteira. O preço está anotado no `Board`: marcar um item de checklist paga 4 `UPDATE`
-subindo a cadeia.
+inteira. O preço está anotado no `Board`: marcar um item de checklist paga 4 `UPDATE`.
 
 Medição de `BoardsController#show` (`bin/rails runner script/bench_board.rb`, média de 5
 requests reais em desenvolvimento, SQLite local):
@@ -146,8 +144,8 @@ requests reais em desenvolvimento, SQLite local):
 | 3 listas, 6 cards (seeds) | 44 ms | 16 ms |
 | 5 listas, 200 cards | 74–86 ms | 19–20 ms |
 
-O ganho é quase todo custo fixo do presenter, não do tamanho do board: é por isso que ele
-aparece já no board pequeno.
+O ganho é quase todo custo fixo do presenter, não do tamanho do board, e por isso já
+aparece no board pequeno.
 
 ## Busca, filtros e atalhos
 
@@ -155,17 +153,17 @@ aparece já no board pequeno.
 (`search_index`), com board e card na mesma tabela porque o resultado é uma lista só.
 Casamento por prefixo de palavra e sem acento (`tokenize='unicode61 remove_diacritics 2'`),
 ordenado pelo `rank` do FTS. Quem mantém a tabela é um `after_commit` do
-`Searchable` — callback de Ruby, não trigger de SQLite, porque trigger não vai para o
+`Searchable`, callback de Ruby em vez de trigger de SQLite, porque trigger não vai para o
 `schema.rb` e o banco de teste nasceria sem ele. Permissão e arquivamento não moram no
 índice: o `policy_scope` de board filtra o resultado depois.
 
-**Filtro do board** (texto, etiqueta, responsável, atrasados) roda no cliente — o payload do
+**Filtro do board** (texto, etiqueta, responsável, atrasados) roda no cliente: o payload do
 board já veio inteiro na página, então esconder card não vale um request. Etiqueta e
 responsável são OU dentro do critério e E entre critérios. Com filtro ligado o arrasto
 desliga: índice dentro de coluna filtrada não é a posição real.
 
 **Atalhos:** `/` foca a busca, `n` abre o formulário de card da primeira coluna, `Esc` fecha
-modal e painel. O board é operável só por teclado — mover lista e card também
+modal e painel. O board é operável só por teclado, mover lista e card incluído
 (`KeyboardSensor` do dnd-kit, com anúncio por leitor de tela).
 
 **Arquivados:** boards em `/workspaces/:slug/boards`, listas e cards em
@@ -198,17 +196,16 @@ nos `.test.tsx`.
   supervisor sobe dentro do Puma (`SOLID_QUEUE_IN_PUMA=1` no `Procfile.dev`) — `bin/dev`
   continua sendo dois processos.
 - **Realtime sem estado duplicado**: o WebSocket só avisa que o board mudou; quem busca o
-  dado é o Inertia. Sincronizar dois caches (um do cable, um do cliente) é o bug clássico
-  que este desenho não tem como ter.
+  dado é o Inertia. Assim não existem dois caches (um do cable, um do cliente) para
+  sincronizar.
 - **Atividade é gravada em job, sempre**: o request nunca paga por ela, e o texto de cada
-  linha do feed é montado no front a partir de `action` + `metadata` — o feed não faz join.
+  linha do feed é montado no front a partir de `action` + `metadata`, sem join.
 
-## Fora de escopo, e por quê
+## Fora de escopo
 
 Power-ups, automações tipo Butler, visão calendário/timeline, i18n além de pt-BR, app mobile,
 mover card entre boards, anexos externos (Drive/Dropbox), export PDF, times aninhados e SSO.
 
-Nenhum deles é difícil — são **largura**. Cada um seria mais uma tela parecida com as que já
-existem, e nenhum mostraria nada novo sobre posicionamento fracionário, autorização em duas
-camadas, invalidação de cache por `touch` ou realtime sem estado duplicado. O projeto é um
-portfólio: o recorte é a decisão, não o esquecimento.
+Cada um seria mais uma tela parecida com as que já existem, sem acrescentar nada sobre
+posicionamento fracionário, autorização em duas camadas, invalidação de cache por `touch`
+ou realtime sem estado duplicado, que são as partes que o projeto existe para mostrar.

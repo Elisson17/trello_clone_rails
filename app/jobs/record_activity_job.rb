@@ -14,9 +14,8 @@ class RecordActivityJob < ApplicationJob
 
     NOTIFIERS[action]&.perform_later(activity.id)
 
-    # Toda atividade é uma mutação no board, e toda mutação no board é um evento de
-    # realtime — então quem já sabe o que aconteceu é quem avisa, e o controller segue
-    # sem saber que existe WebSocket.
+    # Toda atividade é uma mutação no board, e toda mutação é um evento de realtime.
+    # Avisar daqui deixa o controller sem saber que existe WebSocket.
     BroadcastBoardJob.perform_later(board_id, user_id)
   end
 end

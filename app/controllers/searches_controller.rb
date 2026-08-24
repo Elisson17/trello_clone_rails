@@ -2,8 +2,7 @@ class SearchesController < ApplicationController
   RESULT_LIMIT = 10
 
   def show
-    # Não existe registro para autorizar aqui: o filtro é o `policy_scope` de board, e os
-    # cards saem dos boards que ele deixou passar.
+    # Não há registro para autorizar: o filtro é o `policy_scope` de board.
     skip_authorization
 
     render inertia: "Search/Index", props: {

@@ -7,9 +7,8 @@ import type { BoardPayload, ListPayload } from '@/types/inertia'
  * Estado otimista do board durante o drag.
  *
  * O rascunho local manda enquanto existe; qualquer prop nova vinda do servidor o apaga.
- * Isso serve para os dois casos com o mesmo código: se o move deu certo, os props novos
- * são idênticos ao rascunho e a troca é invisível; se deu errado, eles são a versão
- * verdadeira e o card volta sozinho para o lugar de origem.
+ * Se o move deu certo, os props novos são idênticos ao rascunho e a troca é invisível;
+ * se deu errado, o card volta sozinho para o lugar de origem.
  */
 export function useOptimisticMove(board: BoardPayload) {
   const [draft, setDraft] = useState<ListPayload[] | null>(null)

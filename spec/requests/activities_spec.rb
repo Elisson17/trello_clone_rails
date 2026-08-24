@@ -93,7 +93,7 @@ RSpec.describe "Activities", type: :request do
     end
   end
 
-  # §3.7: a atividade nunca é gravada dentro do request.
+  # A atividade nunca é gravada dentro do request.
   describe "what a mutation enqueues" do
     it "records the card that was created" do
       expect { post cards_path, params: { list_id: list.id, title: "Novo" } }

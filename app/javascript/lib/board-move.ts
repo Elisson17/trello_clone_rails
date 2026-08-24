@@ -12,7 +12,6 @@ function insertAt<T>(items: T[], index: number, item: T): T[] {
   return [...items.slice(0, at), item, ...items.slice(at)]
 }
 
-/** Move o card para `toIndex` dentro de `toListId`, tirando-o de onde estiver. */
 export function moveCard(
   lists: ListPayload[],
   cardId: number,
@@ -31,7 +30,6 @@ export function moveCard(
   })
 }
 
-/** Reordena a lista para `toIndex` entre as outras listas do board. */
 export function moveList(lists: ListPayload[], listId: number, toIndex: number): ListPayload[] {
   const from = lists.findIndex((list) => list.id === listId)
   if (from === -1) return lists

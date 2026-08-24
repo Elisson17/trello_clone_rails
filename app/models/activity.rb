@@ -1,9 +1,8 @@
 class Activity < ApplicationRecord
   belongs_to :board
   belongs_to :user, optional: true
-  # `optional` sem coluna nula: o id continua obrigatório, mas a linha pode apontar para
-  # um card que já foi apagado — `card.deleted` é exatamente esse caso, e o texto do feed
-  # vem do `metadata`, não do registro.
+  # `optional` sem coluna nula: o id continua obrigatório, mas pode apontar para um card
+  # já apagado (`card.deleted`). O texto do feed vem do `metadata`.
   belongs_to :subject, polymorphic: true, optional: true
   has_many :notifications, dependent: :destroy
 

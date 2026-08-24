@@ -36,8 +36,7 @@ class CardsController < ApplicationController
 
   private
 
-  # O feed do card: as atividades cujo alvo é este card. Comentário e checklist entram
-  # aqui porque a atividade deles aponta para o card, não para a linha que mudou.
+  # Comentário e checklist entram no feed porque a atividade deles aponta para o card.
   def activity_feed
     pagy, activities = pagy(Activity.about(@card).recent.includes(:user), limit: 10)
 
@@ -52,15 +51,14 @@ class CardsController < ApplicationController
     @card = Card.includes(list: :board).find(params[:id])
   end
 
-  # O que mudou de fato: `card.updated` cobre título, descrição, prazo e capa, e o feed
-  # fica mudo se o PATCH não mexeu em nada.
+  # `card.updated` cobre título, descrição, prazo e capa. PATCH sem mudança não vira atividade.
   def changed_fields = @card.previous_changes.keys - %w[updated_at]
 
   def card_params
     attributes = params.permit(:title, :description, :due_at, :cover_color)
 
-    # Campo vazio no front quer dizer "sem valor", não string vazia: é assim que o prazo
-    # e a capa são limpos, e é o que a validação de `cover_color` espera (`allow_nil`).
+    # Campo vazio no front quer dizer "sem valor": é assim que prazo e capa são limpos,
+    # e é o que o `allow_nil` de `cover_color` espera.
     %i[due_at cover_color].each { |key| attributes[key] = nil if attributes[key].blank? }
     attributes
   end

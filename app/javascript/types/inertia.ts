@@ -104,7 +104,7 @@ export type AttachmentPayload = {
   url: string
 }
 
-/** Prop extra da página do board quando a rota é `/cards/:id` — é o modal do card. */
+/** Prop extra da página do board quando a rota é `/cards/:id`: o modal do card. */
 export type CardDetail = {
   id: number
   list: { id: number; title: string }
@@ -151,7 +151,7 @@ export type ActivityPayload = {
   action: string
   metadata: Record<string, string | string[] | number | null>
   created_at: string
-  /** Nulo quando foi o sistema — o lembrete de prazo não tem autor. */
+  /** Nulo quando foi o sistema: o lembrete de prazo não tem autor. */
   actor: { id: number; name: string; avatar_url: string | null } | null
   url: string | null
 }

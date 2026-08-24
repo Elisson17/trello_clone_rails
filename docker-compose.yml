@@ -4,7 +4,7 @@
 #   demo@example.com / supersecret
 #
 # Web, filas (Solid Queue dentro do Puma), cache e cable vivem no mesmo processo e no
-# mesmo SQLite — é o desenho que o projeto quer demonstrar, não uma simplificação do compose.
+# mesmo SQLite, que é o desenho do projeto e não uma simplificação do compose.
 services:
   app:
     build: .

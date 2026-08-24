@@ -227,7 +227,7 @@ RSpec.describe "Card details", type: :request do
       expect(comment.reload).to be_edited
     end
 
-    # §3.6: passados os 15 min, só apagar.
+    # Passados os 15 min, só apagar.
     it "refuses an edit after the window closed" do
       comment = create(:comment, card: card, user: user, created_at: 16.minutes.ago)
 

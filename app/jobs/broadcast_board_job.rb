@@ -1,8 +1,8 @@
 class BroadcastBoardJob < ApplicationJob
   queue_as :default
 
-  # Evento magro: só o board mudou e quem mudou. Nada de payload no WebSocket — quem
-  # recebe pede a prop nova pelo Inertia, e o servidor continua sendo a única fonte.
+  # Evento magro: só o id do board e quem mudou. Quem recebe pede a prop nova pelo
+  # Inertia, então o servidor continua sendo a única fonte.
   def perform(board_id, by_user_id = nil)
     board = Board.find_by(id: board_id)
     return if board.nil?

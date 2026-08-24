@@ -1,5 +1,5 @@
 module Cards
-  # Mesma ideia do `LabelsController`: o `:id` da rota é o id do **usuário**.
+  # Como no `LabelsController`, o `:id` da rota é o do usuário.
   class AssignmentsController < ApplicationController
     include CardScoped
 

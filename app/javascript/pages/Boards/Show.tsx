@@ -82,8 +82,8 @@ import type {
 
 type Can = { update: boolean; destroy: boolean; archive: boolean; manage_members: boolean }
 
-// Ids do dnd-kit são planos, então o prefixo é o que diz de que tipo é o alvo.
-// `cards:` é a área de soltar da coluna — sem ela, lista vazia não recebe card.
+// Ids do dnd-kit são planos, então o prefixo diz de que tipo é o alvo.
+// `cards:` é a área de soltar da coluna: sem ela, lista vazia não recebe card.
 const cardId = (id: number) => `card:${id}`
 const listId = (id: number) => `list:${id}`
 const dropId = (id: number) => `cards:${id}`
@@ -134,13 +134,12 @@ export default function BoardShow({
   const [dragging, setDragging] = useState<string | null>(null)
   const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER)
 
-  // Com filtro ligado o arrasto sai: índice dentro de coluna filtrada não é a posição real,
-  // e mover pelo que está escondido é como o card acaba no lugar errado.
+  // Com filtro ligado o arrasto sai: índice dentro de coluna filtrada não é a posição real.
   const filtering = isFiltering(filter)
   const visibleLists = filterLists(lists, filter)
   const canDrag = can.update && !filtering
 
-  // `n` abre o formulário de card da primeira coluna — o mesmo botão que o mouse clica.
+  // `n` abre o formulário de card da primeira coluna, o mesmo botão que o mouse clica.
   useShortcut('n', () => document.getElementById(ADD_CARD_ID)?.click())
 
   const sensors = useSensors(
@@ -153,8 +152,8 @@ export default function BoardShow({
     setDragging(String(active.id))
   }
 
-  // Atravessar colunas é resolvido durante o arrasto, não na soltura: é isso que faz o
-  // buraco abrir na coluna de destino enquanto o card ainda está no ar.
+  // Atravessar colunas é resolvido durante o arrasto para o buraco abrir na coluna de
+  // destino enquanto o card ainda está no ar.
   function handleDragOver({ active, over }: DragOverEvent) {
     if (!over) return
     const { kind, id } = parseId(String(active.id))
@@ -274,7 +273,7 @@ export default function BoardShow({
           setDraft(null)
         }}
       >
-        {/* Rolagem horizontal fica só nas colunas — a página em si nunca rola de lado. */}
+        {/* Rolagem horizontal fica só nas colunas; a página nunca rola de lado. */}
         <div className="flex-1 overflow-x-auto p-4">
           <div className="flex h-full items-start gap-3">
             <SortableContext
@@ -440,8 +439,8 @@ function BoardMenu({ board, can }: { board: BoardPayload; can: Can }) {
   )
 }
 
-// Transição curta e com curva forte: o objetivo é consistência espacial (ver de onde o
-// card saiu e para onde foi), não enfeite. Sem movimento para quem pediu menos movimento.
+// Transição curta, só para dar a leitura de onde o card saiu e para onde foi.
+// Nada disso para quem pediu menos movimento.
 const sortableTransition = () =>
   prefersReducedMotion() ? null : { duration: 200, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
 
@@ -635,8 +634,7 @@ function CardTile({
 
   return (
     <article className="group overflow-hidden rounded-md border bg-card transition-colors hover:border-ring/60">
-      {/* A capa colorida ficou como uma faixa fina: o GitHub não tem capa, e um bloco de
-          28px roubava a atenção do título, que é o que se lê ao escanear a coluna. */}
+      {/* Capa como faixa fina: um bloco de 28px roubava a atenção do título. */}
       {card.cover_color && (
         <div aria-hidden className={cn('h-1 w-full', BOARD_THEME[card.cover_color].rail)} />
       )}
@@ -697,8 +695,8 @@ function CardTile({
           )}
         </div>
 
-        {/* Abrir o card é navegar: o painel é a rota `/cards/:id`, então isto é um link
-            de verdade — abre em outra aba, aparece na barra de status, volta no back. */}
+        {/* O painel é a rota `/cards/:id`, então isto é link de verdade: abre em outra
+            aba, aparece na barra de status e volta no back. */}
         <Link
           href={`/cards/${card.id}`}
           className={cn(

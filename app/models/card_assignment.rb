@@ -7,7 +7,7 @@ class CardAssignment < ApplicationRecord
 
   private
 
-  # Responsável tem que ver o card (§3.6 vale para menção; aqui é a mesma ideia).
+  # Responsável precisa enxergar o card.
   def user_must_be_a_board_member
     return if user.nil? || card.nil? || card.list.board.membership_for(user).present?
 

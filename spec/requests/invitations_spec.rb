@@ -118,7 +118,6 @@ RSpec.describe "Invitations", type: :request do
     end
   end
 
-  # Critério de saída da etapa 3.
   it "lets two users share a workspace through an invitation" do
     sign_in owner
     post workspace_invitations_path(workspace), params: { email_address: invitee.email, role: "member" }

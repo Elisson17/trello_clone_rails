@@ -88,8 +88,8 @@ const SENTENCES: Record<string, (meta: Meta, bare: boolean) => string> = {
 }
 
 /**
- * `bare` é o feed dentro do próprio card: ali o card já é o contexto da tela.
- * Ação desconhecida cai na própria chave — feed novo com front antigo não quebra a tela.
+ * `bare` é o feed dentro do próprio card, onde o card já é o contexto da tela.
+ * Ação desconhecida cai na própria chave, para feed novo com front antigo não quebrar.
  */
 export function activityText(activity: ActivityPayload, bare = false) {
   return SENTENCES[activity.action]?.(activity.metadata, bare) ?? activity.action

@@ -1,5 +1,4 @@
-# Todo controller aninhado em card carrega o mesmo card, com o mesmo eager load, e volta
-# para a mesma página: o modal do card sobre o board.
+# Todo controller aninhado em card carrega o mesmo card e volta para a mesma página.
 module CardScoped
   extend ActiveSupport::Concern
 

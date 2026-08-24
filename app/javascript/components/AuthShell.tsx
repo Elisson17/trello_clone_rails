@@ -8,7 +8,6 @@ type AuthShellProps = {
   children: ReactNode
 }
 
-/** Casca única das telas de entrada: mesmo card, mesmo espaçamento, mesma marca. */
 export function AuthShell({ title, description, footer, children }: AuthShellProps) {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">

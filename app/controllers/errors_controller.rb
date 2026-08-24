@@ -1,6 +1,5 @@
 class ErrorsController < ApplicationController
-  # Página de erro não pede login nem autoriza nada: ela é o que sobra quando algo já deu
-  # errado, e mandar quem não está logado para o login em cima de um 500 esconde o erro.
+  # Mandar para o login em cima de um 500 esconderia o erro.
   skip_before_action :authenticate_user!
   skip_after_action :verify_authorized
 

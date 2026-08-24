@@ -24,8 +24,7 @@ module Positioned
       (before + after) / 2
     end
 
-    # Redistribui as posições em múltiplos de STEP. Roda em job, então `update_column`
-    # basta: não há validação nem callback que dependa de posição.
+    # Roda em job, e nenhuma validação ou callback depende de posição: `update_column` basta.
     def rebalance_positions!
       transaction do
         ordered.each.with_index(1) { |record, index| record.update_column(:position, index * STEP) }
@@ -33,6 +32,5 @@ module Positioned
     end
   end
 
-  # Cabe mais alguém entre este item e o vizinho? Se não, alguém precisa rebalancear.
   def crowded?(neighbor) = neighbor.present? && (position - neighbor.position).abs < MIN_GAP
 end

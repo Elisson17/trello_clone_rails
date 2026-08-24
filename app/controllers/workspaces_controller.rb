@@ -68,7 +68,6 @@ class WorkspacesController < ApplicationController
     params.permit(:name)
   end
 
-  # Boards recentes de todos os workspaces: é o atalho que a home precisa ter.
   def recent_boards_props
     policy_scope(Board).active.includes(:workspace).order(updated_at: :desc).limit(6).map do |board|
       { id: board.id, title: board.title, background: board.background,

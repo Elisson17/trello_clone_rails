@@ -18,7 +18,7 @@ class ListsController < ApplicationController
     respond_to_board(@list.board, @list.errors)
   end
 
-  # Excluir lista arquiva: os cards vão junto, sem cascata silenciosa (§3.5).
+  # Excluir lista arquiva: os cards vão junto, sem cascata silenciosa.
   def destroy
     authorize @list
 

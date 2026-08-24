@@ -1,5 +1,4 @@
-# Item de checklist não é aninhado em card na rota: o `checklist_id` já diz de que card
-# se trata, e o controller sobe até ele para autorizar.
+# A rota não aninha em card: o `checklist_id` já leva até ele para autorizar.
 class ChecklistItemsController < ApplicationController
   before_action :set_item, only: %i[update destroy]
 
@@ -12,7 +11,6 @@ class ChecklistItemsController < ApplicationController
     respond_with(checklist.card, item.errors)
   end
 
-  # Serve para os dois usos do item: renomear o conteúdo e marcar/desmarcar como feito.
   def update
     authorize card, :update?
 

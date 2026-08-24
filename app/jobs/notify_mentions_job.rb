@@ -16,7 +16,6 @@ class NotifyMentionsJob < ApplicationJob
   private
 
   # O identificador é a parte do e-mail antes do arroba: `demo@example.com` é `@demo`.
-  # Coluna de handle seria um segundo nome de usuário para manter único sem necessidade.
   def mentioned(activity, handles)
     activity.board.members.reject { |user| user.id == activity.user_id }
             .select { |user| handles.include?(user.email.split("@").first.downcase) }

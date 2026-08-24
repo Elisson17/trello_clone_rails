@@ -41,8 +41,7 @@ RSpec.describe Boards::Duplicate do
     expect(duplicate.value.labels.pluck(:name, :color)).to eq([ [ "bug", "rose" ] ])
   end
 
-  # O ponto todo do mapa de labels: o card da cópia aponta para a label da cópia,
-  # nunca para a do board original.
+  # O card da cópia aponta para a label da cópia, nunca para a do board original.
   it "relinks a card to the label of the copy" do
     label = create(:label, board: board)
     card.card_labels.create!(label: label)
@@ -72,7 +71,7 @@ RSpec.describe Boards::Duplicate do
     expect(duplicate.value.cards.first.assignees).to eq([ other ])
   end
 
-  # Comentário e anexo são o registro de uma conversa, não parte do molde do board.
+  # Comentário e anexo não fazem parte do molde do board.
   it "leaves the comments behind" do
     create(:comment, card: card)
 

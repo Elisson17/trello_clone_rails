@@ -3,7 +3,7 @@ import { ArrowLeftIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
-/** Uma página para 404, 422 e 500: o que muda é o número e a frase, que vêm do servidor. */
+/** Uma página para 404, 422 e 500: número e frase vêm do servidor. */
 export default function ErrorShow({
   status,
   title,

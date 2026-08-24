@@ -1,14 +1,14 @@
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-/** "há 2 minutos" — a conta de unidade e plural é do `date-fns`, que já estava instalado. */
+/** "há 2 minutos", com unidade e plural resolvidos pelo `date-fns`. */
 export const relativeTime = (iso: string) =>
   formatDistanceToNow(new Date(iso), { addSuffix: true, locale: ptBR })
 
 const unit = (unit: 'kilobyte' | 'megabyte', digits: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'unit', unit, maximumFractionDigits: digits })
 
-/** `Intl` já sabe escrever "1,4 MB" em pt-BR — não é um switch de potências de 1024. */
+/** `Intl` já escreve "1,4 MB" em pt-BR, sem switch de potências de 1024. */
 export const humanSize = (bytes: number) =>
   bytes < 1024 * 1024
     ? unit('kilobyte', 0).format(bytes / 1024)

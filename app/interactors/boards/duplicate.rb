@@ -1,7 +1,6 @@
 module Boards
-  # Copia a estrutura do board, não o histórico: listas, cards, labels, checklists,
-  # membros e responsáveis. Comentários e anexos ficam de fora de propósito — são o
-  # registro de uma conversa que aconteceu naquele board, não parte do molde.
+  # Copia a estrutura: listas, cards, labels, checklists, membros e responsáveis.
+  # Comentários, atividades e anexos ficam de fora.
   class Duplicate < ApplicationInteractor
     def initialize(board:, creator:)
       @board = board
@@ -40,7 +39,7 @@ module Boards
       end
     end
 
-    # De id antigo para label nova: é o mapa que religa os cards às labels da cópia.
+    # Mapa de id antigo para label nova, usado ao religar os cards da cópia.
     def duplicate_labels(copy)
       @board.labels.to_h do |label|
         [ label.id, copy.labels.create!(name: label.name, color: label.color) ]

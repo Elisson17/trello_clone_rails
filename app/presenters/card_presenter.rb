@@ -1,6 +1,5 @@
-# Payload do modal do card. O board por trás continua vindo do BoardPresenter — este
-# presenter só acrescenta o que não cabe num tile: descrição, checklists item a item,
-# comentários e anexos.
+# Payload do modal do card. O board por trás continua vindo do BoardPresenter; aqui entra
+# só o que não cabe num tile: descrição, checklists, comentários e anexos.
 class CardPresenter
   def initialize(card, user:)
     @card = card

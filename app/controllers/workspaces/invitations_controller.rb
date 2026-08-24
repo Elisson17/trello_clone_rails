@@ -34,8 +34,7 @@ module Workspaces
       @workspace = Workspace.find_by!(slug: params[:workspace_id])
     end
 
-    # Sem `permit(:role)`: papel é privilégio, então vem de uma allowlist explícita e
-    # cai no menos privilegiado se vier qualquer outra coisa.
+    # Papel é privilégio: allowlist explícita, com fallback no menos privilegiado.
     def invitation_params
       { email_address: params[:email_address],
         role: params[:role].presence_in(Membership.roles.keys) || "member" }

@@ -1,5 +1,5 @@
-# Aceite de convite pelo link do e-mail. `show` é a única action do app aberta a quem não
-# está logado: ela mostra o convite e guarda o destino para o Devise voltar depois do login.
+# Aceite de convite pelo link do e-mail. `show` é a única action aberta a quem não está
+# logado: guarda o destino para o Devise voltar depois do login.
 class InvitationsController < ApplicationController
   skip_before_action :authenticate_user!, only: :show
   skip_after_action :verify_authorized

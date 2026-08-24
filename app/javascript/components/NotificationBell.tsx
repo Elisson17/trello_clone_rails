@@ -3,7 +3,6 @@ import { BellIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
-/** Sino do header: contador e caminho para a central. Ler é a página, não um popover. */
 export function NotificationBell({ count }: { count: number }) {
   return (
     <Button asChild variant="ghost" size="icon">

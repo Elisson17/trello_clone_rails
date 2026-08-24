@@ -24,7 +24,7 @@ RSpec.describe Lists::Move do
     expect(titles).to eq(%w[C A])
   end
 
-  # O segundo `UPDATE`, em `boards`, é o `touch` que invalida o cache do payload (§9).
+  # O segundo `UPDATE`, em `boards`, é o `touch` que invalida o cache do payload.
   it "spends a single UPDATE on lists" do
     create(:list, board: board, position: 1024)
     list = create(:list, board: board, position: 2048)

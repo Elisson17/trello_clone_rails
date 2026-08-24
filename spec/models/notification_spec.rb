@@ -19,9 +19,9 @@ RSpec.describe Notification, type: :model do
     end
   end
 
-  # Job com retry não pode duplicar aviso. Quem segura é o índice único, de propósito:
-  # com uma validação na frente, o `create_or_find_by!` dos jobs levantaria RecordInvalid
-  # em vez de achar a linha que já existe.
+  # Job com retry não pode duplicar aviso, e quem segura é o índice único: com uma
+  # validação na frente, o `create_or_find_by!` levantaria RecordInvalid em vez de achar
+  # a linha que já existe.
   describe "the same activity twice for the same person" do
     it "is refused by the database" do
       first = create(:notification)

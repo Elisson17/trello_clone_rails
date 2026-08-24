@@ -44,7 +44,7 @@ if board.new_record?
 
   cards = {
     "A fazer" => [ "Desenhar o modal do card", "Escolher a lib de drag & drop", "Escrever o ARCHITECTURE.md" ],
-    "Fazendo" => [ "Boards, listas e cards (etapa 4)" ],
+    "Fazendo" => [ "Drag & drop de listas e cards" ],
     "Feito" => [ "Autenticação com Devise", "Workspaces e convites" ]
   }
   board.lists.ordered.each do |list|
@@ -54,7 +54,7 @@ if board.new_record?
   end
   board.lists.find_by(title: "A fazer").cards.first&.update!(due_at: 2.days.from_now)
 
-  # Etapa 6: o modal do card só se demonstra com etiqueta, checklist e comentário dentro.
+  # O modal do card só se demonstra com etiqueta, checklist e comentário dentro.
   labels = { "bug" => "rose", "produto" => "sky", "infra" => "amber" }.map do |name, color|
     board.labels.create!(name: name, color: color)
   end
@@ -75,8 +75,8 @@ if board.new_record?
 
   board.lists.find_by(title: "Fazendo").cards.first&.update!(cover_color: "amber")
 
-  # Etapa 7: feed vazio não demonstra feed. As atividades entram pelo mesmo job que o
-  # controller usa — nada de INSERT paralelo só para as seeds.
+  # Feed vazio não demonstra feed. As atividades entram pelo mesmo job que o controller
+  # usa, sem INSERT paralelo só para as seeds.
   historico = [
     [ "board.created", board, demo, { title: board.title } ],
     [ "list.created", board.lists.ordered.first, demo, { title: "A fazer" } ],

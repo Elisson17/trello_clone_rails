@@ -3,8 +3,7 @@ class Card < ApplicationRecord
   include Archivable
   include Searchable
 
-  # Allowlist de anexo: imagem, PDF e texto. Nada executável, nada de arquivo comprimido —
-  # é um demo público, o upload é a porta de entrada mais barata que existe.
+  # Allowlist de anexo: imagem, PDF e texto. Nada executável nem comprimido.
   ATTACHMENT_CONTENT_TYPES = %w[
     image/png image/jpeg image/webp image/gif application/pdf text/plain text/csv text/markdown
   ].freeze
@@ -32,7 +31,6 @@ class Card < ApplicationRecord
 
   def completed? = completed_at.present?
 
-  # Derivado, nunca persistido (§3.5).
   def overdue? = due_at.present? && completed_at.nil? && due_at.past?
 
   private

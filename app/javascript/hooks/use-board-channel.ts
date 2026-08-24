@@ -21,8 +21,8 @@ export function useBoardChannel(boardId: number) {
         received(event: { type: string; by: number | null }) {
           if (event.by === currentUserId) return
 
-          // `only` deixa o servidor remontar só o payload do board e o contador do sino —
-          // o resto da página (e o modal do card aberto) fica de pé.
+          // `only` remonta só o payload do board e o contador do sino: o resto da página
+          // (e o modal do card aberto) fica de pé.
           router.reload({ only: ['board', 'unread_notifications_count'] })
         },
       },

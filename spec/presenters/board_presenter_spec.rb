@@ -31,9 +31,8 @@ RSpec.describe BoardPresenter do
     expect(payload[:lists].sole[:cards].sole).to include(id: card.id, overdue: true)
   end
 
-  # A prova do critério de saída, em duas camadas: o Bullet pega o N+1 clássico e o
-  # contador nativo prende o número exato — inclusive contra leitura de associação com
-  # escopo, que o Bullet não enxerga.
+  # Duas camadas: o Bullet pega o N+1 clássico e o contador nativo prende o número exato,
+  # inclusive contra leitura de associação com escopo, que o Bullet não enxerga.
   it "builds the payload without a single N+1" do
     big = create(:board)
     create_list(:list, 5, board: big).each { |list| create_list(:card, 10, list: list) }
@@ -41,9 +40,8 @@ RSpec.describe BoardPresenter do
     expect_no_n_plus_one { described_class.new(Board.find(big.id)).as_json }
   end
 
-  # O número importa menos do que ele ser **fixo**: cada badge do card (labels,
-  # responsáveis, checklist, anexos) custa uma query de eager load, e nenhuma delas
-  # cresce com o tamanho do board. Se este número subir junto com o board, é N+1 de volta.
+  # O número importa menos do que ele ser fixo: cada badge do card custa uma query de
+  # eager load, e nenhuma cresce com o tamanho do board. Se subir junto, é N+1 de volta.
   it "costs the same ten queries no matter how big the board is" do
     big = create(:board)
     create_list(:list, 5, board: big).each { |list| create_list(:card, 10, list: list) }

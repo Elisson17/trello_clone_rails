@@ -1,6 +1,5 @@
-# A tela de erro é uma página Inertia como as outras. Fica num concern porque dois lugares
-# a renderizam: o `ErrorsController` (alvo do `exceptions_app` e da rota coringa) e o
-# resgate de `RecordNotFound` aqui do `ApplicationController`.
+# Tela de erro é página Inertia como as outras. Está num concern porque dois lugares a
+# renderizam: o `ErrorsController` (alvo do `exceptions_app`) e o resgate abaixo.
 module ErrorRendering
   extend ActiveSupport::Concern
 
@@ -14,9 +13,7 @@ module ErrorRendering
   }.freeze
 
   included do
-    # Registro que não existe é 404 na nossa tela em todo ambiente. Deixar a exceção subir
-    # até o middleware dá a página de debug em dev e teste, e aí ninguém vê o que o usuário
-    # de produção vê.
+    # Sem isto, dev e teste mostram a página de debug em vez da tela do usuário.
     rescue_from ActiveRecord::RecordNotFound do
       render_error(404)
     end

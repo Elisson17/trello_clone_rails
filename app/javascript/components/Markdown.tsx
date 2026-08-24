@@ -1,9 +1,9 @@
 import ReactMarkdown from 'react-markdown'
 
 /**
- * Descrição e comentário são Markdown renderizado no front (§3.5). O `react-markdown`
- * monta elementos React em vez de HTML cru — não existe `dangerouslySetInnerHTML` aqui,
- * então não existe a porta de XSS que um `marked` + sanitizador teria que fechar.
+ * Descrição e comentário são Markdown renderizado no front. O `react-markdown` monta
+ * elementos React em vez de HTML cru, então não há `dangerouslySetInnerHTML` nem a porta
+ * de XSS que um `marked` + sanitizador teria que fechar.
  */
 export function Markdown({ children }: { children: string }) {
   return (

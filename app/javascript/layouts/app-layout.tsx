@@ -10,8 +10,8 @@ import { Toaster } from '@/components/ui/sonner'
 import type { SharedProps } from '@/types/inertia'
 
 /**
- * Layout persistente: não desmonta entre navegações do Inertia, então o Toaster
- * mantém os toasts na tela e o estado do header sobrevive à troca de página.
+ * Layout persistente: não desmonta entre navegações do Inertia, então os toasts e o
+ * estado do header sobrevivem à troca de página.
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { auth, flash, unread_notifications_count } = usePage<SharedProps>().props

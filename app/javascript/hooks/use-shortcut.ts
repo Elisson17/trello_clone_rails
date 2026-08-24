@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react'
 const TYPING = 'input, textarea, select, [contenteditable="true"]'
 
 /**
- * Atalho de tecla única na página. Quem está digitando não perde a tecla, e combinação com
- * modificador é do navegador, não nossa.
+ * Atalho de tecla única na página. Quem está digitando não perde a tecla, e combinação
+ * com modificador fica com o navegador.
  */
 export function useShortcut(key: string, handler: () => void) {
   const latest = useRef(handler)

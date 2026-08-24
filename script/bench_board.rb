@@ -1,11 +1,10 @@
-# Medição do cache do payload do board (etapa 8): tempo de `BoardsController#show`
-# com o cache frio e com o cache quente, no board mais cheio do banco de desenvolvimento.
+# Medição do cache do payload do board: tempo de `BoardsController#show` com o cache
+# frio e com o cache quente, no board mais cheio do banco de desenvolvimento.
 #
 #   bin/rails runner script/bench_board.rb
 #
 # Request de verdade, não só o presenter: a sessão é criada pelo mesmo POST /users/sign_in
-# que o navegador faz. `benchmark` saiu das gems padrão no Ruby 4, então o cronômetro é
-# o `CLOCK_MONOTONIC` na mão.
+# que o navegador faz. `benchmark` saiu das gems padrão no Ruby 4, daí o `CLOCK_MONOTONIC`.
 raise "Só em desenvolvimento." unless Rails.env.development?
 
 RUNS = 5

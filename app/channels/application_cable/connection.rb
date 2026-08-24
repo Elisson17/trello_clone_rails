@@ -1,6 +1,5 @@
 module ApplicationCable
-  # O WebSocket usa a mesma sessão do request: o Warden já está no env quando o Rack chega
-  # aqui, então não existe token de cable para emitir, girar ou revogar.
+  # O cable reaproveita a sessão do request: o Warden já está no env.
   class Connection < ActionCable::Connection::Base
     identified_by :current_user
 

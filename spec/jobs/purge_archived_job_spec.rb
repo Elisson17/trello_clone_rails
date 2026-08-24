@@ -46,8 +46,8 @@ RSpec.describe PurgeArchivedJob do
     expect(List.exists?(old_list.id)).to be(false)
   end
 
-  # Herdado da etapa 3: convite que expirou não serve para nada e ainda ocupa o índice
-  # único de convite pendente por e-mail.
+  # Convite expirado não serve para nada e ainda ocupa o índice único de convite
+  # pendente por e-mail.
   it "clears an expired invitation" do
     invitation = create(:invitation)
     invitation.update_columns(expires_at: 1.day.ago)
@@ -65,8 +65,8 @@ RSpec.describe PurgeArchivedJob do
     expect(Invitation.exists?(invitation.id)).to be(true)
   end
 
-  # Herdado da etapa 6: anexo recusado pela validação deixa o blob para trás, porque ele
-  # nasce antes de a validação rodar.
+  # Anexo recusado pela validação deixa o blob para trás, porque ele nasce antes de a
+  # validação rodar.
   it "purges the blob left behind by a rejected attachment" do
     blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("x"), filename: "orfao.txt",
                                                   content_type: "text/plain")
