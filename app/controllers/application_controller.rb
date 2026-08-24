@@ -23,7 +23,10 @@ class ApplicationController < ActionController::Base
       auth: { user: current_user && user_props(current_user) },
       flash: { notice: flash.notice, alert: flash.alert },
       unread_notifications_count: -> { current_user&.notifications&.unread&.count.to_i },
-      nav: -> { current_user && NavigationPresenter.new(current_user).as_json }
+      nav: -> { current_user && NavigationPresenter.new(current_user).as_json },
+      # `optional` só é avaliada quando o dropdown pede por nome: quem nunca abre o sino
+      # não paga query nenhuma.
+      notifications: InertiaRails.optional { current_user && notifications_props }
     }
   end
 
@@ -31,6 +34,12 @@ class ApplicationController < ActionController::Base
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: %i[name time_zone])
+  end
+
+  def notifications_props
+    NotificationPresenter.new(
+      current_user.notifications.recent.includes(activity: %i[user board]).limit(20)
+    ).as_json
   end
 
   def user_props(user)

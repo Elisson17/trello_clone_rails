@@ -102,4 +102,40 @@ RSpec.describe "Notifications", type: :request do
 
     expect(response).to redirect_to(new_user_session_path)
   end
+
+  describe "the list shared with the bell" do
+    it "does not travel in an ordinary request" do
+      notify
+
+      get root_path
+
+      expect(inertia_props(response)).not_to have_key("notifications")
+    end
+
+    it "travels when the bell asks for it by name" do
+      notify
+
+      get root_path, headers: {
+        "X-Inertia" => "true",
+        "X-Inertia-Version" => InertiaRails.configuration.version,
+        "X-Inertia-Partial-Data" => "notifications",
+        "X-Inertia-Partial-Component" => "Boards/Index"
+      }
+
+      expect(response.parsed_body["props"]["notifications"]["items"].size).to eq(1)
+    end
+
+    it "stops at twenty, which is what the dropdown shows" do
+      21.times { notify }
+
+      get root_path, headers: {
+        "X-Inertia" => "true",
+        "X-Inertia-Version" => InertiaRails.configuration.version,
+        "X-Inertia-Partial-Data" => "notifications",
+        "X-Inertia-Partial-Component" => "Boards/Index"
+      }
+
+      expect(response.parsed_body["props"]["notifications"]["items"].size).to eq(20)
+    end
+  end
 end
