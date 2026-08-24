@@ -60,6 +60,31 @@ RSpec.describe "Boards", type: :request do
       expect(response).to redirect_to(root_path)
     end
 
+    it "records the visit" do
+      get board_path(board)
+
+      expect(BoardVisit.sole).to have_attributes(user_id: user.id, board_id: board.id)
+    end
+
+    it "moves the same row instead of piling rows up" do
+      get board_path(board)
+      first = BoardVisit.sole.viewed_at
+
+      travel 1.minute
+      get board_path(board)
+
+      expect(BoardVisit.count).to eq(1)
+      expect(BoardVisit.sole.viewed_at).to be > first
+    end
+
+    it "records nothing when the board is not visible to the person" do
+      sign_in create(:user)
+
+      get board_path(board)
+
+      expect(BoardVisit.count).to be_zero
+    end
+
     # O payload não faz uma query por lista nem por card.
     it "loads a full board without a single N+1" do
       big = create(:board, :with_admin, workspace: workspace, creator: user)

@@ -6,6 +6,7 @@ class BoardsController < ApplicationController
   def show
     authorize @board
 
+    record_visit
     render_board(@board)
   end
 
@@ -36,5 +37,17 @@ class BoardsController < ApplicationController
 
   def board_params
     params.permit(:title, :description, :background, :visibility)
+  end
+
+  # `upsert` e nunca `touch`: `board.touch` a cada visita invalidaria o cache do payload
+  # do board, que é o ganho medido na etapa 8.
+  def record_visit
+    now = Time.current
+
+    BoardVisit.upsert(
+      { user_id: current_user.id, board_id: @board.id,
+        viewed_at: now, created_at: now, updated_at: now },
+      unique_by: %i[user_id board_id]
+    )
   end
 end

@@ -67,4 +67,23 @@ RSpec.describe "Board payload cache", type: :request do
 
     expect(board_payload["lists"].sole["cards"].sole["checklist"]).to eq({ "done" => 0, "total" => 1 })
   end
+
+  # Visita é rastro de navegação, não conteúdo do board. Se ela passar a invalidar o
+  # payload cacheado, o ganho medido na etapa 8 vira zero e nenhum outro spec avisa.
+  it "does not rebuild the payload just because someone visited the board" do
+    allow(BoardPresenter).to receive(:new).and_call_original
+
+    2.times { board_payload }
+
+    expect(BoardVisit.sole.board_id).to eq(board.id)
+    expect(BoardPresenter).to have_received(:new).once
+  end
+
+  it "leaves the board's own updated_at alone on a visit" do
+    before_visit = board.reload.updated_at
+
+    board_payload
+
+    expect(board.reload.updated_at).to eq(before_visit)
+  end
 end
