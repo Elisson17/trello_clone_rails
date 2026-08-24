@@ -2,7 +2,7 @@ class List < ApplicationRecord
   include Positioned
   include Archivable
 
-  belongs_to :board, counter_cache: :lists_count
+  belongs_to :board, counter_cache: :lists_count, touch: true
   has_many :cards, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: 80 }

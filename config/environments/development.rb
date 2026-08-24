@@ -25,8 +25,10 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  # Solid Cache em dev, no banco `cache`: o payload do board é cacheado do mesmo jeito que
+  # em produção, então a medição de antes/depois no README vale para os dois.
+  # (`perform_caching` acima é só cache de controller/view; `Rails.cache` funciona sempre.)
+  config.cache_store = :solid_cache_store
 
   # Fila de verdade em dev: o `bin/dev` sobe o supervisor do Solid Queue dentro do Puma
   # (SOLID_QUEUE_IN_PUMA no Procfile.dev), então job assíncrono e cron funcionam local.

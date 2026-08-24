@@ -1,5 +1,5 @@
 class CardAssignment < ApplicationRecord
-  belongs_to :card
+  belongs_to :card, touch: true
   belongs_to :user
 
   validates :user_id, uniqueness: { scope: :card_id }

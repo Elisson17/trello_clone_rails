@@ -8,7 +8,7 @@ class Card < ApplicationRecord
     image/png image/jpeg image/webp image/gif application/pdf text/plain text/csv text/markdown
   ].freeze
 
-  belongs_to :list, counter_cache: :cards_count
+  belongs_to :list, counter_cache: :cards_count, touch: true
   belongs_to :creator, class_name: "User"
 
   has_one :board, through: :list

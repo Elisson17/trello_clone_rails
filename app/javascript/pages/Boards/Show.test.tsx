@@ -18,7 +18,16 @@ vi.mock('@inertiajs/react', () => ({
   Head: () => null,
   Link: ({ children, ...props }: { children?: ReactNode }) => <a {...props}>{children}</a>,
   router,
+  usePage: () => ({ props: { auth: { user: { id: 1 } } } }),
   useForm: () => form,
+}))
+
+// O board assina o BoardChannel ao montar; em jsdom não existe servidor de cable.
+vi.mock('@rails/actioncable', () => ({
+  createConsumer: () => ({
+    subscriptions: { create: () => ({ unsubscribe: vi.fn() }) },
+    disconnect: vi.fn(),
+  }),
 }))
 
 const card = {

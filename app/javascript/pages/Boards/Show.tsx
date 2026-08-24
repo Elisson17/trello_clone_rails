@@ -56,6 +56,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
+import { useBoardChannel } from '@/hooks/use-board-channel'
 import { useOptimisticMove } from '@/hooks/use-optimistic-move'
 import { accentStyle } from '@/lib/accent'
 import { indexOfCard, listOfCard, moveCard, moveList } from '@/lib/board-move'
@@ -116,6 +117,8 @@ export default function BoardShow({
 }) {
   const theme = BOARD_THEME[board.background]
   const { lists, setDraft, moveCard: commitCard, moveList: commitList } = useOptimisticMove(board)
+
+  useBoardChannel(board.id)
   const [dragging, setDragging] = useState<string | null>(null)
 
   const sensors = useSensors(

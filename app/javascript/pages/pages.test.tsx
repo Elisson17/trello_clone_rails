@@ -23,6 +23,13 @@ vi.mock('@inertiajs/react', () => ({
   }),
 }))
 
+vi.mock('@rails/actioncable', () => ({
+  createConsumer: () => ({
+    subscriptions: { create: () => ({ unsubscribe: vi.fn() }) },
+    disconnect: vi.fn(),
+  }),
+}))
+
 describe('pages bundled by the entrypoint', () => {
   it('never includes a test file', () => {
     expect(Object.keys(pages).some((path) => path.includes('.test.'))).toBe(false)

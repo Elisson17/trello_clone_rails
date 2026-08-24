@@ -56,11 +56,13 @@ RSpec.describe Cards::Move do
     expect(titles(list)).to eq(%w[B A])
   end
 
-  it "spends a single UPDATE when the card stays in its list" do
+  # Mover é reescrever a posição de um card, nunca renumerar a coluna. Os `UPDATE` de
+  # `lists` e `boards` que vêm depois são o `touch` que invalida o cache do board (§9).
+  it "spends a single UPDATE on cards when the card stays in its list" do
     create(:card, list: list, position: 1024)
     card = create(:card, list: list, position: 2048)
 
-    assert_queries_match(/^UPDATE/i, count: 1) { described_class.call(card: card, list: list, index: 0) }
+    assert_queries_match(/^UPDATE "cards"/i, count: 1) { described_class.call(card: card, list: list, index: 0) }
   end
 
   it "enqueues a rebalance when the neighbours get too close" do

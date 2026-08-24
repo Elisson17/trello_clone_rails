@@ -1,5 +1,5 @@
 class Label < ApplicationRecord
-  belongs_to :board
+  belongs_to :board, touch: true
 
   has_many :card_labels, dependent: :destroy
   has_many :cards, through: :card_labels

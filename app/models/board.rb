@@ -5,6 +5,11 @@ class Board < ApplicationRecord
   DEFAULT_LISTS = [ "A fazer", "Fazendo", "Feito" ].freeze
   BACKGROUNDS = %w[slate rose amber emerald sky violet].freeze
 
+  # `updated_at` do board é a chave do cache do payload (§9): tudo que aparece na tela do
+  # board tem `touch: true` subindo até aqui — lista, card, comentário, checklist, item,
+  # etiqueta, responsável, membro. Uma coluna só invalida o board inteiro.
+  # ponytail: marcar um item de checklist paga 4 UPDATEs subindo a cadeia. Se isso pesar,
+  # a saída é chave composta com MAX(updated_at) por associação, não menos invalidação.
   belongs_to :workspace
   belongs_to :creator, class_name: "User"
 

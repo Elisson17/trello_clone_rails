@@ -2,7 +2,7 @@ class Comment < ApplicationRecord
   # §3.6: o autor edita por 15 min; depois disso só apagar.
   EDIT_WINDOW = 15.minutes
 
-  belongs_to :card, counter_cache: :comments_count
+  belongs_to :card, counter_cache: :comments_count, touch: true
   belongs_to :user
 
   validates :body, presence: true, length: { maximum: 5_000 }

@@ -24,11 +24,12 @@ RSpec.describe Lists::Move do
     expect(titles).to eq(%w[C A])
   end
 
-  it "spends a single UPDATE" do
+  # O segundo `UPDATE`, em `boards`, é o `touch` que invalida o cache do payload (§9).
+  it "spends a single UPDATE on lists" do
     create(:list, board: board, position: 1024)
     list = create(:list, board: board, position: 2048)
 
-    assert_queries_match(/^UPDATE/i, count: 1) { described_class.call(list: list, index: 0) }
+    assert_queries_match(/^UPDATE "lists"/i, count: 1) { described_class.call(list: list, index: 0) }
   end
 
   it "enqueues a rebalance when the neighbours get too close" do

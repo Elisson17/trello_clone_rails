@@ -43,6 +43,10 @@ RSpec.describe RecordActivityJob do
     expect(Activity.count).to be_zero
   end
 
+  it "tells the board's channel that something changed" do
+    expect { perform(action: "board.updated") }.to have_enqueued_job(BroadcastBoardJob)
+  end
+
   describe "the notifications that follow an activity" do
     it "hands a new comment to the mentions job" do
       expect { perform(action: "comment.created", metadata: { "body" => "oi @alguem" }) }

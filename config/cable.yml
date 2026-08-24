@@ -1,9 +1,14 @@
-# Async adapter only works within the same process, so for manually triggering cable updates from a console,
-# and seeing results in the browser, you must do so from the web console (running inside the dev process),
-# not a terminal started via bin/rails console! Add "console" to any action or any ERB template view
-# to make the web console appear.
+# Solid Cable em desenvolvimento também: o banco `cable` é o mesmo mecanismo da produção,
+# então duas abas sincronizam local pelo mesmo caminho que vai sincronizar no deploy.
+# O adapter `async` seria mais barato, mas só funciona dentro de um processo — e o
+# broadcast sai de um job, não do request.
 development:
-  adapter: async
+  adapter: solid_cable
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day
 
 test:
   adapter: test
