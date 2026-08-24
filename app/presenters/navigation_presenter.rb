@@ -20,7 +20,14 @@ class NavigationPresenter
              .map { |slug, name| { slug: slug, name: name } }
   end
 
-  # Vazio até `board_visits` existir: "recente" aqui quer dizer onde a pessoa esteve, e
-  # isso ainda não é registrado em lugar nenhum. A seção some da sidebar enquanto isso.
-  def recent_boards = []
+  # Uma query só: junta a visita ao board e ao workspace e devolve colunas, sem instanciar
+  # modelo nenhum — isto viaja em toda navegação cheia.
+  def recent_boards
+    BoardVisit.joins(board: :workspace)
+              .where(user: user, boards: { archived_at: nil })
+              .order(viewed_at: :desc)
+              .limit(5)
+              .pluck("boards.id", "boards.title", "workspaces.slug")
+              .map { |id, title, slug| { id: id, title: title, workspace_slug: slug } }
+  end
 end
