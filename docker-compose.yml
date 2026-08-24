@@ -1,0 +1,34 @@
+# Demo local do projeto, em modo produção, num container só:
+#
+#   docker compose up --build     -> http://localhost:3000
+#   demo@example.com / supersecret
+#
+# Web, filas (Solid Queue dentro do Puma), cache e cable vivem no mesmo processo e no
+# mesmo SQLite — é o desenho que o projeto quer demonstrar, não uma simplificação do compose.
+services:
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      # Chave só do demo local: sem config/master.key no clone, o Rails aceita SECRET_KEY_BASE.
+      # Em deploy de verdade venha do secret manager da plataforma (ou use RAILS_MASTER_KEY).
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-6f4d1a0c9e2b8734f5a1c60d3b9e8a2470c5d1f6839ab24e7c05d3f1a9b6e820}
+      SEED_DEMO: "1"
+      APP_HOST: localhost:3000
+      # Opcionais: preencha no .env da máquina para o e-mail sair de verdade.
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      MAIL_FROM: ${MAIL_FROM:-Trello Clone <no-reply@localhost>}
+    volumes:
+      # Bancos SQLite e uploads do Active Storage. Apague o volume para zerar o demo.
+      - storage:/rails/storage
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost/up" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  storage:

@@ -13,5 +13,9 @@ Rails.application.configure do
     config.action_mailer.delivery_method = :resend
   elsif Rails.env.development?
     config.action_mailer.delivery_method = :letter_opener_web
+  else
+    # Sem chave em produção (o demo em container) o e-mail é descartado em vez de
+    # estourar SMTP no job. Deploy real: preencha RESEND_API_KEY.
+    config.action_mailer.delivery_method = :test
   end
 end

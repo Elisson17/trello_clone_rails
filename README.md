@@ -3,7 +3,7 @@
 Kanban colaborativo em **Rails 8 + Inertia + React**, escrito como portfólio: sem serviço
 externo obrigatório, sem Redis, sem Sidekiq. `git clone` e dois comandos e o app está no ar.
 
-> **Status:** em desenvolvimento. Autenticação, workspaces com convites, e boards com listas
+> **Status:** v1.0 — completo para o que se propõe. Autenticação, workspaces com convites, e boards com listas
 > e cards — incluindo drag & drop por mouse e por teclado — já funcionam. O card abre em
 > painel lateral próprio (`/cards/:id`) com descrição em Markdown, etiquetas, responsáveis,
 > checklists, comentários e anexos. Toda mutação vira atividade num feed por board e por
@@ -45,6 +45,28 @@ demo@example.com / supersecret
 
 Os e-mails do app (confirmação, reset de senha) ficam em
 **http://localhost:3000/dev/mails** enquanto não houver chave de e-mail configurada.
+
+### Com Docker
+
+Um comando, sem Ruby nem Bun na máquina — sobe a **imagem de produção** com o banco migrado
+e as seeds carregadas:
+
+```bash
+docker compose up --build   # http://localhost:3000
+```
+
+É um container só: Puma serve o app e o supervisor do Solid Queue roda dentro dele
+(`SOLID_QUEUE_IN_PUMA=1`), com cache e cable no mesmo SQLite — o desenho que o projeto existe
+para demonstrar. Os bancos e os uploads ficam no volume `storage`; `docker compose down -v`
+zera o demo. O `SECRET_KEY_BASE` no `docker-compose.yml` é do demo local: em deploy de verdade
+ele vem do secret manager da plataforma (ou use `RAILS_MASTER_KEY`).
+
+## Arquitetura
+
+[`ARCHITECTURE.md`](ARCHITECTURE.md) tem o resumo em uma página: diagrama do schema, as
+camadas (`Controller → Interactor → Model/Job`, com Pundit e presenters ao lado), o caminho de
+uma mutação até feed, notificação e broadcast, e o porquê de cada decisão. As seções abaixo
+detalham as partes que rendem conversa.
 
 ## Variáveis de ambiente
 
@@ -180,3 +202,13 @@ nos `.test.tsx`.
   que este desenho não tem como ter.
 - **Atividade é gravada em job, sempre**: o request nunca paga por ela, e o texto de cada
   linha do feed é montado no front a partir de `action` + `metadata` — o feed não faz join.
+
+## Fora de escopo, e por quê
+
+Power-ups, automações tipo Butler, visão calendário/timeline, i18n além de pt-BR, app mobile,
+mover card entre boards, anexos externos (Drive/Dropbox), export PDF, times aninhados e SSO.
+
+Nenhum deles é difícil — são **largura**. Cada um seria mais uma tela parecida com as que já
+existem, e nenhum mostraria nada novo sobre posicionamento fracionário, autorização em duas
+camadas, invalidação de cache por `touch` ou realtime sem estado duplicado. O projeto é um
+portfólio: o recorte é a decisão, não o esquecimento.

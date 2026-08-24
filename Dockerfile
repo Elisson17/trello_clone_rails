@@ -4,6 +4,9 @@
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t trello_clone_rails .
 # docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name trello_clone_rails trello_clone_rails
+#
+# Para rodar o demo local (banco, filas e seeds prontos), use o docker-compose.yml na raiz:
+# docker compose up --build
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -21,7 +24,10 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment variables and enable jemalloc for reduced memory usage and latency.
+# SOLID_QUEUE_IN_PUMA: um container só — o supervisor das filas sobe dentro do Puma
+# (mesmo desenho do Procfile.dev). Escalando, tire daqui e suba `bin/jobs` num serviço próprio.
 ENV RAILS_ENV="production" \
+    SOLID_QUEUE_IN_PUMA="1" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \

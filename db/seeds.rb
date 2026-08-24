@@ -1,4 +1,5 @@
-return unless Rails.env.development?
+# Em produção só rodam com SEED_DEMO=1 (o demo em container).
+return unless Rails.env.development? || ENV["SEED_DEMO"].present?
 
 def seed_user(email, name:, confirmed: true)
   user = User.find_or_initialize_by(email: email)

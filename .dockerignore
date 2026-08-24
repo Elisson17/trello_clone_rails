@@ -48,4 +48,5 @@
 
 # Ignore Docker-related files
 /.dockerignore
+/docker-compose.yml
 /Dockerfile*

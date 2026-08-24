@@ -3,6 +3,8 @@
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+  # Demo do portfólio: SEED_DEMO=1 popula workspace, board, atividades e a conta demo.
+  if [ -n "${SEED_DEMO}" ]; then ./bin/rails db:seed; fi
 fi
 
 exec "${@}"
