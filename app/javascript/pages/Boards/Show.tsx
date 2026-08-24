@@ -42,6 +42,7 @@ import { useEffect, useState } from 'react'
 import { ActivityFeed } from '@/components/ActivityFeed'
 import { BoardFilters } from '@/components/BoardFilters'
 import { BoardMembersDialog } from '@/components/BoardMembersDialog'
+import { BoardPresence } from '@/components/BoardPresence'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { CardDrawer } from '@/components/card/CardDrawer'
 import { LabelChips } from '@/components/card/LabelPicker'
@@ -130,7 +131,7 @@ export default function BoardShow({
   const theme = BOARD_THEME[board.background]
   const { lists, setDraft, moveCard: commitCard, moveList: commitList } = useOptimisticMove(board)
 
-  useBoardChannel(board.id)
+  const { presence } = useBoardChannel(board.id)
   const [dragging, setDragging] = useState<string | null>(null)
   const [filter, setFilter] = useState<BoardFilter>(EMPTY_FILTER)
 
@@ -221,6 +222,8 @@ export default function BoardShow({
         </span>
 
         <div className="ml-auto flex items-center gap-2">
+          <BoardPresence people={presence} />
+
           {can.manage_members ? (
             <BoardMembersDialog board={board}>
               <button

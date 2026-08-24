@@ -150,3 +150,18 @@
     }
   }
 }
+
+/* Avatar de presença que acabou de chegar. Mesmo mecanismo do `.card-enter`:
+   `@starting-style` só dispara no nó recém-inserido. */
+@media (prefers-reduced-motion: no-preference) {
+  .presence-enter {
+    transition:
+      opacity 180ms var(--ease-out-strong),
+      transform 180ms var(--ease-out-strong);
+
+    @starting-style {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+}

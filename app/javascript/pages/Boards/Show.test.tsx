@@ -25,7 +25,7 @@ vi.mock('@inertiajs/react', () => ({
 // O board assina o BoardChannel ao montar; em jsdom não existe servidor de cable.
 vi.mock('@rails/actioncable', () => ({
   createConsumer: () => ({
-    subscriptions: { create: () => ({ unsubscribe: vi.fn() }) },
+    subscriptions: { create: () => ({ unsubscribe: vi.fn(), perform: vi.fn() }) },
     disconnect: vi.fn(),
   }),
 }))
