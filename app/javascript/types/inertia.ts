@@ -58,6 +58,20 @@ export type BoardSummary = {
   lists_count: number
 }
 
+export type BoardCardPayload = {
+  id: number
+  title: string
+  background: BoardBackground
+  visibility: BoardVisibility
+  updated_at: string
+  workspace: { slug: string; name: string }
+  owner: { id: number; name: string; avatar_url: string | null }
+  last_visited_at: string | null
+  members: { avatars: { id: number; name: string; avatar_url: string | null }[]; total: number }
+  preview: { list_id: number; count: number; colors: BoardBackground[] }[]
+  counts: { lists: number; cards: number; overdue: number }
+}
+
 export type LabelPayload = { id: number; name: string; color: BoardBackground }
 
 export type BoardMember = {
