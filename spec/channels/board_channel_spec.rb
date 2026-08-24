@@ -25,4 +25,49 @@ RSpec.describe BoardChannel, type: :channel do
 
     expect(subscription).to be_rejected
   end
+
+  it "announces the newcomer to whoever is already there" do
+    expect { subscribe_as(board.creator) }
+      .to have_broadcasted_to(board).from_channel(BoardChannel)
+      .with(hash_including("type" => "presence.join"))
+  end
+
+  it "asks for a roll call, which is how the newcomer learns who was here" do
+    expect { subscribe_as(board.creator) }
+      .to have_broadcasted_to(board).from_channel(BoardChannel)
+      .with(hash_including("type" => "presence.roll_call"))
+  end
+
+  it "carries who joined, because the avatar needs a name" do
+    expect { subscribe_as(board.creator) }
+      .to have_broadcasted_to(board).from_channel(BoardChannel)
+      .with(hash_including("user" => hash_including("id" => board.creator.id,
+                                                    "name" => board.creator.name)))
+  end
+
+  it "passes the tab state along" do
+    subscribe_as(board.creator)
+
+    expect { perform :state, active: true }
+      .to have_broadcasted_to(board).from_channel(BoardChannel)
+      .with(hash_including("type" => "presence.state", "active" => true))
+  end
+
+  it "announces the exit when the socket closes" do
+    subscribe_as(board.creator)
+
+    expect { unsubscribe }
+      .to have_broadcasted_to(board).from_channel(BoardChannel)
+      .with(hash_including("type" => "presence.leave"))
+  end
+
+  it "says nothing on the way out of a rejected subscription" do
+    subscribe_as(create(:user))
+
+    # Not `unsubscribe`: that test helper itself refuses to run on a rejected
+    # subscription (`check_subscribed!`), before this example's own behavior is
+    # even exercised. Drive the same channel callback the connection would call.
+    expect { subscription.unsubscribe_from_channel }
+      .not_to have_broadcasted_to(board).from_channel(BoardChannel)
+  end
 end
