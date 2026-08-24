@@ -15,6 +15,7 @@ export type SharedProps = {
   flash: { notice: string | null; alert: string | null }
   unread_notifications_count: number
   nav: { workspaces: NavWorkspace[]; recent_boards: NavBoard[] } | null
+  notifications?: NotificationList
 }
 
 export type WorkspaceRole = 'owner' | 'admin' | 'member'
@@ -189,3 +190,5 @@ export type NotificationPayload = {
   board: { id: number; title: string }
   activity: ActivityPayload
 }
+
+export type NotificationList = { items: NotificationPayload[] }

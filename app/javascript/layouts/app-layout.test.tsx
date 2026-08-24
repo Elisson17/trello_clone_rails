@@ -75,7 +75,7 @@ describe('AppLayout', () => {
     // A sidebar também leva a /notifications: aqui o alvo é o sino, e ele mora no header.
     const header = within(screen.getByRole('banner'))
 
-    expect(header.getByRole('link', { name: /Notificações/ })).toBeInTheDocument()
+    expect(header.getByRole('button', { name: /Notificações/ })).toBeInTheDocument()
   })
 
   it('offers a way to open the navigation on a narrow screen', () => {
