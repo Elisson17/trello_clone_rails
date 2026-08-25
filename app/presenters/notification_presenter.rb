@@ -1,15 +1,10 @@
 class NotificationPresenter
-  # `pagy` é opcional porque o dropdown não pagina; a página, que ainda existe, passa o dela.
-  def initialize(notifications, pagy = nil)
+  def initialize(notifications)
     @notifications = notifications
-    @pagy = pagy
   end
 
   def as_json(*)
-    payload = { items: @notifications.map { |notification| item(notification) } }
-    return payload if @pagy.nil?
-
-    payload.merge(page: @pagy.page, prev_page: @pagy.previous, next_page: @pagy.next)
+    { items: @notifications.map { |notification| item(notification) } }
   end
 
   private

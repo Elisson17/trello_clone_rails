@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   resource :profile, only: %i[show update], controller: "profiles"
   patch "profile/password" => "profiles#update_password", as: :profile_password
 
-  resources :notifications, only: :index do
+  resources :notifications, only: [] do
     patch :read, on: :collection
   end
 

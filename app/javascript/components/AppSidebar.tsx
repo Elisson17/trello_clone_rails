@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react'
-import { BellIcon, LayoutGridIcon, PlusIcon } from 'lucide-react'
+import { LayoutGridIcon, PlusIcon } from 'lucide-react'
 
 import { GlobalSearch } from '@/components/GlobalSearch'
 import { NewWorkspaceDialog } from '@/components/NewWorkspaceDialog'
@@ -55,7 +55,6 @@ export function AppSidebar({
 
       <div className="flex flex-col gap-0.5">
         {item('/', <LayoutGridIcon className="size-4 shrink-0" />, 'Boards')}
-        {item('/notifications', <BellIcon className="size-4 shrink-0" />, 'Notificações')}
       </div>
 
       <div className="flex flex-col gap-0.5">
