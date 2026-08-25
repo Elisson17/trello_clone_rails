@@ -128,10 +128,10 @@ export default function BoardsIndex({
                 }
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors',
-                  on ? 'border-[var(--accent-solid)] bg-accent' : 'text-muted-foreground',
+                  on ? 'border-(--accent-solid) bg-accent' : 'text-muted-foreground',
                 )}
               >
-                <span aria-hidden className="size-1.5 rounded-full bg-[var(--accent-solid)]" />
+                <span aria-hidden className="size-1.5 rounded-full bg-(--accent-solid)" />
                 {item.name}
               </button>
             )

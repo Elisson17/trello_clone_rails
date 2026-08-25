@@ -48,7 +48,7 @@ export function WorkspaceHeader({
     <header className="flex flex-wrap items-center gap-3" style={accentStyle(workspace.slug)}>
       <span
         aria-hidden
-        className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--accent-soft)] text-base font-bold text-[var(--accent-solid)]"
+        className="grid size-10 shrink-0 place-items-center rounded-lg bg-(--accent-soft) text-base font-bold text-(--accent-solid)"
       >
         {workspace.name[0]?.toUpperCase()}
       </span>

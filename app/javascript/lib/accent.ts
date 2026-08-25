@@ -11,7 +11,7 @@ export function accentHue(seed: string) {
   return HUES[Math.abs(hash) % HUES.length]
 }
 
-/** Variáveis inline consumidas pelas classes utilitárias `bg-[var(--accent-solid)]` etc. */
+/** Variáveis inline consumidas pelas classes utilitárias `bg-(--accent-solid)` etc. */
 export function accentStyle(seed: string) {
   const hue = accentHue(seed)
 

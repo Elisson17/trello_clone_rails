@@ -36,7 +36,7 @@ export function BoardCard({
       style={accentSeed ? accentStyle(accentSeed) : undefined}
       className={cn(
         'flex items-start gap-2 rounded-lg border bg-card p-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
-        accentSeed ? 'hover:border-[var(--accent-solid)]' : 'hover:border-foreground/20',
+        accentSeed ? 'hover:border-(--accent-solid)' : 'hover:border-foreground/20',
         className,
       )}
     >

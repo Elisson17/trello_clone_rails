@@ -75,7 +75,7 @@ export function AppSidebar({
               <span
                 aria-hidden
                 style={accentStyle(workspace.slug)}
-                className="size-2 shrink-0 rounded-full bg-[var(--accent-solid)]"
+                className="size-2 shrink-0 rounded-full bg-(--accent-solid)"
               />
               <span className="min-w-0 truncate">{workspace.name}</span>
             </Link>

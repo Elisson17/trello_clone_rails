@@ -62,7 +62,7 @@ export function BoardGridCard({
     <Link
       href={`/boards/${board.id}`}
       style={accentStyle(board.workspace.slug)}
-      className="group flex h-full flex-col gap-3 rounded-lg border bg-card p-3 transition-colors hover:border-[var(--accent-solid)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="group flex h-full flex-col gap-3 rounded-lg border bg-card p-3 transition-colors hover:border-(--accent-solid) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <div className="flex items-start gap-2">
         <span

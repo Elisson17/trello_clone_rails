@@ -522,7 +522,7 @@ function ListColumn({
         <span
           aria-hidden
           style={accentStyle(list.title)}
-          className="size-2.5 shrink-0 rounded-full bg-[var(--accent-solid)]"
+          className="size-2.5 shrink-0 rounded-full bg-(--accent-solid)"
         />
 
         <EditableTitle
@@ -673,7 +673,7 @@ function CardTile({
               aria-label={card.completed ? `Reabrir ${card.title}` : `Concluir ${card.title}`}
               aria-pressed={card.completed}
               className={cn(
-                'relative z-10 mt-0.5 shrink-0 rounded-full transition-[color,transform] duration-100 ease-(--ease-out-strong) motion-safe:active:scale-90',
+                'relative z-10 mt-0.5 shrink-0 rounded-full transition-[color,transform] duration-100 ease-out-strong motion-safe:active:scale-90',
                 card.completed ? 'text-done' : 'text-open hover:text-foreground',
               )}
               onClick={() =>
