@@ -75,7 +75,7 @@ export default function BoardsIndex({
           placeholder="Buscar board"
           aria-label="Buscar board"
           onChange={(event) => setFilter({ ...filter, text: event.target.value })}
-          className="h-9 w-full max-w-xs rounded-md border bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+          className="h-9 w-full max-w-xs rounded-md border bg-card px-3 text-base focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring md:text-sm"
         />
 
         <Button
@@ -89,13 +89,15 @@ export default function BoardsIndex({
 
         <Select
           aria-label="Ordenar por"
+          fieldClassName="w-44"
           value={filter.sort}
-          onChange={(event) => setFilter({ ...filter, sort: event.target.value as BoardsSort })}
-        >
-          <option value="recent">Último acesso</option>
-          <option value="name">Nome</option>
-          <option value="updated">Atualizado</option>
-        </Select>
+          onChange={(value) => setFilter({ ...filter, sort: value as BoardsSort })}
+          options={[
+            { value: 'recent', label: 'Último acesso' },
+            { value: 'name', label: 'Nome' },
+            { value: 'updated', label: 'Atualizado' },
+          ]}
+        />
 
         {canCreate && (
           <NewBoardDialog

@@ -62,22 +62,21 @@ export function BoardMembersDialog({
 
               <Select
                 aria-label={`Papel de ${member.user.name}`}
-                className="h-8 w-28"
+                size="sm"
+                fieldClassName="w-28"
                 value={member.role}
-                onChange={(event) =>
+                onChange={(value) =>
                   router.patch(
                     `/boards/${board.id}/memberships/${member.id}`,
-                    { role: event.target.value },
+                    { role: value },
                     { preserveScroll: true },
                   )
                 }
-              >
-                {Object.entries(BOARD_ROLES).map(([role, label]) => (
-                  <option key={role} value={role}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
+                options={Object.entries(BOARD_ROLES).map(([role, label]) => ({
+                  value: role,
+                  label,
+                }))}
+              />
 
               <Button
                 variant="ghost"

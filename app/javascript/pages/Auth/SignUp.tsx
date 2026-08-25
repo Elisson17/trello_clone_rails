@@ -89,14 +89,9 @@ export default function SignUp({ time_zones }: { time_zones: string[] }) {
           label="Fuso horário"
           value={form.data.time_zone}
           error={form.errors.time_zone}
-          onChange={(event) => form.setData('time_zone', event.target.value)}
-        >
-          {time_zones.map((zone) => (
-            <option key={zone} value={zone}>
-              {zone}
-            </option>
-          ))}
-        </Select>
+          onChange={(value) => form.setData('time_zone', value)}
+          options={time_zones.map((zone) => ({ value: zone, label: zone }))}
+        />
 
         <Button type="submit" disabled={form.processing}>
           Criar conta

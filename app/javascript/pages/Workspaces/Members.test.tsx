@@ -93,7 +93,9 @@ describe('Workspaces/Members', () => {
   it('sends the new role on change', () => {
     renderPage()
 
-    fireEvent.change(screen.getByLabelText('Papel de Ana'), { target: { value: 'admin' } })
+    // Radix abre no teclado: o `change` do <select> nativo não existe mais aqui.
+    fireEvent.keyDown(screen.getByLabelText('Papel de Ana'), { key: 'Enter' })
+    fireEvent.click(screen.getByRole('option', { name: 'Admin' }))
 
     expect(router.patch).toHaveBeenCalledWith(
       '/workspaces/time/memberships/2',

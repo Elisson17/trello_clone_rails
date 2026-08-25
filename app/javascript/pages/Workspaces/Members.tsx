@@ -98,14 +98,9 @@ function InviteForm({ base, roles }: { base: string; roles: WorkspaceRole[] }) {
         fieldClassName="w-36"
         value={invite.data.role}
         error={invite.errors.role}
-        onChange={(event) => invite.setData('role', event.target.value as WorkspaceRole)}
-      >
-        {roles.map((role) => (
-          <option key={role} value={role}>
-            {ROLE_LABELS[role]}
-          </option>
-        ))}
-      </Select>
+        onChange={(value) => invite.setData('role', value as WorkspaceRole)}
+        options={roles.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
+      />
       <Button type="submit" disabled={invite.processing}>
         <MailIcon />
         {invite.processing ? 'Enviando…' : 'Enviar convite'}
@@ -144,20 +139,15 @@ function MemberRow({
             aria-label={`Papel de ${member.user.name}`}
             fieldClassName="w-32"
             value={member.role}
-            onChange={(event) =>
+            onChange={(value) =>
               router.patch(
                 `${base}/memberships/${member.id}`,
-                { role: event.target.value },
+                { role: value },
                 { preserveScroll: true },
               )
             }
-          >
-            {roles.map((role) => (
-              <option key={role} value={role}>
-                {ROLE_LABELS[role]}
-              </option>
-            ))}
-          </Select>
+            options={roles.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
+          />
         ) : (
           <RoleBadge role={member.role} />
         )}

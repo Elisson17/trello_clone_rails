@@ -90,14 +90,9 @@ export default function ProfileShow({
             label="Fuso horário"
             value={profile.data.time_zone}
             error={profile.errors.time_zone}
-            onChange={(event) => profile.setData('time_zone', event.target.value)}
-          >
-            {time_zones.map((zone) => (
-              <option key={zone} value={zone}>
-                {zone}
-              </option>
-            ))}
-          </Select>
+            onChange={(value) => profile.setData('time_zone', value)}
+            options={time_zones.map((zone) => ({ value: zone, label: zone }))}
+          />
         </div>
 
         <Button type="submit" className="mt-5" disabled={profile.processing}>

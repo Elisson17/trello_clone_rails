@@ -11,6 +11,12 @@ type FieldProps = {
   hint?: ReactNode
   required?: boolean
   className?: string
+  /**
+   * Id do texto do label, para o controle referenciar com `aria-labelledby`. Passe quando
+   * o filho não for um controle nativo: `<label>` só rotula elementos labeláveis, e um
+   * botão (o gatilho do Radix) envolvido por `<label>` recebe o clique duas vezes.
+   */
+  labelId?: string
   children: ReactNode
 }
 
@@ -18,12 +24,13 @@ type FieldProps = {
  * Anatomia label/campo/erro do design system. Input e Select vestem esta casca,
  * então todo formulário do app erra e acerta do mesmo jeito.
  */
-export function Field({ label, error, hint, required, className, children }: FieldProps) {
+export function Field({ label, error, hint, required, className, labelId, children }: FieldProps) {
+  const Wrapper = labelId ? 'div' : 'label'
+
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: o controle vem via children (Input/Select) e fica dentro do label
-    <label className={cn('flex flex-col gap-1.5', className)}>
+    <Wrapper className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <span className="text-[13px] font-semibold text-foreground">
+        <span id={labelId} className="text-[13px] font-semibold text-foreground">
           {label}
           {required && <span className="ml-0.5 text-destructive">*</span>}
         </span>
@@ -38,6 +45,6 @@ export function Field({ label, error, hint, required, className, children }: Fie
       ) : (
         hint && <span className="text-[12.5px] text-muted-foreground">{hint}</span>
       )}
-    </label>
+    </Wrapper>
   )
 }

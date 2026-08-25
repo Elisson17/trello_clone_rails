@@ -4,6 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Widgets nativos (popup do <select>, scrollbar, campos de data) são pintados pelo
+     navegador: sem `color-scheme` ele usa o tema claro mesmo no dark, e a lista do
+     select abre branca com azul de sistema. */
+  color-scheme: light;
   /* Paleta da Linear: cinza sem viés de matiz, índigo como único acento. Os nomes de
      token continuam os mesmos de propósito, então toda tela herda a paleta sem ser
      reescrita. */
@@ -47,6 +51,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #08090a;
   --foreground: #f7f8f8;
   --card: #16171a;

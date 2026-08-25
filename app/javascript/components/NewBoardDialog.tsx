@@ -74,14 +74,12 @@ export function NewBoardDialog({
               <Select
                 label="Workspace"
                 value={form.data.workspace}
-                onChange={(event) => form.setData('workspace', event.target.value)}
-              >
-                {workspaces.map((workspace) => (
-                  <option key={workspace.slug} value={workspace.slug}>
-                    {workspace.name}
-                  </option>
-                ))}
-              </Select>
+                onChange={(value) => form.setData('workspace', value)}
+                options={workspaces.map((workspace) => ({
+                  value: workspace.slug,
+                  label: workspace.name,
+                }))}
+              />
             )}
 
             <Input
@@ -127,13 +125,12 @@ export function NewBoardDialog({
               label="Quem vê"
               value={form.data.visibility}
               error={form.errors.visibility}
-              onChange={(event) =>
-                form.setData('visibility', event.target.value as BoardVisibility)
-              }
-            >
-              <option value="workspace_wide">Todo o workspace</option>
-              <option value="private_to_members">Só quem eu adicionar</option>
-            </Select>
+              onChange={(value) => form.setData('visibility', value as BoardVisibility)}
+              options={[
+                { value: 'workspace_wide', label: 'Todo o workspace' },
+                { value: 'private_to_members', label: 'Só quem eu adicionar' },
+              ]}
+            />
           </div>
 
           <DialogFooter>

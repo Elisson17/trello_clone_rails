@@ -1,42 +1,92 @@
-import type { ComponentProps, ReactNode } from 'react'
+import { type ReactNode, useId } from 'react'
 
 import { Field, type FieldError } from '@/components/Field'
+import {
+  SelectContent,
+  SelectItem,
+  Select as SelectRoot,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
-type SelectProps = ComponentProps<'select'> & {
+export type SelectOption = {
+  value: string
+  label: ReactNode
+}
+
+type SelectProps = {
+  options: SelectOption[]
+  value?: string
+  onChange: (value: string) => void
   label?: string
   error?: FieldError
   hint?: ReactNode
+  placeholder?: string
+  required?: boolean
+  disabled?: boolean
+  name?: string
+  size?: 'sm' | 'default'
+  className?: string
   fieldClassName?: string
+  'aria-label'?: string
 }
 
-/**
- * `<select>` nativo de propósito: busca por digitação, teclado e roda mobile saem de
- * graça, e nenhum deles é trivial num combobox custom.
- */
 export function Select({
+  options,
+  value,
+  onChange,
   label,
   error,
   hint,
-  fieldClassName,
+  placeholder,
   required,
+  disabled,
+  name,
+  size,
   className,
-  ...props
+  fieldClassName,
+  'aria-label': ariaLabel,
 }: SelectProps) {
+  const labelId = useId()
+  const triggerId = useId()
+
   return (
-    <Field label={label} error={error} hint={hint} required={required} className={fieldClassName}>
-      <select
+    <Field
+      label={label}
+      error={error}
+      hint={hint}
+      required={required}
+      className={fieldClassName}
+      labelId={label ? labelId : undefined}
+    >
+      <SelectRoot
+        value={value}
+        onValueChange={onChange}
         required={required}
-        aria-invalid={!!error || undefined}
-        className={cn(
-          'h-9 w-full rounded-md border border-input bg-transparent px-2.5 text-sm shadow-xs outline-none',
-          'focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
-          'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
-          'disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30',
-          className,
-        )}
-        {...props}
-      />
+        disabled={disabled}
+        name={name}
+      >
+        <SelectTrigger
+          id={triggerId}
+          size={size}
+          className={cn('w-full', className)}
+          aria-label={ariaLabel}
+          aria-labelledby={label ? `${labelId} ${triggerId}` : undefined}
+          aria-invalid={!!error || undefined}
+        >
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        {/* `popper` ancora a lista abaixo do gatilho; o `item-aligned` do shadcn cobre o
+            campo com a opção escolhida, como o select do macOS. */}
+        <SelectContent position="popper" align="start" sideOffset={4}>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </SelectRoot>
     </Field>
   )
 }
