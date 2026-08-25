@@ -2,6 +2,7 @@ import { Head, Link } from '@inertiajs/react'
 import { SearchIcon } from 'lucide-react'
 
 import { BoardCard } from '@/components/BoardCard'
+import { PageHeader } from '@/components/PageHeader'
 import { BOARD_THEME } from '@/lib/board-theme'
 import { cn } from '@/lib/utils'
 import type { BoardBackground } from '@/types/inertia'
@@ -34,28 +35,42 @@ export default function SearchIndex({
   const total = boards.length + cards.length
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-8">
       <Head title={term ? `Busca: ${term}` : 'Busca'} />
 
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {term ? `Resultados para “${term}”` : 'Busca'}
-      </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <PageHeader>
+        <h1 className="shrink-0 text-sm font-semibold tracking-tight">Busca</h1>
+
+        {term && (
+          <>
+            <span aria-hidden className="text-xs text-muted-foreground/40">
+              /
+            </span>
+            <p className="min-w-0 truncate text-xs text-muted-foreground">
+              {total} {total === 1 ? 'resultado' : 'resultados'} para “{term}”
+            </p>
+          </>
+        )}
+      </PageHeader>
+
+      <p className="text-sm text-muted-foreground">
         {term
-          ? `${total} ${total === 1 ? 'resultado' : 'resultados'} em boards e cards que você pode ver.`
-          : 'Digite no campo do header para buscar por título de board ou de card.'}
+          ? 'Boards e cards que você pode ver, por título.'
+          : 'Digite no campo da navegação para buscar por título de board ou de card.'}
       </p>
 
       {term && total === 0 && (
-        <p className="mt-8 flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center text-sm text-muted-foreground">
+        <p className="mt-6 flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center text-sm text-muted-foreground">
           <SearchIcon aria-hidden className="size-5" />
           Nada com esse título. A busca casa começo de palavra — tente um pedaço menor.
         </p>
       )}
 
       {boards.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-sm font-semibold text-muted-foreground">Boards</h2>
+        <section className="mt-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Boards
+          </h2>
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {boards.map((board) => (
               <li key={board.id}>
@@ -64,6 +79,8 @@ export default function SearchIndex({
                   title={board.title}
                   background={board.background}
                   meta={board.workspace.name}
+                  accentSeed={board.workspace.slug}
+                  className="h-full"
                 />
               </li>
             ))}
@@ -72,19 +89,21 @@ export default function SearchIndex({
       )}
 
       {cards.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-sm font-semibold text-muted-foreground">Cards</h2>
+        <section className="mt-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Cards
+          </h2>
           <ul className="mt-2 divide-y rounded-xl border bg-card">
             {cards.map((card) => (
               <li key={card.id}>
                 <Link
                   href={`/cards/${card.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                  className="flex items-start gap-2 px-3 py-2.5 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <span
                     aria-hidden
                     className={cn(
-                      'h-8 w-1.5 shrink-0 rounded-full',
+                      'mt-1 size-2 shrink-0 rounded-full',
                       BOARD_THEME[card.board.background].rail,
                     )}
                   />
@@ -103,7 +122,9 @@ export default function SearchIndex({
                     </span>
                   </span>
 
-                  <span className="shrink-0 text-xs text-muted-foreground">#{card.id}</span>
+                  <span className="mt-0.5 shrink-0 text-xs tabular-nums text-muted-foreground/70">
+                    #{card.id}
+                  </span>
                 </Link>
               </li>
             ))}

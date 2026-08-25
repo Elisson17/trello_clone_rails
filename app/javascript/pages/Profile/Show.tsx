@@ -1,6 +1,7 @@
 import { Head, useForm, usePage } from '@inertiajs/react'
 
 import { Input } from '@/components/Input'
+import { PageHeader } from '@/components/PageHeader'
 import { Select } from '@/components/Select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -23,20 +24,30 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
   })
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10">
+    <div className="mx-auto max-w-xl px-4 py-8">
       <Head title="Perfil" />
-      <h1 className="text-2xl font-semibold">Perfil</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{user?.email}</p>
+
+      <PageHeader>
+        <h1 className="shrink-0 text-sm font-semibold tracking-tight">Perfil</h1>
+        <span aria-hidden className="text-xs text-muted-foreground/40">
+          /
+        </span>
+        <span className="min-w-0 truncate text-xs text-muted-foreground">{user?.email}</span>
+      </PageHeader>
+
+      <p className="text-sm text-muted-foreground">
+        Nome, avatar e fuso horário valem para todos os workspaces.
+      </p>
 
       <form
-        className="mt-8 flex flex-col gap-4 rounded-2xl border bg-card p-6"
+        className="mt-5 flex flex-col gap-4 rounded-xl border bg-card p-5"
         onSubmit={(event) => {
           event.preventDefault()
           // Inertia detecta o File e manda multipart sozinho.
           profile.patch('/profile', { forceFormData: true })
         }}
       >
-        <h2 className="font-semibold">Dados da conta</h2>
+        <h2 className="text-sm font-semibold tracking-tight">Dados da conta</h2>
 
         <div className="flex items-center gap-4">
           <Avatar className="size-14">
@@ -82,13 +93,13 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
       </form>
 
       <form
-        className="mt-6 flex flex-col gap-4 rounded-2xl border bg-card p-6"
+        className="mt-5 flex flex-col gap-4 rounded-xl border bg-card p-5"
         onSubmit={(event) => {
           event.preventDefault()
           password.patch('/profile/password', { onSuccess: () => password.reset() })
         }}
       >
-        <h2 className="font-semibold">Trocar senha</h2>
+        <h2 className="text-sm font-semibold tracking-tight">Trocar senha</h2>
 
         <Input
           label="Senha atual"

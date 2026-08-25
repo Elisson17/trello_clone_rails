@@ -13,7 +13,7 @@ export default function SignIn() {
       description="Use o e-mail e a senha da sua conta."
       footer={
         <>
-          Não tem conta?
+          Não tem conta?{' '}
           <Link href="/users/sign_up" className="font-semibold text-foreground hover:underline">
             Criar conta
           </Link>
@@ -50,7 +50,7 @@ export default function SignIn() {
           onChange={(event) => form.setData('password', event.target.value)}
         />
 
-        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+        <label className="flex items-center gap-2 text-muted-foreground">
           <input
             type="checkbox"
             className="size-4 rounded border-input"
@@ -64,7 +64,7 @@ export default function SignIn() {
           Entrar
         </Button>
 
-        <div className="flex justify-between text-[13px]">
+        <div className="flex justify-between">
           <Link href="/users/password/new" className="text-muted-foreground hover:underline">
             Esqueci minha senha
           </Link>

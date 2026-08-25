@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react'
 import { AuthShell } from '@/components/AuthShell'
 import { ROLE_LABELS } from '@/components/RoleBadge'
 import { Button } from '@/components/ui/button'
+import { relativeTime } from '@/lib/card-format'
 import type { WorkspaceRole } from '@/types/inertia'
 
 type InvitationState = 'ready' | 'signed_out' | 'wrong_email' | 'expired' | 'accepted'
@@ -28,15 +29,26 @@ const MESSAGES: Record<InvitationState, string> = {
 }
 
 export default function InvitationsAccept({ invitation, state }: Props) {
+  const live = state === 'ready' || state === 'signed_out' || state === 'wrong_email'
+
   return (
     <AuthShell
       title="Você foi convidado"
       description={`${invitation.invited_by_name} convidou você para "${invitation.workspace_name}" como ${ROLE_LABELS[invitation.role]}.`}
     >
-      <p className="text-sm text-muted-foreground">
-        Convite para <strong className="text-foreground">{invitation.email_address}</strong>.{' '}
-        {MESSAGES[state]}
-      </p>
+      <dl className="flex flex-col gap-2 rounded-lg border bg-secondary/50 p-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="text-muted-foreground">Convite para</dt>
+          <dd className="min-w-0 truncate font-medium">{invitation.email_address}</dd>
+        </div>
+
+        <div className="flex items-baseline justify-between gap-3">
+          <dt className="text-muted-foreground">{live ? 'Expira' : 'Expirou'}</dt>
+          <dd className="shrink-0">{relativeTime(invitation.expires_at)}</dd>
+        </div>
+      </dl>
+
+      <p className="mt-4 text-muted-foreground">{MESSAGES[state]}</p>
 
       {state === 'ready' && (
         <Button
@@ -63,6 +75,19 @@ export default function InvitationsAccept({ invitation, state }: Props) {
           <Link href="/users/sign_out" method="delete" as="button">
             Sair desta conta
           </Link>
+        </Button>
+      )}
+
+      {/* Sem estes dois, os estados finais deixavam a pessoa numa tela sem saída. */}
+      {state === 'accepted' && (
+        <Button asChild className="mt-4 w-full">
+          <Link href="/">Ir para os boards</Link>
+        </Button>
+      )}
+
+      {state === 'expired' && (
+        <Button asChild variant="outline" className="mt-4 w-full">
+          <Link href="/">Voltar para o início</Link>
         </Button>
       )}
     </AuthShell>

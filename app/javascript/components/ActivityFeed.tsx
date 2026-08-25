@@ -40,10 +40,13 @@ export function ActivityFeed({
 export function ActivityLine({
   activity,
   bare = false,
+  strong = false,
   children,
 }: {
   activity: ActivityPayload
   bare?: boolean
+  /** Linha em peso cheio: é assim que a notificação não lida se distingue da lida. */
+  strong?: boolean
   children?: React.ReactNode
 }) {
   const text = activityText(activity, bare)
@@ -62,7 +65,7 @@ export function ActivityLine({
         <BellRingIcon aria-hidden className="mt-1 size-4 shrink-0 text-muted-foreground" />
       )}
 
-      <span className="min-w-0 flex-1 text-muted-foreground">
+      <span className={cn('min-w-0 flex-1', strong ? 'text-foreground' : 'text-muted-foreground')}>
         {activity.actor && (
           <span className="font-medium text-foreground">{activity.actor.name}</span>
         )}{' '}
