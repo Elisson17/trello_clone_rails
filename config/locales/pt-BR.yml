@@ -1,6 +1,7 @@
 pt-BR:
   auth:
     rate_limited: "Muitas tentativas. Espere alguns minutos e tente de novo."
+    session_expired: "Sua sessão expirou. Entre de novo para continuar."
   profiles:
     updated: "Perfil atualizado."
     password_updated: "Senha alterada."

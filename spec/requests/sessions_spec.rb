@@ -53,4 +53,29 @@ RSpec.describe "Sessions", type: :request do
 
     expect(response).to have_http_status(:ok)
   end
+
+  # A sessão caindo no meio do uso chegava como 401 vazio, que não é resposta Inertia:
+  # o cliente engasgava e a tela ficava branca.
+  describe "when the session dies under a running app" do
+    def inertia_get
+      get root_path, headers: {
+        "X-Inertia" => "true",
+        "X-Inertia-Version" => InertiaRails.configuration.version,
+        "X-Requested-With" => "XMLHttpRequest"
+      }
+    end
+
+    it "asks the client for a full page visit to the login" do
+      inertia_get
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.headers["X-Inertia-Location"]).to eq(new_user_session_url)
+    end
+
+    it "says why, because the person was in the middle of something" do
+      inertia_get
+
+      expect(flash[:alert]).to eq(I18n.t("auth.session_expired"))
+    end
+  end
 end
