@@ -142,6 +142,24 @@
   }
 }
 
+/* O `@starting-style` das entradas próprias já respeita a preferência; os keyframes
+   `enter`/`exit` do tw-animate-css, não. Zerar as variáveis deles tira o movimento e
+   deixa só o fade — menos movimento, não ausência de resposta. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="popover-content"],
+  [data-slot="sheet-content"],
+  [data-slot="tooltip-content"] {
+    --tw-enter-translate-x: 0;
+    --tw-enter-translate-y: 0;
+    --tw-enter-scale: 1;
+    --tw-exit-translate-x: 0;
+    --tw-exit-translate-y: 0;
+    --tw-exit-scale: 1;
+  }
+}
+
 /* Card recém-inserido na coluna. `@starting-style` só dispara no nó que acabou de entrar
    no DOM, e a classe só é aplicada depois da primeira pintura — abrir o board não faz a
    coluna inteira entrar de uma vez. */
