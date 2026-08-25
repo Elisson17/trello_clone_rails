@@ -6,13 +6,17 @@ module Lists
     end
 
     def call
-      siblings = @list.board.lists.active.ordered.where.not(id: @list.id).to_a
-      index = @index.clamp(0, siblings.size)
-      before = siblings[index - 1] if index.positive?
-      after = siblings[index]
+      before, after = nil
+      moved = List.transaction do
+        siblings = @list.board.lists.active.ordered.where.not(id: @list.id).to_a
+        index = @index.clamp(0, siblings.size)
+        before = siblings[index - 1] if index.positive?
+        after = siblings[index]
 
-      @list.position = List.position_between(before&.position, after&.position)
-      return failure(@list.errors) unless @list.save
+        @list.position = List.position_between(before&.position, after&.position)
+        @list.save
+      end
+      return failure(@list.errors) unless moved
 
       enqueue_rebalance(before, after)
       success(@list)

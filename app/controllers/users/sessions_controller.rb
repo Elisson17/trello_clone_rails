@@ -1,6 +1,17 @@
 module Users
   class SessionsController < Devise::SessionsController
-    rate_limit to: 10, within: 3.minutes, only: :create, with: :too_many_attempts
+    # Duas travas com chaves diferentes: por IP contra força bruta numa conta só, e por
+    # e-mail contra credential stuffing, que troca de IP a cada tentativa e passa reto
+    # pela primeira. `name:` é o que separa as duas contagens na mesma action.
+    rate_limit to: 10, within: 3.minutes, only: :create, name: "sign-in-ip",
+               with: :too_many_attempts
+    # `if:` é o que evita o balde compartilhado: sem ele, toda tentativa sem e-mail cairia
+    # na mesma chave vazia e trancaria o login de todo mundo. O teto é folgado de propósito
+    # — apertar demais deixaria qualquer um trancar a conta alheia de fora.
+    rate_limit to: 15, within: 20.minutes, only: :create, name: "sign-in-account",
+               by: -> { params.dig(:user, :email).to_s.downcase.strip },
+               if: -> { params.dig(:user, :email).present? },
+               with: :too_many_attempts
 
     def new
       render inertia: "Auth/SignIn"

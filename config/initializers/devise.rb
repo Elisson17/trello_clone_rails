@@ -181,8 +181,9 @@ Devise.setup do |config|
   # config.rememberable_options = {}
 
   # ==> Configuration for :validatable
-  # Range for password length.
-  config.password_length = 6..128
+  # Range for password length. 8 é o piso do OWASP ASVS; o 6 do Devise deixa passar senha
+  # que uma wordlist quebra em segundos.
+  config.password_length = 8..128
 
   # Email regex used to validate email formats. It simply asserts that
   # one (and only one) @ exists in the given string. This is mainly
