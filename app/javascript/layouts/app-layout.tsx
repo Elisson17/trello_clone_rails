@@ -48,7 +48,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </a>
 
       <div className="flex min-h-screen">
-        <div id="nav" className="hidden w-60 shrink-0 border-r lg:block">
+        {/* `bg-sidebar` na coluna, e não só na nav: numa página mais alta que a tela a faixa abaixo da nav grudada ficava sem pintura. */}
+        <div id="nav" className="hidden w-60 shrink-0 border-r bg-sidebar lg:block">
           <div className="sticky top-0 h-screen">
             <AppSidebar user={auth.user} nav={nav} />
           </div>

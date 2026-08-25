@@ -132,6 +132,13 @@
        não no `html`: o `rem` do Tailwind é a raiz, e mexer nele encolheria todo o
        espaçamento do app junto. */
     @apply bg-background text-[13px] text-foreground;
+    /* Caixa de seleção, cursor e seleção de texto são desenhados pelo navegador: sem
+       isto chegam no azul do sistema, a única cor da tela que não é do design. */
+    accent-color: var(--primary);
+    caret-color: var(--primary);
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 28%, transparent);
   }
 }
 
