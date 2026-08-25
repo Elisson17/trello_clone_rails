@@ -59,7 +59,7 @@ export default function BoardsIndex({
   const canCreate = workspace ? can?.create_board : workspaces.length > 0
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-page px-6 py-8">
       <Head title={workspace ? workspace.name : 'Boards'} />
 
       {workspace && can ? (
@@ -75,7 +75,7 @@ export default function BoardsIndex({
           placeholder="Buscar board"
           aria-label="Buscar board"
           onChange={(event) => setFilter({ ...filter, text: event.target.value })}
-          className="h-9 min-w-48 flex-1 rounded-md border bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+          className="h-9 w-full max-w-xs rounded-md border bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
         />
 
         <Button
@@ -137,8 +137,10 @@ export default function BoardsIndex({
         </div>
       )}
 
+      {/* Colunas seguem o espaço em vez de uma escada de breakpoints: acima de `lg` a escada
+          parava em três e a página congelava, do notebook ao monitor de 27 polegadas. */}
       {found.length > 0 ? (
-        <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3">
           {found.map((item) => (
             <li key={item.id}>
               <BoardGridCard board={item} showWorkspace={!workspace} />

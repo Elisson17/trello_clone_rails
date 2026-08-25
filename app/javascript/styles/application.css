@@ -84,6 +84,9 @@
 
 @theme inline {
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Largura das telas de grade. As telas de leitura (perfil, busca, arquivados) continuam
+     estreitas pela medida do texto; a grade é superfície de varredura e não tem essa trava. */
+  --container-page: 1600px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
