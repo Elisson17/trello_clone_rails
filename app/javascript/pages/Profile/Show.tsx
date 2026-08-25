@@ -1,19 +1,34 @@
 import { Head, useForm, usePage } from '@inertiajs/react'
 
+import { AvatarPicker, type AvatarPreset } from '@/components/AvatarPicker'
 import { Input } from '@/components/Input'
 import { PageHeader } from '@/components/PageHeader'
 import { Select } from '@/components/Select'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import type { SharedProps } from '@/types/inertia'
 
-export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
+const CARD = 'mt-5 rounded-xl border bg-card p-5'
+
+// Uma coluna abaixo de `md` porque no celular não há largura para duas; daí para cima o
+// formulário lê em duas, e cada linha junta o que se decide junto.
+const GRID = 'grid gap-x-5 gap-y-4 md:grid-cols-2'
+
+export default function ProfileShow({
+  time_zones,
+  avatar_presets,
+  avatar_preset: savedPreset,
+}: {
+  time_zones: string[]
+  avatar_presets: AvatarPreset[]
+  avatar_preset: string | null
+}) {
   const { auth } = usePage<SharedProps>().props
   const user = auth.user
 
   const profile = useForm({
     name: user?.name ?? '',
     time_zone: user?.time_zone ?? 'UTC',
+    avatar_preset: savedPreset ?? '',
     avatar: null as File | null,
   })
 
@@ -24,7 +39,7 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
   })
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
+    <div className="mx-auto max-w-3xl px-4 py-8">
       <Head title="Perfil" />
 
       <PageHeader>
@@ -40,7 +55,7 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
       </p>
 
       <form
-        className="mt-5 flex flex-col gap-4 rounded-xl border bg-card p-5"
+        className={CARD}
         onSubmit={(event) => {
           event.preventDefault()
           // Inertia detecta o File e manda multipart sozinho.
@@ -49,51 +64,49 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
       >
         <h2 className="text-sm font-semibold tracking-tight">Dados da conta</h2>
 
-        <div className="flex items-center gap-4">
-          <Avatar className="size-14">
-            <AvatarImage src={user?.avatar_url ?? undefined} alt="" />
-            <AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? '?'}</AvatarFallback>
-          </Avatar>
+        <div className={`${GRID} mt-4`}>
+          <div className="md:col-span-2">
+            <AvatarPicker
+              presets={avatar_presets}
+              preset={profile.data.avatar_preset}
+              file={profile.data.avatar}
+              name={profile.data.name}
+              savedUploadUrl={savedPreset ? null : (user?.avatar_url ?? null)}
+              error={profile.errors.avatar ?? profile.errors.avatar_preset}
+              onPick={(key) => profile.setData('avatar_preset', key)}
+              onUpload={(file) => profile.setData('avatar', file)}
+            />
+          </div>
 
           <Input
-            label="Avatar"
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            hint="PNG, JPEG ou WebP, até 2 MB."
-            error={profile.errors.avatar}
-            fieldClassName="flex-1"
-            onChange={(event) => profile.setData('avatar', event.target.files?.[0] ?? null)}
+            label="Nome"
+            required
+            value={profile.data.name}
+            error={profile.errors.name}
+            onChange={(event) => profile.setData('name', event.target.value)}
           />
+
+          <Select
+            label="Fuso horário"
+            value={profile.data.time_zone}
+            error={profile.errors.time_zone}
+            onChange={(event) => profile.setData('time_zone', event.target.value)}
+          >
+            {time_zones.map((zone) => (
+              <option key={zone} value={zone}>
+                {zone}
+              </option>
+            ))}
+          </Select>
         </div>
 
-        <Input
-          label="Nome"
-          required
-          value={profile.data.name}
-          error={profile.errors.name}
-          onChange={(event) => profile.setData('name', event.target.value)}
-        />
-
-        <Select
-          label="Fuso horário"
-          value={profile.data.time_zone}
-          error={profile.errors.time_zone}
-          onChange={(event) => profile.setData('time_zone', event.target.value)}
-        >
-          {time_zones.map((zone) => (
-            <option key={zone} value={zone}>
-              {zone}
-            </option>
-          ))}
-        </Select>
-
-        <Button type="submit" className="self-start" disabled={profile.processing}>
+        <Button type="submit" className="mt-5" disabled={profile.processing}>
           Salvar
         </Button>
       </form>
 
       <form
-        className="mt-5 flex flex-col gap-4 rounded-xl border bg-card p-5"
+        className={CARD}
         onSubmit={(event) => {
           event.preventDefault()
           password.patch('/profile/password', { onSuccess: () => password.reset() })
@@ -101,43 +114,44 @@ export default function ProfileShow({ time_zones }: { time_zones: string[] }) {
       >
         <h2 className="text-sm font-semibold tracking-tight">Trocar senha</h2>
 
-        <Input
-          label="Senha atual"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password.data.current_password}
-          error={password.errors.current_password}
-          onChange={(event) => password.setData('current_password', event.target.value)}
-        />
+        {/* Coluna da esquerda prova quem você é, a da direita é a senha nova: são dois
+            passos, e lado a lado eles param de parecer uma lista de três campos iguais. */}
+        <div className={`${GRID} mt-4 items-start`}>
+          <Input
+            label="Senha atual"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password.data.current_password}
+            error={password.errors.current_password}
+            onChange={(event) => password.setData('current_password', event.target.value)}
+          />
 
-        <Input
-          label="Nova senha"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={8}
-          value={password.data.password}
-          error={password.errors.password}
-          onChange={(event) => password.setData('password', event.target.value)}
-        />
+          <div className="flex flex-col gap-4">
+            <Input
+              label="Nova senha"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password.data.password}
+              error={password.errors.password}
+              onChange={(event) => password.setData('password', event.target.value)}
+            />
 
-        <Input
-          label="Confirmação da nova senha"
-          type="password"
-          autoComplete="new-password"
-          required
-          value={password.data.password_confirmation}
-          error={password.errors.password_confirmation}
-          onChange={(event) => password.setData('password_confirmation', event.target.value)}
-        />
+            <Input
+              label="Confirmação da nova senha"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={password.data.password_confirmation}
+              error={password.errors.password_confirmation}
+              onChange={(event) => password.setData('password_confirmation', event.target.value)}
+            />
+          </div>
+        </div>
 
-        <Button
-          type="submit"
-          variant="outline"
-          className="self-start"
-          disabled={password.processing}
-        >
+        <Button type="submit" variant="outline" className="mt-5" disabled={password.processing}>
           Trocar senha
         </Button>
       </form>

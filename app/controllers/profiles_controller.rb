@@ -2,7 +2,14 @@ class ProfilesController < ApplicationController
   skip_after_action :verify_authorized
 
   def show
-    render inertia: "Profile/Show", props: { time_zones: ActiveSupport::TimeZone::MAPPING.values.sort }
+    render inertia: "Profile/Show", props: {
+      time_zones: ActiveSupport::TimeZone::MAPPING.values.sort,
+      avatar_preset: current_user.avatar_preset,
+      # A URL sai do Propshaft, que carimba o digest: o front não tem como montá-la sozinho.
+      avatar_presets: User::AVATAR_PRESETS.map do |key|
+        { key: key, url: helpers.image_path("avatars/#{key}.svg") }
+      end
+    }
   end
 
   def update
@@ -25,7 +32,7 @@ class ProfilesController < ApplicationController
   private
 
   def profile_params
-    params.permit(:name, :time_zone, :avatar)
+    params.permit(:name, :time_zone, :avatar, :avatar_preset)
   end
 
   def password_params
