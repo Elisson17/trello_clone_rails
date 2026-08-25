@@ -76,7 +76,7 @@ function Checklist({
         aria-label={`Progresso de ${checklist.title}`}
       >
         <div
-          className="h-full w-full origin-left rounded-full bg-primary transition-transform duration-200 ease-(--ease-out-strong)"
+          className="h-full w-full origin-left bg-primary transition-transform duration-200 ease-(--ease-out-strong)"
           style={{ transform: `scaleX(${percent / 100})` }}
         />
       </div>

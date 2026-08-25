@@ -34,14 +34,14 @@ function SheetContent({
     <SheetPrimitive.Portal>
       <SheetPrimitive.Overlay
         data-slot="sheet-overlay"
-        className="fixed inset-0 z-50 bg-black/40 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+        className="fixed inset-0 z-50 bg-black/40 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 duration-150 ease-(--ease-out-strong) data-[state=closed]:duration-100"
       />
 
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
           'fixed z-50 flex w-full flex-col overflow-y-auto bg-background shadow-2xl outline-none',
-          'duration-200 ease-(--ease-out-strong) data-[state=closed]:animate-out data-[state=open]:animate-in',
+          'duration-200 ease-(--ease-out-strong) data-[state=closed]:animate-out data-[state=closed]:duration-150 data-[state=open]:animate-in',
           SIDES[side],
           className,
         )}
